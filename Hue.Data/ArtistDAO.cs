@@ -83,8 +83,8 @@ namespace Hue.Data {
                 cmd.SetInt(ARTIST_ID, id);
             }, (reader) => new ImageDownload() { 
                 Filename= reader.GetString(ARTIST_NM),
-                Mime = reader.GetString(ARTIST_IMG_MIME_TX),
-                Data = reader.GetBytea(ARTIST_IMG_BYTES),
+                Mime = reader.GetOptionalString(ARTIST_IMG_MIME_TX),
+                Data = reader.GetOptionalBytea(ARTIST_IMG_BYTES),
             });
         }
 

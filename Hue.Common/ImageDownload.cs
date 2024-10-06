@@ -13,11 +13,11 @@
 
         public string Filename { get; set; } = "";
 
-        public string? Extension => AcceptableMimeTypeExtensions.GetValueOrDefault(Mime);
+        public string? Extension => AcceptableMimeTypeExtensions.GetValueOrDefault(Mime ?? "");
 
         public string FullFilename => Filename + (!string.IsNullOrWhiteSpace(Extension) ? "." + Extension : "");
 
-        public string Mime { get; set; } = "";
-        public byte[] Data { get; set; } = [];
+        public string? Mime { get; set; } = "";
+        public byte[]? Data { get; set; } = [];
     }
 }

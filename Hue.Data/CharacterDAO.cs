@@ -29,12 +29,12 @@ namespace Hue.Data {
 
         }
 
-        public async Task<string?> CreateCategory(string username, CharacterCategory cat) {
+        public async Task<int> CreateCategory(string username, CharacterCategory cat) {
 
             var sql = InsertSql(
                 columns: [CHAR_CAT_NM,CHAR_CAT_DESC_TX,CHAR_CAT_COLOR_TX,USER_NM],
                 table: CHAR_CAT_TABLE,
-                returning: CHAR_CAT_NM
+                returning: CHAR_CAT_ID
             );
 
             return await adoTemplate.QuerySingle(sql, (cmd) => {
@@ -42,7 +42,7 @@ namespace Hue.Data {
                 cmd.SetString(CHAR_CAT_DESC_TX, cat.Description);
                 cmd.SetString(CHAR_CAT_COLOR_TX, cat.Color);
                 cmd.SetString(USER_NM, username);
-            }, (reader) => reader.GetString(0));
+            }, (reader) => reader.GetInt(0));
 
         }
 
@@ -134,8 +134,8 @@ namespace Hue.Data {
                 cmd.SetInt(CHAR_ID, id);
             }, (reader) => new ImageDownload() {
                 Filename = reader.GetString(CHAR_NM),
-                Mime = reader.GetString(CHAR_IMG_MIME_TX),
-                Data = reader.GetBytea(CHAR_IMG_BYTES),
+                Mime = reader.GetOptionalString(CHAR_IMG_MIME_TX),
+                Data = reader.GetOptionalBytea(CHAR_IMG_BYTES),
             });
         }
 
@@ -180,7 +180,7 @@ namespace Hue.Data {
             });
         }
 
-        public async Task UpdateTag(string username, CharacterCategory category) {
+        public async Task UpdateCategory(string username, CharacterCategory category) {
 
             var sql = UpdateSql(
                 columns: [CHAR_CAT_NM, CHAR_CAT_DESC_TX, CHAR_CAT_COLOR_TX],

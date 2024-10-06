@@ -365,3 +365,4 @@ FodyWeavers.xsd
 HASHBROWN_SALT.txt
 REGISTER_KEY.txt
 DB_URL.txt
+/Hue.API/FRONTEND_HOST_NAME.txt

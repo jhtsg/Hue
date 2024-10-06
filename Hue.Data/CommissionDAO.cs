@@ -103,7 +103,7 @@ namespace Hue.Data {
             Color = reader.GetString(COMM_TAG_COLOR_TX)
         };
 
-        public async Task<List<Commission>> GetAll(string username, CommissionFilterOptions filter, int page) {
+        public async Task<List<Commission>> GetAll(string username, CommissionFilterOptions filter) {
 
             List<WhereCondition> conditions = [
                 new("c."+USER_NM, WhereConditionOperator.EQUALS,$"@{USER_NM}"),
@@ -136,8 +136,8 @@ namespace Hue.Data {
 ],
                 table: $"{COMM_TABLE} C, {ARTIST_TABLE} a",
                 new(WhereConditionUnion.AND, conditions),
-                [new($"COALESCE({UPDT_TS},{CRE_TS})",SortOrder.DESC)],
-                PAGE_SIZE, PAGE_SIZE*page
+                [new($"COALESCE({UPDT_TS},{CRE_TS})", SortOrder.DESC)],
+                PAGE_SIZE, PAGE_SIZE * (filter.Page ?? 0)
             );
 
             return await adoTemplate.Query(sql, (cmd) => {
@@ -193,8 +193,8 @@ namespace Hue.Data {
                 cmd.SetInt(ARTIST_ID, id);
             }, (reader) => new ImageDownload() { 
                 Filename= reader.GetString(ARTIST_NM),
-                Mime = reader.GetString(ARTIST_IMG_MIME_TX),
-                Data = reader.GetBytea(ARTIST_IMG_BYTES),
+                Mime = reader.GetOptionalString(ARTIST_IMG_MIME_TX),
+                Data = reader.GetOptionalBytea(ARTIST_IMG_BYTES),
             });
         }
 

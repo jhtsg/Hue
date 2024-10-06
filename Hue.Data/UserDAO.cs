@@ -1,7 +1,6 @@
 ﻿using Hue.Common;
 using Hue.Data.Utils;
 using Igtampe.Hashbrown;
-using NpgsqlTypes;
 using static Hue.Data.Utils.Constants;
 
 namespace Hue.Data
