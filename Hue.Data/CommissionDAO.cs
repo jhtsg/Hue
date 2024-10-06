@@ -117,11 +117,11 @@ namespace Hue.Data {
             if (filter.CommissionStatus != null) { conditions.Add(new(COMM_STATUS_CD)); }
             if (filter.Year != null) { conditions.Add(new($"extract (year from {START_TS})", WhereConditionOperator.EQUALS, "@year")); }
             if (filter.CharacterId != null) { conditions.Add(new(
-                    COMM_ID, WhereConditionOperator.IN, SelectSql([COMM_ID], COMM_CHAR_MAP, new([new(CHAR_ID)]))
+                    COMM_ID, WhereConditionOperator.IN, "(" + SelectSql([COMM_ID], COMM_CHAR_MAP, new([new(CHAR_ID)])) + ")"
                 )); }
             if (filter.CommissionTagId != null) {
                 conditions.Add(new(
-                    COMM_ID, WhereConditionOperator.IN, SelectSql([COMM_ID], COMM_TAG_MAP, new([new(COMM_TAG_ID)]))
+                    COMM_ID, WhereConditionOperator.IN, "(" + SelectSql([COMM_ID], COMM_TAG_MAP, new([new(COMM_TAG_ID)])) + ")"
                 ));
             }
 
@@ -133,7 +133,7 @@ namespace Hue.Data {
                     COMM_STATUS_CD, COMM_TYPE_CD,
                     CRE_TS, UPDT_TS, START_TS, DONE_TS, PBLSH_TS,
                     "C."+ARTIST_ID, ARTIST_NM, ARTIST_COMM_SHEET_TX, ARTIST_SOCIAL_TX
-],
+                ],
                 table: $"{COMM_TABLE} C, {ARTIST_TABLE} a",
                 new(WhereConditionUnion.AND, conditions),
                 [new($"COALESCE({UPDT_TS},{CRE_TS})", SortOrder.DESC)],
@@ -255,7 +255,7 @@ namespace Hue.Data {
                   ])
               );
 
-            return await adoTemplate.Query(sql, (cmd) => cmd.SetInt(COMM_TAG_ID, id), commTagRm);
+            return await adoTemplate.Query(sql, (cmd) => cmd.SetInt(COMM_ID, id), commTagRm);
         }
 
         #endregion

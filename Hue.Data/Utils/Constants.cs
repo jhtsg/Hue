@@ -51,8 +51,8 @@
         public static readonly string COMM_TAG_DESC_TX = "comm_tag_desc_tx";
         public static readonly string COMM_TAG_COLOR_TX = "comm_tag_color_tx";
 
-        public static readonly string COMM_CHAR_MAP = $"{SCHEMA}.com_char_map";
-        public static readonly string COMM_TAG_MAP = $"{SCHEMA}.com_tag_map";
+        public static readonly string COMM_CHAR_MAP = $"{SCHEMA}.comm_char_map";
+        public static readonly string COMM_TAG_MAP = $"{SCHEMA}.comm_tag_map";
 
         public static readonly string CRE_TS = "cre_ts";
         public static readonly string UPDT_TS = "updt_ts";

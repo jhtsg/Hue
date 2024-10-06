@@ -20,10 +20,10 @@
         public string PostDescription { get; set; } = "";
 
         /// <summary>Days its taken to complete this piece. 0 if the piece hasn't finished yet</summary>
-        public double? DaysToComplete => StartTs == null ? null 
+        public int? DaysToComplete => StartTs == null ? null 
             : DoneTs == null 
-                ? (DateTime.UtcNow - StartTs).Value.TotalDays 
-            : (DoneTs - StartTs).Value.TotalDays;
+                ? Convert.ToInt32(Math.Floor((DateTime.UtcNow - StartTs).Value.TotalDays)) 
+            : Convert.ToInt32(Math.Floor((DoneTs - StartTs).Value.TotalDays));
 
         /// <summary>Status of this commission</summary>
         public CommissionStatus Status { get; set; } = CommissionStatus.BRAINSTORM;
