@@ -47,7 +47,7 @@ namespace Hue.API.Controllers {
 
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequest request) {
-            try { await dao.Register(request.Username, request.Password, request.RegistrationKey); }
+            try { await dao.Register(request.Username, request.Password, request.RegistrationKey, request.IsArtist); }
             catch (ArgumentException e) { return BadRequest(new ProblemDetails() { 
                 Status=400,
                 Detail = e.Message

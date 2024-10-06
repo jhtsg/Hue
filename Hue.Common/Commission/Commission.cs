@@ -1,5 +1,10 @@
-﻿namespace Hue.Common {
-    public class Commission : Identifiable {
+﻿using Hue.Common.Artist;
+using Hue.Common.Character;
+
+namespace Hue.Common.Commission
+{
+    public class Commission : Identifiable
+    {
 
         /// <summary>Name of this Commission</summary>
         public string Name { get; set; } = "";
@@ -20,9 +25,9 @@
         public string PostDescription { get; set; } = "";
 
         /// <summary>Days its taken to complete this piece. 0 if the piece hasn't finished yet</summary>
-        public int? DaysToComplete => StartTs == null ? null 
-            : DoneTs == null 
-                ? Convert.ToInt32(Math.Floor((DateTime.UtcNow - StartTs).Value.TotalDays)) 
+        public int? DaysToComplete => StartTs == null ? null
+            : DoneTs == null
+                ? Convert.ToInt32(Math.Floor((DateTime.UtcNow - StartTs).Value.TotalDays))
             : Convert.ToInt32(Math.Floor((DoneTs - StartTs).Value.TotalDays));
 
         /// <summary>Status of this commission</summary>
@@ -47,10 +52,10 @@
         public DateTime? PublishTs { get; set; }
 
         /// <summary>Artist who's in charge of this commission</summary>
-        public Artist? Artist { get; set; } = null;
+        public Artist.Artist? Artist { get; set; } = null;
 
         /// <summary>Characters in this commission</summary>
-        public List<Character> Characters { get; set; } = [];
+        public List<Character.Character> Characters { get; set; } = [];
 
         /// <summary>Tags for this commission on Hue</summary>
         public List<CommissionTag> CommissionTags { get; set; } = [];

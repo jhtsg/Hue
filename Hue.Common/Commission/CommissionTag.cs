@@ -1,5 +1,7 @@
-﻿namespace Hue.Common {
-    public class CommissionTag : Identifiable {
+﻿namespace Hue.Common.Commission
+{
+    public class CommissionTag : Identifiable
+    {
         /// <summary>Name of this Tag</summary>
         public string Name { get; set; } = "";
 

@@ -4,8 +4,11 @@ using static Hue.Data.Utils.AdoTemplate;
 using static Hue.Data.Utils.SqlBuilder;
 using static Hue.Data.Utils.Constants;
 using static Hue.Data.Utils.OwnerChecker;
+using Hue.Common.Character;
+using Hue.Common.Commission;
 
-namespace Hue.Data {
+namespace Hue.Data
+{
     public class CommissionDAO(string connectionString) {
 
         private const int PAGE_SIZE = 20;

@@ -2,6 +2,8 @@
 using Hue.Data.Utils;
 using Igtampe.Hashbrown;
 using static Hue.Data.Utils.Constants;
+using static Hue.Data.Utils.AdoTemplate;
+using static Hue.Data.Utils.SqlBuilder;
 
 namespace Hue.Data
 {
@@ -14,10 +16,13 @@ namespace Hue.Data
 
         //We'll need to add some other fields eventually or something
         public async Task<User?> GetUser(string username) {
-            var sql = $@"SELECT {USER_NM} FROM {USER_TABLE} WHERE {USER_NM} = @username";
+
+            var sql = SelectSql([USER_NM,ARTIST_IN],USER_TABLE, new([new(USER_NM)]));
+
             return await adoTemplate.QuerySingle(sql, (cmd) => cmd.SetString("username", username), (reader) => {
                 return new User() {
-                    Username = reader.GetString(USER_NM)!,
+                    Username = reader.GetString(USER_NM),
+                    IsArtist = reader.GetBoolean(ARTIST_IN),
                 };
             });
         }
@@ -35,7 +40,7 @@ namespace Hue.Data
         
         }
 
-        public async Task Register(string username, string password, string key) {
+        public async Task Register(string username, string password, string key, bool isArtist) {
 
             if (registerKey.ToString().Length == 0) {
                 throw new ArgumentException("No Registrations are accepted at this time");
@@ -45,11 +50,12 @@ namespace Hue.Data
                 throw new ArgumentException("Registration key is incorrect");
             }
 
-            var sql = $"INSERT INTO {USER_TABLE} ({string.Join(",", [USER_NM, PASS_TX])}) VALUES (@username, @password)";
+            var sql = InsertSql([USER_NM, PASS_TX, ARTIST_IN], USER_TABLE);
 
             await adoTemplate.Execute(sql, (cmd) => {
-                cmd.SetString("username", username);
-                cmd.SetString("password", hashbrown.Hash(password));
+                cmd.SetString(USER_NM, username);
+                cmd.SetString(PASS_TX, hashbrown.Hash(password));
+                cmd.SetBoolean(ARTIST_IN, isArtist);
             });
         }
 

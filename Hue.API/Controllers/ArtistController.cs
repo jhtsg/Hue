@@ -3,8 +3,10 @@ using Hue.Data;
 using Hue.Data.Utils;
 using Hue.Common;
 using static Hue.API.Controllers.AuthController;
+using Hue.Common.Artist;
 
-namespace Hue.API.Controllers {
+namespace Hue.API.Controllers
+{
 
     [ApiController]
     [Route("api/artist")]

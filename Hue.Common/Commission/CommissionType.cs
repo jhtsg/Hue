@@ -1,7 +1,9 @@
-﻿namespace Hue.Common {
+﻿namespace Hue.Common.Commission
+{
 
     /// <summary>Type of Commission</summary>
-    public enum CommissionType {
+    public enum CommissionType
+    {
 
         /// <summary>Default single image commission</summary>
         SIMPLE_IMAGE = 0,
@@ -22,7 +24,7 @@
         ANIM = 5,
 
         /// <summary>Animated commission with a background</summary>
-        ANIM_WITH_BG =6,
+        ANIM_WITH_BG = 6,
 
         /// <summary>Animated commissions with multiple scenes</summary>
         FILM = 7,

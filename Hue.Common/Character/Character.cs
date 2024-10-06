@@ -1,5 +1,7 @@
-﻿namespace Hue.Common {
-    public class Character : Identifiable {
+﻿namespace Hue.Common.Character
+{
+    public class Character : Identifiable
+    {
         /// <summary>Name of this character</summary>
         public string Name { get; set; } = "";
 
@@ -8,7 +10,7 @@
 
         /// <summary>Description of this character in Markdown</summary>
         public string Description { get; set; } = "";
-        
+
         /// <summary>Color for this character's tile</summary>
         public string Color { get; set; } = "";
 

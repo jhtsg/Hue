@@ -1,5 +1,7 @@
-﻿namespace Hue.Common {
-    public class CharacterCategory : Identifiable {
+﻿namespace Hue.Common.Character
+{
+    public class CharacterCategory : Identifiable
+    {
 
         /// <summary>Name of this Category</summary>
         public string Name { get; set; } = "";

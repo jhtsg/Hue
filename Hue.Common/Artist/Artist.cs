@@ -1,5 +1,7 @@
-﻿namespace Hue.Common {
-    public class Artist : Identifiable {
+﻿namespace Hue.Common.Artist
+{
+    public class Artist : Identifiable
+    {
         /// <summary>Full name of this artist</summary>
         public string Name { get; set; } = "";
 

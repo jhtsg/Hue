@@ -1,7 +1,9 @@
-﻿namespace Hue.Common {
+﻿namespace Hue.Common.Commission
+{
 
     /// <summary>Status of a commission</summary>
-    public enum CommissionStatus {
+    public enum CommissionStatus
+    {
 
         /// <summary>Archived or left for later</summary>
         ARCHIVE = -1,
