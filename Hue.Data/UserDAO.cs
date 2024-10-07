@@ -19,7 +19,7 @@ namespace Hue.Data
 
             var sql = SelectSql([USER_NM,ARTIST_IN],USER_TABLE, new([new(USER_NM)]));
 
-            return await adoTemplate.QuerySingle(sql, (cmd) => cmd.SetString("username", username), (reader) => {
+            return await adoTemplate.QuerySingle(sql, (cmd) => cmd.SetString(USER_NM, username), (reader) => {
                 return new User() {
                     Username = reader.GetString(USER_NM),
                     IsArtist = reader.GetBoolean(ARTIST_IN),

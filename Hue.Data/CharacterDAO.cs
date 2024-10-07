@@ -74,7 +74,8 @@ namespace Hue.Data
                 new(WhereConditionUnion.AND, [
                     new ("c." + USER_NM, WhereConditionOperator.EQUALS, "@" + USER_NM ),
                     new JoinCondition("c","cat",CHAR_CAT_ID)
-                ])
+                ]),
+                order:[new(CHAR_NM)]
             );
 
             return await adoTemplate.Query(sql, (cmd) => cmd.SetString(USER_NM, username), characterRm);
@@ -112,7 +113,8 @@ namespace Hue.Data
             var sql = SelectSql(
                            columns: ["*"],
                            table: CHAR_CAT_TABLE,
-                           new(WhereConditionUnion.AND, [new(USER_NM), new(CHAR_CAT_ID)])
+                           new(WhereConditionUnion.AND, [new(USER_NM), new(CHAR_CAT_ID)]),
+                           order: [new(CHAR_CAT_NM)]
                        );
 
             return await adoTemplate.QuerySingle(sql, (cmd) => {

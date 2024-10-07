@@ -47,7 +47,8 @@ namespace Hue.Data
                 table: ARTIST_TABLE,
                 new(WhereConditionUnion.AND, [
                     new(USER_NM)
-                ])
+                ]),
+                order: [new(ARTIST_NM)]
             );
 
             return await adoTemplate.Query(sql, (cmd) => cmd.SetString(USER_NM, username), artistRm);

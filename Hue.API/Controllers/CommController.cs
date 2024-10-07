@@ -28,7 +28,7 @@ namespace Hue.API.Controllers
         }
 
         [HttpPost("tag")]
-        public async Task<IActionResult> CreateCategory(CommissionTag commTag) {
+        public async Task<IActionResult> CreateTag(CommissionTag commTag) {
             var session = GetSession(Request, Response);
             if (session == null) { return Unauthorized(); }
             await dao.CreateTag(session.Username, commTag);
@@ -127,7 +127,25 @@ namespace Hue.API.Controllers
 
         #endregion
 
+        #region DELETE
 
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteCommission(int id) {
+            var session = GetSession(Request, Response);
+            if (session == null) { return Unauthorized(); }
+            await dao.DeleteCommission(session.Username, id);
+            return Ok();
+        }
+
+        [HttpDelete("tag/{id}")]
+        public async Task<IActionResult> DeleteTag(int id) {
+            var session = GetSession(Request, Response);
+            if (session == null) { return Unauthorized(); }
+            await dao.DeleteTag(session.Username, id);
+            return Ok();
+        }
+
+        #endregion
 
     }
 }
