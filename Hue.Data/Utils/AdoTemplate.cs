@@ -14,6 +14,7 @@ namespace Hue.Data.Utils {
             public void SetLong(string key, long? value) => Set(key, NpgsqlDbType.Bigint, value);
             public void SetDouble(string key, double? value) => Set(key, NpgsqlDbType.Double, value);
             public void SetString(string key, string? value) => Set(key, NpgsqlDbType.Varchar, value);
+            public void SetGuid(string key, Guid? value) => Set(key, NpgsqlDbType.Uuid, value);
             public void SetBytea(string key, byte[]? value) => Set(key, NpgsqlDbType.Bytea, value);
             public void SetTimestamp(string key, DateTime? value)=> Set(key, NpgsqlDbType.Timestamp, value);
 
