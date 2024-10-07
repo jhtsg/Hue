@@ -36,6 +36,6 @@
         RENDER_3D = 9,
 
         /// <summary>Character Ref sheet</summary>
-        REF_SHEET = 9
+        REF_SHEET = 10
     }
 }

@@ -59,7 +59,7 @@ namespace Hue.API.Controllers
         }
 
         [HttpGet("tag")]
-        public async Task<IActionResult> GetAllCategories() {
+        public async Task<IActionResult> GetAllTags() {
             var session = GetSession(Request, Response);
             return session == null
                 ? Unauthorized()

@@ -77,6 +77,7 @@ namespace Hue.API.Controllers
             if (session == null) { return Unauthorized(); }
 
             if (file == null || file.Length == 0) { return BadRequest("No data!"); }
+            if (file.Length > 5 * 1024 * 1024) { return BadRequest("File "); }
             if (!ImageDownload.AcceptableMimeTypeExtensions.ContainsKey(file.ContentType)) {
                 return BadRequest("Unacceptable type, must be an image!");
             }
