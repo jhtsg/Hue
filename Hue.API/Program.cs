@@ -1,3 +1,4 @@
+using Hue.API.Controllers;
 using Hue.Data.Utils;
 using Microsoft.OpenApi.Models;
 
@@ -59,5 +60,7 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+PingPongController.StartupTime = DateTime.UtcNow;
 
 app.Run();
