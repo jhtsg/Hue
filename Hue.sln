@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hue.Data", "Hue.Data\Hue.Da
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hue.API", "Hue.API\Hue.API.csproj", "{0B7A7153-0C6C-4A66-A4DC-0665A443FD8A}"
 EndProject
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "hue.web", "Hue.Web\hue.web.esproj", "{CA40C2F8-923B-4E42-BD6C-C94AC45A36BB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,12 @@ Global
 		{0B7A7153-0C6C-4A66-A4DC-0665A443FD8A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0B7A7153-0C6C-4A66-A4DC-0665A443FD8A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0B7A7153-0C6C-4A66-A4DC-0665A443FD8A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CA40C2F8-923B-4E42-BD6C-C94AC45A36BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CA40C2F8-923B-4E42-BD6C-C94AC45A36BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CA40C2F8-923B-4E42-BD6C-C94AC45A36BB}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{CA40C2F8-923B-4E42-BD6C-C94AC45A36BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CA40C2F8-923B-4E42-BD6C-C94AC45A36BB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CA40C2F8-923B-4E42-BD6C-C94AC45A36BB}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

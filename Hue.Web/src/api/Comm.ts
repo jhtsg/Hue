@@ -1,0 +1,61 @@
+import Commission from "../model/commission/Commission";
+import CommissionFilterOptions from "../model/commission/CommissionFilterOptions";
+import { API_PREFIX, Delete, Get, Post, Put, Upload } from "./Common";
+
+const ENDPOINT = API_PREFIX + "comm/"
+
+export const commHeaderImage = (commission: Commission) => ENDPOINT + `${commission.id}/image`
+
+export const createCommission = (
+    setLoading: (value: boolean) => void,
+    setItem: (value?: Commission) => void,
+    onError: (value: any) => void,
+    val: Commission
+) => Post(setLoading, setItem, onError, ENDPOINT, val)
+
+export const getCommissions = (
+    setLoading: (value: boolean) => void,
+    setItem: (value?: Commission[]) => void,
+    onError: (value: any) => void,
+    filter?: CommissionFilterOptions
+) => {
+    //We need to convert the Filter to a Query String
+    const queryString = filter ? Object.keys(filter)
+        .map((k) => `${k}=${filter[k]}`)
+        .join("&") : "";
+
+    Get(setLoading, setItem, onError, ENDPOINT + (queryString.length === 0 ? "" : "?" + queryString));
+}
+
+export const getCommission = (
+    setLoading: (value: boolean) => void,
+    setItem: (value?: Commission) => void,
+    onError: (value: any) => void,
+    id: number,
+) => Get(setLoading, setItem, onError, ENDPOINT + id)
+
+export const updateCommission = (
+    setLoading: (value: boolean) => void,
+    onSuccess: () => void,
+    onError: (value: any) => void,
+    val: Commission
+) => Put(setLoading, onSuccess, onError, ENDPOINT, val)
+
+export const updateCommissionHeader = (
+    setLoading: (value: boolean) => void,
+    setProgress: (value: number) => void,
+    onSuccess: () => void,
+    onError: (value: any) => void,
+    id: number,
+    file: File
+) => Upload(setLoading, setProgress, onSuccess, onError, "PUT", ENDPOINT + `${id}/image`, file)
+
+
+export const deleteCommission = (
+    setLoading: (value: boolean) => void,
+    onSuccess: () => void,
+    onError: (value: any) => void,
+    id: number,
+) => Delete(setLoading, onSuccess, onError, ENDPOINT + id)
+
+
