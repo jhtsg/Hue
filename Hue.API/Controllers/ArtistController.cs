@@ -23,8 +23,8 @@ namespace Hue.API.Controllers
         public async Task<IActionResult> Create(Artist artist) {
             var session = GetSession(Request, Response);
             if (session == null) { return Unauthorized(); }
-            await dao.Create(session.Username, artist);
-            return Created();
+            var id = await dao.Create(session.Username, artist);
+            return Created("api/artist/" + id,await dao.Get(session.Username,id));
         }
 
         #endregion

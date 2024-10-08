@@ -23,16 +23,16 @@ namespace Hue.API.Controllers
         public async Task<IActionResult> Create(Character character) {
             var session = GetSession(Request, Response);
             if (session == null) { return Unauthorized(); }
-            await dao.Create(session.Username, character);
-            return Created();
+            var id = await dao.Create(session.Username, character);
+            return Created("api/char/" + id, await dao.Get(session.Username, id));
         }
 
         [HttpPost("category")]
         public async Task<IActionResult> CreateCategory(CharacterCategory category) {
             var session = GetSession(Request, Response);
             if (session == null) { return Unauthorized(); }
-            await dao.CreateCategory(session.Username, category);
-            return Created();
+            var id = await dao.CreateCategory(session.Username, category);
+            return Created("api/char/category/" + id, await dao.GetCategory(session.Username, id));
         }
 
         #endregion

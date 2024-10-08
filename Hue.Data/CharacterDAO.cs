@@ -15,7 +15,7 @@ namespace Hue.Data
         public async Task<int> Create(string username, Character character) {
 
             var sql = InsertSql(
-                columns : [CHAR_NM, CHAR_SPECIES_TX, CHAR_DESC_TX, CHAR_COLOR_TX, CHAR_CAT_NM,USER_NM],
+                columns : [CHAR_NM, CHAR_SPECIES_TX, CHAR_DESC_TX, CHAR_COLOR_TX, CHAR_CAT_ID,USER_NM],
                 table : CHAR_TABLE,
                 returning : CHAR_ID
             );
@@ -25,7 +25,7 @@ namespace Hue.Data
                 cmd.SetString(CHAR_SPECIES_TX, character.Species);
                 cmd.SetString(CHAR_DESC_TX, character.Description);
                 cmd.SetString(CHAR_COLOR_TX, character.Color);
-                cmd.SetString(CHAR_CAT_NM, character.Category?.Name);
+                cmd.SetInt(CHAR_CAT_ID, character.Category?.Id);
                 cmd.SetString(USER_NM, username);
             }, (reader) => reader.GetInt(0));
 
@@ -62,6 +62,7 @@ namespace Hue.Data
         };
 
         public static readonly Func<Getter, CharacterCategory> characterCatRm = (reader) => new() {
+            Id = reader.GetInt(CHAR_CAT_ID),
             Name = reader.GetString(CHAR_CAT_NM),
             Color = reader.GetString(CHAR_CAT_COLOR_TX),
             Description = reader.GetString(CHAR_CAT_DESC_TX)
@@ -69,13 +70,13 @@ namespace Hue.Data
 
         public async Task<List<Character>> GetAll(string username) {
             var sql = SelectSql(
-                columns: [CHAR_ID, CHAR_NM, CHAR_COLOR_TX, CHAR_SPECIES_TX, CHAR_DESC_TX, CHAR_CAT_NM, CHAR_CAT_COLOR_TX, CHAR_CAT_DESC_TX],
+                columns: [CHAR_ID, CHAR_NM, CHAR_COLOR_TX, CHAR_SPECIES_TX, CHAR_DESC_TX, "cat." + CHAR_CAT_ID, CHAR_CAT_NM, CHAR_CAT_COLOR_TX, CHAR_CAT_DESC_TX],
                 table: $"{CHAR_TABLE} c, {CHAR_CAT_TABLE} cat",
                 new(WhereConditionUnion.AND, [
                     new ("c." + USER_NM, WhereConditionOperator.EQUALS, "@" + USER_NM ),
                     new JoinCondition("c","cat",CHAR_CAT_ID)
                 ]),
-                order:[new(CHAR_NM)]
+                order:[new(CHAR_CAT_NM), new(CHAR_NM)]
             );
 
             return await adoTemplate.Query(sql, (cmd) => cmd.SetString(USER_NM, username), characterRm);
@@ -84,7 +85,7 @@ namespace Hue.Data
         public async Task<Character?> Get(string username, int id) {
 
             var sql = SelectSql(
-                columns: [CHAR_ID, CHAR_NM, CHAR_COLOR_TX, CHAR_SPECIES_TX, CHAR_DESC_TX, CHAR_CAT_NM, CHAR_CAT_COLOR_TX, CHAR_CAT_DESC_TX],
+                columns: [CHAR_ID, CHAR_NM, CHAR_COLOR_TX, CHAR_SPECIES_TX, CHAR_DESC_TX, "cat." + CHAR_CAT_ID, CHAR_CAT_NM, CHAR_CAT_COLOR_TX, CHAR_CAT_DESC_TX],
                 table: $"{CHAR_TABLE} c, {CHAR_CAT_TABLE} cat",
                 new(WhereConditionUnion.AND, [
                     new ("c." + USER_NM, WhereConditionOperator.EQUALS, "@" + USER_NM ),
