@@ -4,6 +4,8 @@ using Hue.Data.Utils;
 using Hue.Common;
 using static Hue.API.Controllers.AuthController;
 using Hue.Common.Artist;
+using Hue.API.utils;
+using Microsoft.AspNetCore.DataProtection.KeyManagement;
 
 namespace Hue.API.Controllers
 {
@@ -13,6 +15,7 @@ namespace Hue.API.Controllers
     public class ArtistController : ControllerBase {
 
         readonly ArtistDAO dao;
+        readonly ImageCache imgCache = new();
 
         public ArtistController() {
             dao = new(new EnvironmentKey("DB_URL", () => throw new InvalidOperationException("")).ToString());
@@ -52,7 +55,12 @@ namespace Hue.API.Controllers
             var session = GetSession(Request, Response);
             if (session == null) return Unauthorized();
 
-            var file = await dao.GetImage(session.Username, ID);
+
+            var key = $"{session.Username}-{ID}-ARTIST";
+            var file = 
+                imgCache.GetFromCache(key) ?? //Try getting it from the cache first. 
+                imgCache.AddToCache(key, await dao.GetImage(session.Username, ID)); //Otherwise get it from the DB
+
             if (file == null || file.Data == null || file.Mime == null) return NotFound();
 
             Response.Headers.Append("Content-Disposition", "inline; filename=" + file.FullFilename);
@@ -87,6 +95,14 @@ namespace Hue.API.Controllers
             var fileBytes = memoryStream.ToArray(); // Convert to byte array
 
             await dao.UpdateImage(session.Username,ID, fileBytes, file.ContentType);
+            //Actually we can just set this here
+            var key = $"{session.Username}-{ID}-ARTIST";
+            imgCache.AddToCache(key, new ImageDownload() { 
+                Data = fileBytes,
+                Mime = file.ContentType,
+                Filename = file.Name,
+            });
+
             return Ok();
         }
 

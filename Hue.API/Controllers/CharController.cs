@@ -4,6 +4,7 @@ using Hue.Data.Utils;
 using Hue.Common;
 using static Hue.API.Controllers.AuthController;
 using Hue.Common.Character;
+using Hue.API.utils;
 
 namespace Hue.API.Controllers
 {
@@ -13,6 +14,7 @@ namespace Hue.API.Controllers
     public class CharController : ControllerBase {
 
         readonly CharacterDAO dao;
+        readonly ImageCache imgCache = new();
 
         public CharController() {
             dao = new(new EnvironmentKey("DB_URL", () => throw new InvalidOperationException("")).ToString());
@@ -77,8 +79,12 @@ namespace Hue.API.Controllers
             var session = GetSession(Request, Response);
             if (session == null) return Unauthorized();
 
-            var file = await dao.GetImage(session.Username, ID);
-            if(file== null || file.Data==null || file.Mime==null) return NotFound(); 
+            var key = $"{session.Username}-{ID}-CHARACTER";
+            var file =
+                imgCache.GetFromCache(key) ?? //Try getting it from the cache first. 
+                imgCache.AddToCache(key, await dao.GetImage(session.Username, ID)); //Otherwise get it from the DB
+
+            if (file== null || file.Data==null || file.Mime==null) return NotFound(); 
 
             Response.Headers.Append("Content-Disposition", "inline; filename=" + file.FullFilename);
             return File(file.Data,file.Mime);
@@ -119,6 +125,13 @@ namespace Hue.API.Controllers
             var fileBytes = memoryStream.ToArray(); // Convert to byte array
 
             await dao.UpdateImage(session.Username,ID, fileBytes, file.ContentType);
+            var key = $"{session.Username}-{ID}-CHARACTER";
+            imgCache.AddToCache(key, new ImageDownload() {
+                Data = fileBytes,
+                Mime = file.ContentType,
+                Filename = file.Name,
+            });
+
             return Ok();
         }
 
