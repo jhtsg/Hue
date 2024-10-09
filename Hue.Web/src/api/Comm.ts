@@ -4,7 +4,7 @@ import { API_PREFIX, Delete, Get, Post, Put, Upload } from "./Common";
 
 const ENDPOINT = API_PREFIX + "comm/"
 
-export const commHeaderImage = (commission: Commission) => ENDPOINT + `${commission.id}/image`
+export const commHeaderImage = (id: number) => ENDPOINT + `${id}/image`
 
 export const createCommission = (
     setLoading: (value: boolean) => void,
@@ -26,6 +26,12 @@ export const getCommissions = (
 
     Get(setLoading, setItem, onError, ENDPOINT + (queryString.length === 0 ? "" : "?" + queryString));
 }
+
+export const getCommissionYears = (
+    setLoading: (value: boolean) => void,
+    setItem: (value?: number[]) => void,
+    onError: (value: any) => void,
+) => Get(setLoading, setItem, onError, ENDPOINT + "years")
 
 export const getCommission = (
     setLoading: (value: boolean) => void,

@@ -7,16 +7,19 @@ import CharacterCategoryPill from "./CharacterCategoryPill";
 
 export default function CharacterTile(props: {
     character: Character
+    avatarSize?: number
+    autoSize?: boolean
+    onClick?: () => void
 }) {
 
     const nav = useNavigate();
-    const { character } = props;
+    const { character, autoSize, avatarSize, onClick } = props;
 
     return <AvatarTile
-        width={340}
-        avatarSize={64}
+        width={autoSize ? undefined : 340}
+        avatarSize={avatarSize ?? 64}
         avatarUrl={characterImage(character.id)}
-        onClick={() => nav(`/characters/${character.id}`)}
+        onClick={() => onClick ? onClick() : nav(`/characters/${character.id}`)}
         avatarString={character.name}
     >
         <div style={{ marginBottom: "7px", display: "flex" }}>

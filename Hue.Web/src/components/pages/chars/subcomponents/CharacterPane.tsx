@@ -113,6 +113,12 @@ export default function CharacterPane(props: {
     }
 
     const createChar = (catOverride?: CharacterCategory) => {
+
+        if (!catOverride && !category) {
+            enqueueSnackbar("Please specify a category", { variant: 'warning' })
+            return;
+        }
+
         createCharacterApi.fetch(onCreateSuccess, undefined, {
             name: name,
             color: color,
@@ -137,7 +143,7 @@ export default function CharacterPane(props: {
         if (selectedFile) {
             updateCharacterProfileApi.fetch(onUploadCreateSuccess, undefined, val?.id, selectedFile)
         } else {
-            enqueueSnackbar("Character created!")
+            enqueueSnackbar("Character created!", { variant: 'success' })
             if (onOk) onOk();
         }
     }
@@ -149,21 +155,21 @@ export default function CharacterPane(props: {
         if (selectedFile) {
             updateCharacterProfileApi.fetch(onUploadSuccess, undefined, id, selectedFile)
         } else {
-            enqueueSnackbar("Character Updated!")
+            enqueueSnackbar("Character Updated!", { variant: 'success' })
         }
     }
 
     const onUploadCreateSuccess = () => {
         if (selectedFileUrl) { URL.revokeObjectURL(selectedFileUrl) }
         setSelectedFile(null)
-        enqueueSnackbar("Character Created!")
+        enqueueSnackbar("Character Created!", { variant: 'success' })
         if (onOk) onOk();
     }
 
     const onUploadSuccess = () => {
         if (selectedFileUrl) { URL.revokeObjectURL(selectedFileUrl) }
         setSelectedFile(null)
-        enqueueSnackbar("Character Updated!")
+        enqueueSnackbar("Character Updated!", { variant: 'success' })
     }
 
     const updateCategory = (val: CharacterCategory) => {

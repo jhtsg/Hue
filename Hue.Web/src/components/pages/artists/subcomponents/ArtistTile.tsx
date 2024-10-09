@@ -6,16 +6,17 @@ import SocialDisplay from "../../../shared/SocialDisplay";
 
 export default function ArtistTile(props: {
     artist: Artist
+    onClick?: (e: any) => void
 }) {
 
     const nav = useNavigate();
-    const { artist } = props;
+    const { artist, onClick } = props;
 
     return <AvatarTile
         width={280}
-        avatarSize={64}
+        avatarSize={48}
         avatarUrl={artistImage(artist.id)}
-        onClick={() => nav(`/artists/${artist.id}`)}
+        onClick={onClick ? onClick : () => nav(`/artists/${artist.id}`)}
         avatarString={artist.name}
     >
         <div>{artist.name}</div>

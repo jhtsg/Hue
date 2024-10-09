@@ -1,5 +1,8 @@
 import { createContext, useState } from "react";
 
+export const REFRESH_ALL_COLUMNS = "ALL_COMM_COLUMNS";
+export const REFRESH_SPECIFIC_COLUMN_PREFIX = "COMM_COLUMNS_CD_"
+
 export class RefreshContextType {
     public constructor(
         public sendRefresh: (flag: string) => void,

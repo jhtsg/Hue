@@ -1,5 +1,4 @@
 import { useNavigate, useParams } from "react-router-dom";
-import { usePageTitle } from "../../hooks/usePageTitle"
 import { Card, CardContent, IconButton } from "@mui/material";
 import { ArrowBack } from "@mui/icons-material";
 import ArtistPane from "./subcomponents/ArtistPane";
@@ -8,7 +7,6 @@ export default function ArtistPage() {
 
     const { id } = useParams();
     const nav = useNavigate();
-    usePageTitle("Artist")
 
 
     return <>

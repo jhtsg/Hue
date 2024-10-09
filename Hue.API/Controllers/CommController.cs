@@ -60,6 +60,14 @@ namespace Hue.API.Controllers
                 : Ok(await dao.Get(session.Username,ID));
         }
 
+        [HttpGet("years")]
+        public async Task<IActionResult> GetYears() {
+            var session = GetSession(Request, Response);
+            return session == null
+                ? Unauthorized()
+                : Ok(await dao.GetYears(session.Username));
+        }
+
         [HttpGet("tag")]
         public async Task<IActionResult> GetAllTags() {
             var session = GetSession(Request, Response);

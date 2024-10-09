@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { usePageTitle } from "../../hooks/usePageTitle";
 import useApi from "../../hooks/useApi";
 import { getCharacters } from "../../../api/Char";
 import { Button, Dialog } from "@mui/material";
@@ -8,12 +7,14 @@ import ApiAlert from "../../shared/ApiAlert";
 import LoadingBackdrop from "../../shared/LoadingBackdrop";
 import CharacterTile from "./subcomponents/CharacterTile";
 import CharacterPane from "./subcomponents/CharacterPane";
+import Character from "../../../model/character/Character";
 
-export default function CharsPage() {
+export default function CharsPage(props: {
+    onSelect?: (val: Character) => void
+}) {
 
     const [newOpen, setNewOpen] = useState(false)
 
-    usePageTitle("Characters")
     const artistsApi = useApi(getCharacters, true)
 
     return <>
@@ -23,8 +24,10 @@ export default function CharsPage() {
         </div>
         <hr />
         <ApiAlert result={artistsApi.error} style={{ marginBottom: "20px" }} />
-        <div style={{ display: 'flex', flexWrap: 'wrap', width: '100%', marginTop: "20px" }} >
-            {artistsApi.data?.map(a => <CharacterTile character={a} />)}
+        <div style={{ display: 'flex', flexWrap: 'wrap', width: '100%', marginTop: "20px", justifyContent: props.onSelect ? "center" : undefined }} >
+            {artistsApi.data?.map(a => <CharacterTile character={a} onClick={props.onSelect ? () => {
+                props.onSelect?.(a)
+            } : undefined} />)}
         </div>
 
         <LoadingBackdrop loading={artistsApi.loading} />

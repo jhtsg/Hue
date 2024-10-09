@@ -16,7 +16,7 @@ namespace Hue.Data.Utils {
             public void SetString(string key, string? value) => Set(key, NpgsqlDbType.Varchar, value);
             public void SetGuid(string key, Guid? value) => Set(key, NpgsqlDbType.Uuid, value);
             public void SetBytea(string key, byte[]? value) => Set(key, NpgsqlDbType.Bytea, value);
-            public void SetTimestamp(string key, DateTime? value)=> Set(key, NpgsqlDbType.Timestamp, value);
+            public void SetTimestamp(string key, DateTime? value)=> Set(key, NpgsqlDbType.TimestampTz, value);
 
         }
 
@@ -143,6 +143,9 @@ namespace Hue.Data.Utils {
         }
 
         public async Task<int> ExecuteBatch<T>(string sql, Action<Setter,T> setter, ICollection<T> items) {
+
+            if (items.Count == 0) return 0;
+
             using var conn = new NpgsqlConnection(ConnectionString);
             await conn.OpenAsync();
 
@@ -162,6 +165,32 @@ namespace Hue.Data.Utils {
                 batch.BatchCommands.Add(batchCommand);
             }
             
+            return await batch.ExecuteNonQueryAsync();
+        }
+
+        public async Task<int> ExecuteBatch<T>(string sql, Func<Setter, T, Task> setter, ICollection<T> items) {
+
+            if(items.Count == 0) return 0;
+
+            using var conn = new NpgsqlConnection(ConnectionString);
+            await conn.OpenAsync();
+
+            using var batch = new NpgsqlBatch(conn);
+
+            foreach (var item in items) {
+                var batchCommand = new NpgsqlBatchCommand(sql);
+
+                void setParam(string key, NpgsqlDbType type, object? val) {
+                    batchCommand.Parameters.Add(new NpgsqlParameter(key, type) { Value = val ?? DBNull.Value });
+                }
+
+                await setter(new Setter(setParam), item);
+
+                log.Debug(sql);
+
+                batch.BatchCommands.Add(batchCommand);
+            }
+
             return await batch.ExecuteNonQueryAsync();
         }
     }

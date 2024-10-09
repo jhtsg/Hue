@@ -6,6 +6,7 @@ import ArtistsPage from "./components/pages/artists/ArtistsPage";
 import CommsPage from "./components/pages/comms/CommsPage";
 import ArtistPage from "./components/pages/artists/ArtistPage";
 import CharPage from "./components/pages/chars/CharPage";
+import CommPage from "./components/pages/comms/CommPage";
 
 export const HueRouter = createBrowserRouter([{
     path: "/",
@@ -21,6 +22,7 @@ export const HueRouter = createBrowserRouter([{
         { path: '/artists', element: <ArtistsPage /> },
         { path: '/artists/:id', element: <ArtistPage /> },
         { path: '/commissions', element: <CommsPage /> },
+        { path: '/commissions/:id', element: <CommPage /> },
 
     ]
 

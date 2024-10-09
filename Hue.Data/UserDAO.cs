@@ -17,7 +17,7 @@ namespace Hue.Data
         //We'll need to add some other fields eventually or something
         public async Task<User?> GetUser(string username) {
 
-            var sql = SelectSql([USER_NM,ARTIST_IN],USER_TABLE, new([new(USER_NM)]));
+            var sql = SelectSql([USER_NM,ARTIST_IN],USER_TABLE, new WhereConditionGroup([new(USER_NM)]));
 
             return await adoTemplate.QuerySingle(sql, (cmd) => cmd.SetString(USER_NM, username), (reader) => {
                 return new User() {

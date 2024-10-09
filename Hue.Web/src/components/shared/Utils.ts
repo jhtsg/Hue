@@ -17,3 +17,12 @@ export function stringToColor(string: string) {
 
     return color;
 }
+
+export function RemoveIndex<T>(arr: T[], i: number) {
+    const l = [] as T[]
+    arr.forEach((a, ai) => {
+        if (ai !== i) { l.push(a) }
+    })
+
+    return l;
+}

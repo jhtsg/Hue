@@ -14,6 +14,10 @@ namespace Hue.Data
         #region CREATE
         public async Task<int> Create(string username, Character character) {
 
+            if (character.Category?.Id <= 0) {
+                character.Category.Id = await CreateCategory(username, character.Category);
+            }
+
             var sql = InsertSql(
                 columns : [CHAR_NM, CHAR_SPECIES_TX, CHAR_DESC_TX, CHAR_COLOR_TX, CHAR_CAT_ID,USER_NM],
                 table : CHAR_TABLE,
@@ -87,7 +91,7 @@ namespace Hue.Data
             var sql = SelectSql(
                 columns: [CHAR_ID, CHAR_NM, CHAR_COLOR_TX, CHAR_SPECIES_TX, CHAR_DESC_TX, "cat." + CHAR_CAT_ID, CHAR_CAT_NM, CHAR_CAT_COLOR_TX, CHAR_CAT_DESC_TX],
                 table: $"{CHAR_TABLE} c, {CHAR_CAT_TABLE} cat",
-                new(WhereConditionUnion.AND, [
+                new WhereConditionGroup(WhereConditionUnion.AND, [
                     new ("c." + USER_NM, WhereConditionOperator.EQUALS, "@" + USER_NM ),
                     new JoinCondition("c","cat",CHAR_CAT_ID),
                     new(CHAR_ID)
@@ -104,7 +108,7 @@ namespace Hue.Data
             var sql = SelectSql(
                 columns: ["*"],
                 table: CHAR_CAT_TABLE,
-                new(WhereConditionUnion.AND, [new (USER_NM)])
+                new WhereConditionGroup(WhereConditionUnion.AND, [new (USER_NM)])
             );
 
             return await adoTemplate.Query(sql, (cmd) => cmd.SetString(USER_NM, username), characterCatRm);
@@ -129,7 +133,7 @@ namespace Hue.Data
             var sql = SelectSql(
              columns: [CHAR_IMG_BYTES, CHAR_NM, CHAR_IMG_MIME_TX],
              table: CHAR_TABLE,
-             new(WhereConditionUnion.AND, [
+             new WhereConditionGroup(WhereConditionUnion.AND, [
                  new(USER_NM), new(CHAR_ID)
              ])
          );
@@ -149,6 +153,10 @@ namespace Hue.Data
         #region UPDATE
 
         public async Task Update(string username, Character character) {
+
+            if (character.Category?.Id <= 0) {
+                character.Category.Id = await CreateCategory(username, character.Category);
+            }
 
             var sql = UpdateSql(
                 columns: [CHAR_NM, CHAR_SPECIES_TX, CHAR_DESC_TX, CHAR_COLOR_TX, CHAR_CAT_ID],

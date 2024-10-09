@@ -88,7 +88,7 @@ export default function ArtistPane(props: {
         if (selectedFile) {
             updateArtistProfileApi.fetch(onUploadCreateSuccess, undefined, val?.id, selectedFile)
         } else {
-            enqueueSnackbar("Artist created!")
+            enqueueSnackbar("Artist created!", { variant: 'success' })
             if (onOk) onOk();
         }
     }
@@ -100,7 +100,7 @@ export default function ArtistPane(props: {
         if (selectedFile) {
             updateArtistProfileApi.fetch(onUploadSuccess, undefined, id, selectedFile)
         } else {
-            enqueueSnackbar("Artist Updated!")
+            enqueueSnackbar("Artist Updated!", { variant: 'success' })
         }
     }
 
@@ -114,7 +114,7 @@ export default function ArtistPane(props: {
     const onUploadSuccess = () => {
         if (selectedFileUrl) { URL.revokeObjectURL(selectedFileUrl) }
         setSelectedFile(null)
-        enqueueSnackbar("Artist Updated!")
+        enqueueSnackbar("Artist Updated!", { variant: 'success' })
     }
 
 

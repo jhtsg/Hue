@@ -60,7 +60,7 @@ namespace Hue.Data
             var sql = SelectSql(
               columns: [ARTIST_ID, ARTIST_NM, ARTIST_SOCIAL_TX, ARTIST_COMM_SHEET_TX],
               table: ARTIST_TABLE,
-              new(WhereConditionUnion.AND, [
+              new WhereConditionGroup(WhereConditionUnion.AND, [
                   new(USER_NM), new(ARTIST_ID)
               ])
           );
@@ -76,7 +76,7 @@ namespace Hue.Data
             var sql = SelectSql(
               columns: [ARTIST_IMG_BYTES, ARTIST_NM, ARTIST_IMG_MIME_TX],
               table: ARTIST_TABLE,
-              new(WhereConditionUnion.AND, [
+              new WhereConditionGroup(WhereConditionUnion.AND, [
                   new(USER_NM), new(ARTIST_ID)
               ])
           );

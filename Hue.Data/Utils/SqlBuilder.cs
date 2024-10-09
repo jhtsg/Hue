@@ -59,25 +59,25 @@
             
         }
 
-        public static string SelectSql(List<string> columns, string table) => $@"
-SELECT {string.Join(",", columns)}
+        public static string SelectSql(List<string> columns, string table, bool distinct = false) => $@"
+SELECT {(distinct ? "DISTINCT" : "")} {string.Join(",", columns)}
 FROM {table}
 ";
 
-        public static string SelectSql(List<string> columns, string table, WhereConditionGroup conditions) => $@"
-SELECT {string.Join(",", columns)}
+        public static string SelectSql(List<string> columns, string table, WhereConditionGroup conditions, bool distinct = false) => $@"
+SELECT {(distinct ? "DISTINCT" : "")} {string.Join(",", columns)}
 FROM {table}
 WHERE {conditions}
 ";
 
-        public static string SelectSql(List<string> columns, string table, WhereConditionGroup conditions, List<OrderBy> order ) => $@"
-SELECT {string.Join(",", columns)}
+        public static string SelectSql(List<string> columns, string table, WhereConditionGroup conditions, List<OrderBy> order, bool distinct = false) => $@"
+SELECT {(distinct ? "DISTINCT" : "")} {string.Join(",", columns)}
 FROM {table}
 WHERE {conditions}
 ORDER BY {string.Join(", ", order.Select(a=>a.ToString()))}
 ";
-        public static string SelectSql(List<string> columns, string table, WhereConditionGroup conditions, List<OrderBy> order, int limit, int offset) => $@"
-SELECT {string.Join(",", columns)}
+        public static string SelectSql(List<string> columns, string table, WhereConditionGroup conditions, List<OrderBy> order, int limit, int offset, bool distinct = false) => $@"
+SELECT {(distinct ? "DISTINCT" : "")} {string.Join(",", columns)}
 FROM {table}
 WHERE {conditions}
 ORDER BY {string.Join(", ", order.Select(a => a.ToString()))}
@@ -106,7 +106,7 @@ WHERE {conditions}
 ";
 
         public static string UpdateSql(List<string> columns, Dictionary<string, string> setValues, string table, WhereConditionGroup conditions) => $@"
-INSERT INTO {table} ({string.Join(",", columns)})
+UPDATE {table} SET
 {string.Join(",", columns.Select(a => $"{a}={setValues.GetValueOrDefault(a) ?? $"@{a}"}"))}
 WHERE {conditions}
 ";

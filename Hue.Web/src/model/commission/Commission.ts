@@ -17,6 +17,7 @@ export default class Commission extends Identifiable {
     public updateTs?: string;
     public startTs?: string;
     public doneTs?: string;
+    public publishTs?: string;
     public artist?: Artist
     public characters: Character[] = []
     public commissionTags: CommissionTag[] = []

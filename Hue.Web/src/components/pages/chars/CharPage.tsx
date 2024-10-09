@@ -1,5 +1,4 @@
 import { useNavigate, useParams } from "react-router-dom";
-import { usePageTitle } from "../../hooks/usePageTitle";
 import { Card, CardContent, IconButton } from "@mui/material";
 import { ArrowBack } from "@mui/icons-material";
 import CharacterPane from "./subcomponents/CharacterPane";
@@ -7,7 +6,6 @@ import CharacterPane from "./subcomponents/CharacterPane";
 export default function CharPage() {
     const { id } = useParams();
     const nav = useNavigate();
-    usePageTitle("Character")
 
 
     return <>

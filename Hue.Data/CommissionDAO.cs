@@ -13,9 +13,15 @@ namespace Hue.Data
 
         private const int PAGE_SIZE = 20;
         readonly AdoTemplate adoTemplate = new(connectionString);
+        readonly ArtistDAO artistDAO = new(connectionString);
+        readonly CharacterDAO characterDAO = new(connectionString);
 
         #region CREATE
         public async Task<int> Create(string username, Commission comm) {
+
+            if (comm.Artist?.Id <= 0) { 
+                comm.Artist.Id = await artistDAO.Create(username, comm.Artist);
+            }
 
             //Verify we own everytyhing
             await UserOwnsAllDeps(username, comm);
@@ -47,8 +53,8 @@ namespace Hue.Data
             }, (reader) => reader.GetInt(0));
 
             //Now create the COMM TAG and COMM CHAR maps
-            await UpdateCharMap(id, comm.Characters);
-            await UpdateTagMap(id,comm.CommissionTags);
+            await UpdateCharMap(username, id, comm.Characters);
+            await UpdateTagMap(username, id,comm.CommissionTags);
 
             return id;
         }
@@ -93,7 +99,7 @@ namespace Hue.Data
                 DoneTs = reader.GetOptionalDateTime(DONE_TS),
                 PublishTs = reader.GetOptionalDateTime(PBLSH_TS),
 
-                Artist = ArtistDAO.artistRm(reader),
+                Artist = reader.IsNull(ARTIST_ID) ? null : ArtistDAO.artistRm(reader),
                 Characters = await GetCommCharacters(reader.GetInt(COMM_ID)),
                 CommissionTags = await GetCommTags(reader.GetInt(COMM_ID))
             };
@@ -110,7 +116,7 @@ namespace Hue.Data
 
             List<WhereCondition> conditions = [
                 new("c."+USER_NM, WhereConditionOperator.EQUALS,$"@{USER_NM}"),
-                new JoinCondition("C","A",ARTIST_ID)
+                //new JoinCondition("C","A",ARTIST_ID)
             ];
 
             if (filter.ArtistId != null) {
@@ -118,13 +124,13 @@ namespace Hue.Data
             }
 
             if (filter.CommissionStatus != null) { conditions.Add(new(COMM_STATUS_CD)); }
-            if (filter.Year != null) { conditions.Add(new($"extract (year from {START_TS})", WhereConditionOperator.EQUALS, "@year")); }
+            if (filter.Year != null) { conditions.Add(new($"extract (year from coalesce({START_TS},{CRE_TS}))", WhereConditionOperator.EQUALS, "@year")); }
             if (filter.CharacterId != null) { conditions.Add(new(
-                    COMM_ID, WhereConditionOperator.IN, "(" + SelectSql([COMM_ID], COMM_CHAR_MAP, new([new(CHAR_ID)])) + ")"
+                    COMM_ID, WhereConditionOperator.IN, "(" + SelectSql([COMM_ID], COMM_CHAR_MAP, new WhereConditionGroup([new(CHAR_ID)])) + ")"
                 )); }
             if (filter.CommissionTagId != null) {
                 conditions.Add(new(
-                    COMM_ID, WhereConditionOperator.IN, "(" + SelectSql([COMM_ID], COMM_TAG_MAP, new([new(COMM_TAG_ID)])) + ")"
+                    COMM_ID, WhereConditionOperator.IN, "(" + SelectSql([COMM_ID], COMM_TAG_MAP, new WhereConditionGroup([new(COMM_TAG_ID)])) + ")"
                 ));
             }
 
@@ -137,9 +143,9 @@ namespace Hue.Data
                     CRE_TS, UPDT_TS, START_TS, DONE_TS, PBLSH_TS,
                     "C."+ARTIST_ID, ARTIST_NM, ARTIST_COMM_SHEET_TX, ARTIST_SOCIAL_TX
                 ],
-                table: $"{COMM_TABLE} C, {ARTIST_TABLE} a",
+                table: $"{COMM_TABLE} C LEFT JOIN {ARTIST_TABLE} A ON C.{ARTIST_ID} = A.{ARTIST_ID}",
                 new(WhereConditionUnion.AND, conditions),
-                [new($"COALESCE({UPDT_TS},{CRE_TS})", SortOrder.DESC)],
+                [new($"COALESCE({DONE_TS},COALESCE({UPDT_TS},{CRE_TS}))", SortOrder.DESC)],
                 PAGE_SIZE, PAGE_SIZE * (filter.Page ?? 0)
             );
 
@@ -167,11 +173,10 @@ namespace Hue.Data
                     CRE_TS, UPDT_TS, START_TS, DONE_TS, PBLSH_TS,
                     "C."+ARTIST_ID, ARTIST_NM, ARTIST_COMM_SHEET_TX, ARTIST_SOCIAL_TX
 ],
-                table: $"{COMM_TABLE} C, {ARTIST_TABLE} a",
-                new(WhereConditionUnion.AND, [
-                    new(USER_NM),
+                table: $"{COMM_TABLE} C LEFT JOIN {ARTIST_TABLE} A ON C.{ARTIST_ID} = A.{ARTIST_ID}",
+                new WhereConditionGroup(WhereConditionUnion.AND, [
+                    new("c."+USER_NM, WhereConditionOperator.EQUALS,$"@{USER_NM}"),
                     new(COMM_ID),
-                    new JoinCondition("C","A",ARTIST_ID)
                 ])
             );
 
@@ -181,23 +186,35 @@ namespace Hue.Data
             }, CommissionRm);
         }
 
+        public async Task<List<double>> GetYears(string username) {
+            var sql = SelectSql(
+                    columns:[$"extract(year from coalesce({START_TS},{CRE_TS})) as year"],
+                    table:COMM_TABLE,
+                    new([new(USER_NM)]),
+                    [new("YEAR",SortOrder.DESC)],
+                    distinct:true
+                );
+
+            return await adoTemplate.Query(sql, (cmd) => cmd.SetString(USER_NM, username), (reader) => reader.GetDouble(0));
+        }
+
         public async Task<ImageDownload?> GetImage(string username, int id) {
 
             var sql = SelectSql(
-              columns: [ARTIST_IMG_BYTES, ARTIST_NM, ARTIST_IMG_MIME_TX],
-              table: ARTIST_TABLE,
-              new(WhereConditionUnion.AND, [
-                  new(USER_NM), new(ARTIST_ID)
+              columns: [COMM_HEADER_IMG_BYTES, COMM_NM, COMM_HEADER_IMG_MIME_TYPE],
+              table: COMM_TABLE,
+              new WhereConditionGroup(WhereConditionUnion.AND, [
+                  new(USER_NM), new(COMM_ID)
               ])
           );
 
             return await adoTemplate.QuerySingle(sql, (cmd) => {
                 cmd.SetString(USER_NM, username);
-                cmd.SetInt(ARTIST_ID, id);
+                cmd.SetInt(COMM_ID, id);
             }, (reader) => new ImageDownload() { 
-                Filename= reader.GetString(ARTIST_NM),
-                Mime = reader.GetOptionalString(ARTIST_IMG_MIME_TX),
-                Data = reader.GetOptionalBytea(ARTIST_IMG_BYTES),
+                Filename= reader.GetString(COMM_NM),
+                Mime = reader.GetOptionalString(COMM_HEADER_IMG_MIME_TYPE),
+                Data = reader.GetOptionalBytea(COMM_HEADER_IMG_BYTES),
             });
         }
 
@@ -206,7 +223,7 @@ namespace Hue.Data
             var sql = SelectSql(
                 columns: ["*"],
                 table: COMM_TAG_TABLE,
-                new(WhereConditionUnion.AND, [
+                new WhereConditionGroup(WhereConditionUnion.AND, [
                     new(USER_NM)
                 ])
             );
@@ -220,7 +237,7 @@ namespace Hue.Data
             var sql = SelectSql(
               columns: ["*"],
               table: COMM_TAG_TABLE,
-              new(WhereConditionUnion.AND, [
+              new WhereConditionGroup(WhereConditionUnion.AND, [
                   new(USER_NM), new(ARTIST_ID)
               ])
           );
@@ -235,10 +252,10 @@ namespace Hue.Data
             var sql = SelectSql(
                 columns: [
                     "C." + CHAR_ID, CHAR_NM, CHAR_COLOR_TX, CHAR_SPECIES_TX, CHAR_DESC_TX, 
-                    CHAR_CAT_NM, CHAR_CAT_COLOR_TX, CHAR_CAT_DESC_TX
+                    "CCAT." + CHAR_CAT_ID, CHAR_CAT_NM, CHAR_CAT_COLOR_TX, CHAR_CAT_DESC_TX
                     ],
                 table: $"{COMM_CHAR_MAP} CCM, {CHAR_TABLE} C, {CHAR_CAT_TABLE} ccat",
-                new([
+                new WhereConditionGroup([
                     new JoinCondition("CCM","C",CHAR_ID),
                     new JoinCondition("C","CCAT",CHAR_CAT_ID),
                     new(COMM_ID)
@@ -252,7 +269,7 @@ namespace Hue.Data
             var sql = SelectSql(
                   columns: ["ct.*"],
                   table: $"{COMM_TAG_MAP} ctm, {COMM_TAG_TABLE} ct",
-                  new(WhereConditionUnion.AND, [
+                  new WhereConditionGroup(WhereConditionUnion.AND, [
                       new JoinCondition("ctm","ct",COMM_TAG_ID),
                       new(COMM_ID)
                   ])
@@ -267,8 +284,12 @@ namespace Hue.Data
 
         public async Task Update(string username, Commission comm) {
 
+            if (comm.Artist?.Id <= 0) {
+                comm.Artist.Id = await artistDAO.Create(username, comm.Artist);
+            }
+
             //Verify we own everytyhing
-            if(!await UserOwnsCommission(adoTemplate, username,comm.Id)) return;
+            if (!await UserOwnsCommission(adoTemplate, username,comm.Id)) return;
             await UserOwnsAllDeps(username, comm);
 
             var CreateCommSql = UpdateSql(
@@ -283,7 +304,7 @@ namespace Hue.Data
                 table: COMM_TABLE
             );
 
-            var id = await adoTemplate.Execute(CreateCommSql, (cmd) => {
+            await adoTemplate.Execute(CreateCommSql, (cmd) => {
                 cmd.SetString(COMM_NM, comm.Name);
                 cmd.SetString(COMM_DESC_TX, comm.Description);
                 
@@ -297,8 +318,8 @@ namespace Hue.Data
                 cmd.SetInt(COMM_TYPE_CD, (int)comm.Type);
 
                 cmd.SetTimestamp(START_TS, comm.StartTs);
-                cmd.SetTimestamp(DONE_TS, comm.StartTs);
-                cmd.SetTimestamp(PBLSH_TS, comm.StartTs);
+                cmd.SetTimestamp(DONE_TS, comm.DoneTs);
+                cmd.SetTimestamp(PBLSH_TS, comm.PublishTs);
 
                 cmd.SetInt(ARTIST_ID, comm.Artist?.Id);
                 
@@ -307,8 +328,8 @@ namespace Hue.Data
             });
 
             //Now create the COMM TAG and COMM CHAR maps
-            await UpdateCharMap(id, comm.Characters);
-            await UpdateTagMap(id, comm.CommissionTags);
+            await UpdateCharMap(username,comm.Id, comm.Characters);
+            await UpdateTagMap(username,comm.Id, comm.CommissionTags);
 
 
         }
@@ -333,19 +354,19 @@ namespace Hue.Data
 
             var sql = UpdateSql(
                 columns: [COMM_TAG_NM, COMM_TAG_DESC_TX, COMM_TAG_COLOR_TX],
-                table: ARTIST_TABLE,
-                new(WhereConditionUnion.AND, [new(USER_NM), new(ARTIST_ID)]));
+                table: COMM_TAG_TABLE,
+                new(WhereConditionUnion.AND, [new(USER_NM), new(COMM_TAG_ID)]));
 
             await adoTemplate.Execute(sql, (cmd) => {
                 cmd.SetString(COMM_TAG_NM, tag.Name);
                 cmd.SetString(COMM_TAG_DESC_TX, tag.Description);
                 cmd.SetString(COMM_TAG_COLOR_TX, tag.Color);
                 cmd.SetString(USER_NM, username);
-                cmd.SetInt(ARTIST_ID, tag.Id);
+                cmd.SetInt(COMM_TAG_ID, tag.Id);
             });
         }
 
-        private async Task UpdateTagMap(int commId, List<CommissionTag> commissionTags) {
+        private async Task UpdateTagMap(string username, int commId, List<CommissionTag> commissionTags) {
 
             //Clear the tag map for this commission
             var delSql = DeleteSql(COMM_TAG_MAP, new([new(COMM_ID)]));
@@ -353,14 +374,20 @@ namespace Hue.Data
 
             //Add all of them back
             var setSql = InsertSql([COMM_ID, COMM_TAG_ID],COMM_TAG_MAP);
-            await adoTemplate.ExecuteBatch(setSql, (cmd, t) => {
+            await adoTemplate.ExecuteBatch(setSql, async (cmd, t) => {
+
+                //Create tags if necessary
+                if (t.Id <= 0) {
+                    t.Id = await CreateTag(username, t);
+                }
+
                 cmd.SetInt(COMM_ID, commId);
                 cmd.SetInt(COMM_TAG_ID, t.Id);
             }, commissionTags);
 
         }
         
-        private async Task UpdateCharMap(int commId, List<Character> characters) {
+        private async Task UpdateCharMap(string username, int commId, List<Character> characters) {
 
             //Clear the tag map for this commission
             var delSql = DeleteSql(COMM_CHAR_MAP, new([new(COMM_ID)]));
@@ -368,7 +395,12 @@ namespace Hue.Data
 
             //Add all of them back
             var setSql = InsertSql([COMM_ID, CHAR_ID], COMM_CHAR_MAP);
-            await adoTemplate.ExecuteBatch(setSql, (cmd, t) => {
+            await adoTemplate.ExecuteBatch(setSql, async (cmd, t) => {
+
+                if (t.Id <= 0) {
+                    t.Id = await characterDAO.Create(username, t);
+                }
+
                 cmd.SetInt(COMM_ID, commId);
                 cmd.SetInt(CHAR_ID, t.Id);
             }, characters);
@@ -406,7 +438,7 @@ namespace Hue.Data
 {DeleteSql(COMM_TABLE, new(WhereConditionUnion.AND, [new(COMM_ID)]))};
 ";
 
-            await adoTemplate.Execute(delSql, (cmd) => cmd.SetInt(COMM_TAG_ID, id));
+            await adoTemplate.Execute(delSql, (cmd) => cmd.SetInt(COMM_ID, id));
 
         }
 
@@ -440,7 +472,7 @@ namespace Hue.Data
             => await UserOwns(template, COMM_TAG_TABLE, username, COMM_ID, id);
 
         public static async Task<bool> UserOwnsAllCommissionTags(AdoTemplate template, string username, List<int> ids)
-           => await UserOwnsAll(template, COMM_TAG_TABLE, username, COMM_ID, ids);
+           => await UserOwnsAll(template, COMM_TAG_TABLE, username, COMM_TAG_ID, ids);
 
         #endregion
 

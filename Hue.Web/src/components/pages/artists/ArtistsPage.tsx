@@ -1,19 +1,20 @@
 import { Button, Dialog } from "@mui/material"
 import { getArtists } from "../../../api/Artist"
 import useApi from "../../hooks/useApi"
-import { usePageTitle } from "../../hooks/usePageTitle"
 import ApiAlert from "../../shared/ApiAlert"
 import LoadingBackdrop from "../../shared/LoadingBackdrop"
 import ArtistTile from "./subcomponents/ArtistTile"
 import { Add } from "@mui/icons-material"
 import { useState } from "react"
 import ArtistPane from "./subcomponents/ArtistPane"
+import Artist from "../../../model/artist/Artist"
 
-export default function ArtistsPage() {
+export default function ArtistsPage(props: {
+    onSelect?: (val: Artist) => void
+}) {
 
     const [newOpen, setNewOpen] = useState(false)
 
-    usePageTitle("Artists")
     const artistsApi = useApi(getArtists, true)
 
     return <>
@@ -24,7 +25,9 @@ export default function ArtistsPage() {
         <hr />
         <ApiAlert result={artistsApi.error} style={{ marginBottom: "20px" }} />
         <div style={{ display: 'flex', flexWrap: 'wrap', width: '100%', marginTop: "20px" }} >
-            {artistsApi.data?.map(a => <ArtistTile artist={a} />)}
+            {artistsApi.data?.map(a => <ArtistTile artist={a} onClick={props.onSelect ? () => {
+                props.onSelect?.(a)
+            } : undefined} />)}
         </div>
 
         <LoadingBackdrop loading={artistsApi.loading} />
