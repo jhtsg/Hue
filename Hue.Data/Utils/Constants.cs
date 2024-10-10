@@ -45,6 +45,10 @@
         public static readonly string COMM_TYPE_CD = "comm_type_cd";
         public static readonly string COMM_HEADER_IMG_BYTES = "comm_header_img_bytes";
         public static readonly string COMM_HEADER_IMG_MIME_TYPE = "comm_header_img_mime_tx";
+        public static readonly string COMM_YEAR_NB = "comm_year_nb";
+        public static readonly string COMM_MONTH_NB = "comm_month_nb";
+        public static readonly string COMM_STARTED_IN = "comm_started_in";
+        public static readonly string COMM_TTC_NB = "comm_ttc_nb";
 
         public static readonly string COMM_TAG_TABLE = $"{SCHEMA}.comm_tag";
         public static readonly string COMM_TAG_ID = "comm_tag_id";
@@ -54,6 +58,44 @@
 
         public static readonly string COMM_CHAR_MAP = $"{SCHEMA}.comm_char_map";
         public static readonly string COMM_TAG_MAP = $"{SCHEMA}.comm_tag_map";
+
+        public static readonly string AT_A_GLANCE_VIEW = $"{SCHEMA}.AT_A_GLANCE_VIEW";
+        public static readonly string YEARLY_AT_A_GLANCE_VIEW = $"{SCHEMA}.YEARLY_AT_A_GLANCE_VIEW";
+        public static readonly string TOTAL_COMM_NB        = "total_comm_nb";
+        public static readonly string TOTAL_SPENT_NB       = "total_spent_nb";
+        public static readonly string TOTAL_NOT_COMM_NB    = "total_not_comm_nb";
+        public static readonly string TOTAL_NOT_SPENT_NB   = "total_not_spent_nb";
+        public static readonly string AVG_PRICE_NB         = "avg_price_nb";
+        public static readonly string AVG_TTC_NB           = "AVG_TTC_NB";
+        public static readonly string AVG_SPENT_NB         = "AVG_SPENT_NB";
+        public static readonly string AVG_COMM_BY_MONTH_NB = "AVG_COMM_BY_MONTH_NB";
+
+        public static readonly string MONTHLY_COMM_PRICE_CAT_VIEW = $"{SCHEMA}.MONTHLY_COMM_PRICE_CAT_VIEW";
+        public static readonly string SMALL_COMM_CNT = "SMALL_COMM_CNT";
+        public static readonly string MED_COMM_CNT = "MED_COMM_CNT";
+        public static readonly string LARGE_COMM_CNT = "LARGE_COMM_CNT";
+
+        public static readonly string MONTHLY_SPEND_VIEW = $"{SCHEMA}.MONTHLY_SPEND_VIEW";
+        public static readonly string CONFIRMED_SPENT_NB = "CONFIRMED_SPENT_NB";
+        public static readonly string POTENTIAL_SPENT_NB = "POTENTIAL_SPENT_NB";
+
+        public static readonly string MONTHLY_STATUS_VIEW = $"{SCHEMA}.MONTHLY_STATUS_VIEW";
+        public static readonly string BRAINSTORM_CNT = "BRAINSTORM_CNT";
+        public static readonly string SCHEDULED_CNT = "SCHEDULED_CNT";
+        public static readonly string IN_PROG_CNT = "IN_PROG_CNT";
+        public static readonly string DONE_CNT = "DONE_CNT";
+        public static readonly string PUBLISH_CNT = "PUBLISH_CNT";
+
+        public static readonly string CHAR_STATISTICS = $"{SCHEMA}.CHAR_STATISTICS";
+        public static readonly string YEARLY_CHAR_STATISTICS = $"{SCHEMA}.CHAR_STATISTICS";
+        public static readonly string ARTIST_STATISTICS = $"{SCHEMA}.CHAR_STATISTICS";
+        public static readonly string YEARLY_ARTIST_STATISTICS = $"{SCHEMA}.CHAR_STATISTICS";
+        public static readonly string TAG_STATISTICS = $"{SCHEMA}.CHAR_STATISTICS";
+        public static readonly string YEARLY_TAG_STATISTICS = $"{SCHEMA}.CHAR_STATISTICS";
+
+        public static readonly string COMM_CNT = "COMM_CNT";
+        public static readonly string SPENT_NB = "SPENT_NB";
+        public static readonly string LAST_PBLSH_TS = "LAST_PBLSH_TS";
 
         public static readonly string CRE_TS = "cre_ts";
         public static readonly string UPDT_TS = "updt_ts";
