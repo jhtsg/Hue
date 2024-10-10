@@ -2,6 +2,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { Card, CardContent, IconButton } from "@mui/material";
 import { ArrowBack } from "@mui/icons-material";
 import CharacterPane from "./subcomponents/CharacterPane";
+import CommsDisplay from "../comms/subcomponents/CommsDisplay";
 
 export default function CharPage() {
     const { id } = useParams();
@@ -22,6 +23,11 @@ export default function CharPage() {
                 </CardContent>
             </Card>
         </div>
+
+        <CommsDisplay filter={{
+            Page: 0,
+            CharacterId: Number(id)
+        }} />
 
     </>
 }

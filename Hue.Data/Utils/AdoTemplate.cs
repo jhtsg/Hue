@@ -54,7 +54,7 @@ namespace Hue.Data.Utils {
             public string? GetOptionalString(string key) => GetOptionalString(reader.GetOrdinal(key));
             public DateTime? GetOptionalDateTime(string key) => GetOptionalDateTime(reader.GetOrdinal(key));
             public Guid? GetOptionalGuid(string key) => GetOptionalGuid(reader.GetOrdinal(key));
-            public byte[]? GetOptionalBytea(string key) => (byte[])reader[key] ?? null;
+            public byte[]? GetOptionalBytea(string key) => reader.IsDBNull(reader.GetOrdinal(key)) ? null : (byte[])reader[key];
 
             public bool? GetOptionalBoolean(int index) => reader.IsDBNull(index) ? null : reader.GetBoolean(index);
             public int? GetOptionalInt(int index) => reader.IsDBNull(index) ? null : reader.GetInt32(index);

@@ -52,6 +52,17 @@ namespace Hue.API.Controllers
                 : Ok(await dao.GetAll(session.Username,filter));
         }
 
+        [HttpGet("Count")]
+        public async Task<IActionResult> GetAllCount(
+            [FromQuery] CommissionFilterOptions filter
+            ) {
+
+            var session = GetSession(Request, Response);
+            return session == null
+                ? Unauthorized()
+                : Ok(new Dictionary<string, int>() { { "count", await dao.GetCount(session.Username, filter) } });
+        }
+
         [HttpGet("{ID}")]
         public async Task<IActionResult> Get(int ID) {
             var session = GetSession(Request, Response);

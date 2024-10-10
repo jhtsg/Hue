@@ -27,6 +27,20 @@ export const getCommissions = (
     Get(setLoading, setItem, onError, ENDPOINT + (queryString.length === 0 ? "" : "?" + queryString));
 }
 
+export const getCommissionsCount = (
+    setLoading: (value: boolean) => void,
+    setItem: (value?: { count: number }) => void,
+    onError: (value: any) => void,
+    filter?: CommissionFilterOptions
+) => {
+    //We need to convert the Filter to a Query String
+    const queryString = filter ? Object.keys(filter)
+        .map((k) => `${k}=${filter[k]}`)
+        .join("&") : "";
+
+    Get(setLoading, setItem, onError, ENDPOINT + "count" + (queryString.length === 0 ? "" : "?" + queryString));
+}
+
 export const getCommissionYears = (
     setLoading: (value: boolean) => void,
     setItem: (value?: number[]) => void,

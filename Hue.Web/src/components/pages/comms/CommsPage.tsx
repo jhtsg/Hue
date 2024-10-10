@@ -9,6 +9,7 @@ import { REFRESH_SPECIFIC_COLUMN_PREFIX } from "../../contexts/RefreshContext";
 import CommColumn from "./subcomponents/CommBoard/Column";
 import useApi from "../../hooks/useApi";
 import { getCommissionYears } from "../../../api/Comm";
+import { useWindowDimensions } from "../../hooks/useWindowDimensions";
 
 export default function CommsPage() {
 
@@ -16,6 +17,7 @@ export default function CommsPage() {
 
     const yearFromParams = Number(searchParams.get("year"))
     const { refresh } = useRefresh(REFRESH_SPECIFIC_COLUMN_PREFIX + "0")
+    const { width } = useWindowDimensions()
 
     //We will not support commissions from before the 80s and after the 31st century
     const year = yearFromParams > 1980 && yearFromParams < 3000 ? yearFromParams : new Date().getFullYear();
@@ -31,7 +33,7 @@ export default function CommsPage() {
 
     return <>
         <div style={{ display: "flex", alignItems: "end" }}>
-            <div style={{ flex: "1" }}>
+            <div style={{ flex: "1", maxWidth: `${width - 280}px`, marginRight: "20px" }}>
                 <Tabs value={year} onChange={(_, newval) => { setYear(newval) }}
                     variant="scrollable"
                 >

@@ -11,7 +11,7 @@ namespace Hue.Data
 {
     public class CommissionDAO(string connectionString) {
 
-        private const int PAGE_SIZE = 20;
+        private const int PAGE_SIZE = 10;
         readonly AdoTemplate adoTemplate = new(connectionString);
         readonly ArtistDAO artistDAO = new(connectionString);
         readonly CharacterDAO characterDAO = new(connectionString);
@@ -29,7 +29,9 @@ namespace Hue.Data
             var CreateCommSql = InsertSql(
                 columns : [
                     COMM_NM, COMM_DESC_TX, COMM_PRICE_NB, COMM_CHAR_CNT, COMM_POST_TAGS_TX,
-                    COMM_POST_DESC_TX, COMM_STATUS_CD, COMM_TYPE_CD, CRE_TS, ARTIST_ID, USER_NM
+                    COMM_POST_DESC_TX, COMM_STATUS_CD, COMM_TYPE_CD, 
+                    CRE_TS, START_TS, DONE_TS, PBLSH_TS,
+                    ARTIST_ID, USER_NM
                 ],
                 setValues: new Dictionary<string, string> { 
                     { CRE_TS,"CURRENT_TIMESTAMP" },
@@ -44,8 +46,14 @@ namespace Hue.Data
                 cmd.SetString(COMM_DESC_TX, comm.Description);
                 cmd.SetInt(COMM_PRICE_NB, comm.Price);
                 cmd.SetInt(COMM_CHAR_CNT,comm.CharCount);
+                
                 cmd.SetString(COMM_POST_TAGS_TX , comm.PostTags);
                 cmd.SetString(COMM_POST_DESC_TX, comm.PostDescription);
+
+                cmd.SetTimestamp(START_TS, comm.StartTs);
+                cmd.SetTimestamp(DONE_TS, comm.DoneTs);
+                cmd.SetTimestamp(PBLSH_TS, comm.PublishTs);
+
                 cmd.SetInt(COMM_STATUS_CD, (int)comm.Status);
                 cmd.SetInt(COMM_TYPE_CD, (int)comm.Type);
                 cmd.SetInt(ARTIST_ID, comm.Artist?.Id);
@@ -62,7 +70,7 @@ namespace Hue.Data
         public async Task<int> CreateTag(string username, CommissionTag tag) {
 
             var sql = InsertSql(
-                columns: [COMM_TAG_NM, COMM_TAG_DESC_TX, COMM_TAG_COLOR_TX],
+                columns: [COMM_TAG_NM, COMM_TAG_DESC_TX, COMM_TAG_COLOR_TX, USER_NM],
                 table: COMM_TAG_TABLE,
                 returning: COMM_TAG_ID
             );
@@ -114,25 +122,7 @@ namespace Hue.Data
 
         public async Task<List<Commission>> GetAll(string username, CommissionFilterOptions filter) {
 
-            List<WhereCondition> conditions = [
-                new("c."+USER_NM, WhereConditionOperator.EQUALS,$"@{USER_NM}"),
-                //new JoinCondition("C","A",ARTIST_ID)
-            ];
-
-            if (filter.ArtistId != null) {
-                conditions.Add(new("C." + ARTIST_ID, WhereConditionOperator.EQUALS, $"@{ARTIST_ID}"));
-            }
-
-            if (filter.CommissionStatus != null) { conditions.Add(new(COMM_STATUS_CD)); }
-            if (filter.Year != null) { conditions.Add(new($"extract (year from coalesce({START_TS},{CRE_TS}))", WhereConditionOperator.EQUALS, "@year")); }
-            if (filter.CharacterId != null) { conditions.Add(new(
-                    COMM_ID, WhereConditionOperator.IN, "(" + SelectSql([COMM_ID], COMM_CHAR_MAP, new WhereConditionGroup([new(CHAR_ID)])) + ")"
-                )); }
-            if (filter.CommissionTagId != null) {
-                conditions.Add(new(
-                    COMM_ID, WhereConditionOperator.IN, "(" + SelectSql([COMM_ID], COMM_TAG_MAP, new WhereConditionGroup([new(COMM_TAG_ID)])) + ")"
-                ));
-            }
+            List<WhereCondition> conditions = CommissionFilterOptionsToWhereConditions(filter);
 
             var sql = SelectSql(
                 columns: [
@@ -154,12 +144,61 @@ namespace Hue.Data
                 
                 if (filter.ArtistId != null) {cmd.SetInt(ARTIST_ID, filter.ArtistId);}
                 if (filter.CommissionStatus != null) {cmd.SetInt(COMM_STATUS_CD,(int)filter.CommissionStatus);}
-                if (filter.Year != null) { cmd.SetInt("year", filter.Year); }
+                if (filter.Year != null) { cmd.SetInt(COMM_YEAR_NB, filter.Year); }
                 if (filter.CharacterId != null) { cmd.SetInt(CHAR_ID, filter.CharacterId); }
                 if (filter.CommissionTagId != null) { cmd.SetInt(COMM_TAG_ID, filter.CommissionTagId); }
 
             }, CommissionRm);
 
+        }
+
+        public async Task<int> GetCount(string username, CommissionFilterOptions filter) {
+            
+            List<WhereCondition> conditions = CommissionFilterOptionsToWhereConditions(filter);
+
+            var sql = SelectSql(
+                columns: ["Count(*)"],
+                table: $"{COMM_TABLE} C LEFT JOIN {ARTIST_TABLE} A ON C.{ARTIST_ID} = A.{ARTIST_ID}",
+                new WhereConditionGroup(WhereConditionUnion.AND, conditions)
+            );
+
+            return await adoTemplate.QuerySingle(sql, (cmd) => {
+                cmd.SetString(USER_NM, username);
+
+                if (filter.ArtistId != null) { cmd.SetInt(ARTIST_ID, filter.ArtistId); }
+                if (filter.CommissionStatus != null) { cmd.SetInt(COMM_STATUS_CD, (int)filter.CommissionStatus); }
+                if (filter.Year != null) { cmd.SetInt(COMM_YEAR_NB, filter.Year); }
+                if (filter.CharacterId != null) { cmd.SetInt(CHAR_ID, filter.CharacterId); }
+                if (filter.CommissionTagId != null) { cmd.SetInt(COMM_TAG_ID, filter.CommissionTagId); }
+
+            }, (reader) => reader.GetInt(0));
+
+        }
+
+        private static List<WhereCondition> CommissionFilterOptionsToWhereConditions(CommissionFilterOptions filter) {
+            List<WhereCondition> conditions = [
+                new("c."+USER_NM, WhereConditionOperator.EQUALS,$"@{USER_NM}"),
+                //new JoinCondition("C","A",ARTIST_ID)
+            ];
+
+            if (filter.ArtistId != null) {
+                conditions.Add(new("C." + ARTIST_ID, WhereConditionOperator.EQUALS, $"@{ARTIST_ID}"));
+            }
+
+            if (filter.CommissionStatus != null) { conditions.Add(new(COMM_STATUS_CD)); }
+            if (filter.Year != null) { conditions.Add(new(COMM_YEAR_NB)); }
+            if (filter.CharacterId != null) {
+                conditions.Add(new(
+                    COMM_ID, WhereConditionOperator.IN, "(" + SelectSql([COMM_ID], COMM_CHAR_MAP, new WhereConditionGroup([new(CHAR_ID)])) + ")"
+                ));
+            }
+            if (filter.CommissionTagId != null) {
+                conditions.Add(new(
+                    COMM_ID, WhereConditionOperator.IN, "(" + SelectSql([COMM_ID], COMM_TAG_MAP, new WhereConditionGroup([new(COMM_TAG_ID)])) + ")"
+                ));
+            }
+
+            return conditions;
         }
 
         public async Task<Commission?> Get(string username, int id) {
@@ -459,7 +498,7 @@ namespace Hue.Data
             }
 
             //Verify we own the tags
-            if(commission.CommissionTags.Count > 0 && !await UserOwnsAllCommissionTags(adoTemplate,username,commission.CommissionTags.Select(a=>a.Id).ToList())) {
+            if(commission.CommissionTags.Count > 0 && !await UserOwnsAllCommissionTags(adoTemplate,username,commission.CommissionTags.Where(a=>a.Id > 0).Select(a=>a.Id).ToList())) {
                 throw new ArgumentException("At least one tag is not owned by user");
             }
 

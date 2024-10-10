@@ -1,4 +1,4 @@
-import { Alert, AlertTitle, Button, CircularProgress, Dialog, DialogContent, FormControl, IconButton, InputAdornment, InputLabel, Menu, MenuItem, Select, TextField, Tooltip, Typography } from "@mui/material"
+import { Alert, Button, CircularProgress, Dialog, DialogContent, FormControl, IconButton, InputAdornment, InputLabel, Menu, MenuItem, Select, TextField, Tooltip, Typography } from "@mui/material"
 import useApi from "../../../hooks/useApi"
 import useUpload from "../../../hooks/useUpload"
 import { CSSProperties, useEffect, useRef, useState } from "react"
@@ -9,7 +9,6 @@ import Character from "../../../../model/character/Character"
 import CommissionTag from "../../../../model/commission/CommissionTag"
 import { commHeaderImage, createCommission, deleteCommission, getCommission, updateCommission, updateCommissionHeader } from "../../../../api/Comm"
 import { updateCommTag } from "../../../../api/CommTag"
-import { updateArtistProfile } from "../../../../api/Artist"
 import Artist from "../../../../model/artist/Artist"
 import Commission from "../../../../model/commission/Commission"
 
@@ -29,7 +28,6 @@ import CommTagEditor from "./CommTagEditor"
 import CommTagSelector from "./CommTagSelector"
 import ArtistTile from "../../artists/subcomponents/ArtistTile"
 import { useNavigate } from "react-router-dom"
-import ArtistPage from "../../artists/ArtistPage"
 import ArtistsPage from "../../artists/ArtistsPage"
 import AreYouSureModal from "../../../shared/modals/AreYouSureModal"
 
@@ -378,10 +376,12 @@ export default function CommPane(props: {
                     />
 
                     }
-                    <Button fullWidth variant="contained" color="secondary" onClick={() => { setDeleteOpen(true) }}
-                        style={{ marginTop: "10px", marginBottom: "25px" }}>
-                        Delete Commission
-                    </Button>
+                    {
+                        !create && <Button fullWidth variant="contained" color="secondary" onClick={() => { setDeleteOpen(true) }}
+                            style={{ marginTop: "10px", marginBottom: "25px" }}>
+                            Delete Commission
+                        </Button>
+                    }
 
 
                 </div>
@@ -471,9 +471,9 @@ function CoverHeader(props: {
                 ${LightenDarkenColor(color, -20)} 20px /* Total width of a stripe pair */
             )
         ` : `url("${commHeaderImage(id ?? 0)}")`,
-            backgroundPosition: imageError ? undefined : 'center',
-            backgroundRepeat: imageError ? undefined : 'no-repeat',
-            backgroundSize: imageError ? undefined : 'cover',
+            backgroundPosition: imageError && !selectedFileUrl ? undefined : 'center',
+            backgroundRepeat: imageError && !selectedFileUrl ? undefined : 'no-repeat',
+            backgroundSize: imageError && !selectedFileUrl ? undefined : 'cover',
             textAlign: "right"
         }}>
             <Button
@@ -585,12 +585,14 @@ function TagsDisplay(props: {
             </div>
             <div style={{ flex: "1" }}>
                 <Tooltip title={a.description}>
-                    <ColorPill color={a.color} text={`#${a.name}`} onClick={() => setTag(a)} />
+                    <ColorPill color={a.color} onClick={() => setTag(a)}>
+                        #{a.name}
+                    </ColorPill>
                 </Tooltip>
             </div>
         </div>)}
 
-        <ColorPill color='#999999' text='+ Add a Tag' onClick={() => setTagSelector(true)} />
+        <ColorPill color='#999999' onClick={() => setTagSelector(true)}>+ Add a Tag</ColorPill>
 
         <CommTagSelector open={tagSelector} setOpen={setTagSelector} setTag={(tag) => {
             setTags([...tags, tag])

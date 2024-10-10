@@ -27,16 +27,14 @@ export default function CommTagSelector(props: {
             <DialogContent>
                 <ColorPill
                     color='#999999'
-                    text={'Create a Tag'}
                     onClick={() => setNewTagOpen(true)}
-                />
+                > Create a Tag </ColorPill>
                 {tagsApi.loading ? <Skeleton />
                     : tagsApi.data?.map(tag => <div style={{ marginTop: "5px" }}>
                         <ColorPill
                             color={tag.color}
-                            text={tag.name}
                             onClick={() => setTag(tag)}
-                        />
+                        >{tag.name}</ColorPill>
                     </div>)
                 }
             </DialogContent>

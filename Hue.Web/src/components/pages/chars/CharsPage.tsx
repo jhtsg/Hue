@@ -8,14 +8,15 @@ import LoadingBackdrop from "../../shared/LoadingBackdrop";
 import CharacterTile from "./subcomponents/CharacterTile";
 import CharacterPane from "./subcomponents/CharacterPane";
 import Character from "../../../model/character/Character";
+import { useWindowDimensions } from "../../hooks/useWindowDimensions";
 
 export default function CharsPage(props: {
     onSelect?: (val: Character) => void
 }) {
 
     const [newOpen, setNewOpen] = useState(false)
-
     const artistsApi = useApi(getCharacters, true)
+    const { vertical } = useWindowDimensions();
 
     return <>
         <div style={{ display: "flex", alignItems: "end" }}>
@@ -24,7 +25,7 @@ export default function CharsPage(props: {
         </div>
         <hr />
         <ApiAlert result={artistsApi.error} style={{ marginBottom: "20px" }} />
-        <div style={{ display: 'flex', flexWrap: 'wrap', width: '100%', marginTop: "20px", justifyContent: props.onSelect ? "center" : undefined }} >
+        <div style={{ display: 'flex', flexWrap: 'wrap', width: '100%', marginTop: "20px", justifyContent: props.onSelect || vertical ? "center" : undefined }} >
             {artistsApi.data?.map(a => <CharacterTile character={a} onClick={props.onSelect ? () => {
                 props.onSelect?.(a)
             } : undefined} />)}

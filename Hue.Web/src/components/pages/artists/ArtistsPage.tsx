@@ -8,14 +8,15 @@ import { Add } from "@mui/icons-material"
 import { useState } from "react"
 import ArtistPane from "./subcomponents/ArtistPane"
 import Artist from "../../../model/artist/Artist"
+import { useWindowDimensions } from "../../hooks/useWindowDimensions"
 
 export default function ArtistsPage(props: {
     onSelect?: (val: Artist) => void
 }) {
 
     const [newOpen, setNewOpen] = useState(false)
-
     const artistsApi = useApi(getArtists, true)
+    const { vertical } = useWindowDimensions();
 
     return <>
         <div style={{ display: "flex", alignItems: "end" }}>
@@ -24,7 +25,7 @@ export default function ArtistsPage(props: {
         </div>
         <hr />
         <ApiAlert result={artistsApi.error} style={{ marginBottom: "20px" }} />
-        <div style={{ display: 'flex', flexWrap: 'wrap', width: '100%', marginTop: "20px" }} >
+        <div style={{ display: 'flex', flexWrap: 'wrap', width: '100%', marginTop: "20px", justifyContent: props.onSelect || vertical ? "center" : undefined }} >
             {artistsApi.data?.map(a => <ArtistTile artist={a} onClick={props.onSelect ? () => {
                 props.onSelect?.(a)
             } : undefined} />)}
