@@ -2,7 +2,6 @@
 using Hue.Data.Utils;
 using Igtampe.Hashbrown;
 using static Hue.Data.Utils.Constants;
-using static Hue.Data.Utils.AdoTemplate;
 using static Hue.Data.Utils.SqlBuilder;
 
 namespace Hue.Data
@@ -17,12 +16,22 @@ namespace Hue.Data
         //We'll need to add some other fields eventually or something
         public async Task<User?> GetUser(string username) {
 
-            var sql = SelectSql([USER_NM,ARTIST_IN],USER_TABLE, new WhereConditionGroup([new(USER_NM)]));
+            var sql = SelectSql(
+                columns: ["U." + USER_NM,ARTIST_IN,CHAR_ID,CHAR_COLOR_TX],
+                table: $"{USER_TABLE} u left join {CHAR_TABLE} c on c.{USER_NM} = u.{USER_NM} and {PRIMARY_CHAR_IN}", 
+                new WhereConditionGroup([
+                    new("u." + USER_NM, WhereConditionOperator.EQUALS,$"@{USER_NM}"),
+                ])
+            );
 
-            return await adoTemplate.QuerySingle(sql, (cmd) => cmd.SetString(USER_NM, username), (reader) => {
+            return await adoTemplate.QuerySingle(sql, (cmd) => {
+                cmd.SetString(USER_NM, username);
+            }, (reader) => {
                 return new User() {
                     Username = reader.GetString(USER_NM),
                     IsArtist = reader.GetBoolean(ARTIST_IN),
+                    PrimaryCharacterColor = reader.GetOptionalString(CHAR_COLOR_TX),
+                    PrimaryCharacterId = reader.GetOptionalInt(CHAR_ID)
                 };
             });
         }

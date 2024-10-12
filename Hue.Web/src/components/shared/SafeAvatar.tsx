@@ -1,16 +1,17 @@
 import { Avatar } from "@mui/material";
 import { stringToColor } from "./Utils";
-import { useEffect, useState } from "react";
+import { CSSProperties, useEffect, useState } from "react";
 
 export default function SafeAvatar(props: {
     src?: string,
     size?: number,
     text?: string,
-    color?: string
+    color?: string,
+    style?: CSSProperties,
     variant?: "rounded" | "circular" | "square"
 }) {
 
-    const { size, text, src, variant, color } = props
+    const { size, text, src, variant, color, style } = props
 
     const [imgError, setImgError] = useState(false);
 
@@ -19,7 +20,7 @@ export default function SafeAvatar(props: {
     }, [src])
 
     return <Avatar
-        variant={variant ?? "rounded"}
+        variant={variant ?? "rounded"} style={style}
         sx={{ bgcolor: color ?? (text ? stringToColor(text) : '#999'), width: size, height: size }}
         src={!imgError ? src ?? undefined : undefined} // Fallback to undefined if there's an error
         onError={() => setImgError(true)} // If image fails to load, set error state

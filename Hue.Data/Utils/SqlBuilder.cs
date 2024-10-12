@@ -2,7 +2,7 @@
     public class SqlBuilder {
 
         public enum WhereConditionOperator {
-            EQUALS, GREATER_THAN, LESS_THAN, GREATER_OR_EQUAL, LESS_OR_EQUAL, IN
+            EQUALS, GREATER_THAN, LESS_THAN, GREATER_OR_EQUAL, LESS_OR_EQUAL, IN, NOT_EQUALS, NOT_IN
         };
 
         public enum WhereConditionUnion {
@@ -38,11 +38,13 @@
 
             public override string ToString() => @$"{column} {operation switch {
                 WhereConditionOperator.EQUALS => "=",
+                WhereConditionOperator.NOT_EQUALS => "!=",
                 WhereConditionOperator.GREATER_THAN => ">",
                 WhereConditionOperator.LESS_THAN => "<",
                 WhereConditionOperator.GREATER_OR_EQUAL => ">=",
                 WhereConditionOperator.LESS_OR_EQUAL => "<=",
                 WhereConditionOperator.IN => "IN",
+                WhereConditionOperator.NOT_IN => "NOT IN",
                 _ => throw new NotImplementedException(),
             }} {value}";
 

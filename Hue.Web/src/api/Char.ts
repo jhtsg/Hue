@@ -32,6 +32,13 @@ export const updateCharacter = (
     val: Character
 ) => Put(setLoading, onSuccess, onError, ENDPOINT, val)
 
+export const updatePrimaryCharacter = (
+    setLoading: (value: boolean) => void,
+    onSuccess: () => void,
+    onError: (value: any) => void,
+    val: Character
+) => Put(setLoading, onSuccess, onError, ENDPOINT + "primary", val)
+
 export const updateCharacterProfile = (
     setLoading: (value: boolean) => void,
     setProgress: (value: number) => void,

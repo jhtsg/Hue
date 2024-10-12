@@ -22,7 +22,6 @@ import LoadingBackdrop from "../../../shared/LoadingBackdrop"
 import CharacterTile from "../../chars/subcomponents/CharacterTile"
 import { dateFromBackend, dateToBackend, RemoveIndex as removeIndex } from "../../../shared/Utils"
 import AvatarTile from "../../../shared/AvatarTile"
-import CharsPage from "../../chars/CharsPage"
 import ColorPill from "../../../shared/ColorPill"
 import CommTagEditor from "./CommTagEditor"
 import CommTagSelector from "./CommTagSelector"
@@ -30,6 +29,7 @@ import ArtistTile from "../../artists/subcomponents/ArtistTile"
 import { useNavigate } from "react-router-dom"
 import ArtistsPage from "../../artists/ArtistsPage"
 import AreYouSureModal from "../../../shared/modals/AreYouSureModal"
+import CharacterSelector from "../../chars/subcomponents/CharacterSelector"
 
 
 export default function CommPane(props: {
@@ -526,19 +526,14 @@ function CharactersDisplay(props: {
             Add a Character
         </AvatarTile>
 
-        {charSelector && <Dialog
-            open={charSelector} onClose={() => { setCharSelector(false) }}
-            maxWidth="xl" fullWidth
-        >
-            <DialogContent>
-                <CharsPage onSelect={(val) => {
-                    setChars([...chars, val]);
-                    setCharSelector(false);
-                }} />
-            </DialogContent>
-        </Dialog>}
-
-
+        <CharacterSelector
+            open={charSelector}
+            setOpen={setCharSelector}
+            setChar={(val) => {
+                setChars([...chars, val]);
+                setCharSelector(false);
+            }}
+        />
     </>
 
 }

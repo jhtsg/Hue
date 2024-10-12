@@ -138,7 +138,7 @@ namespace Hue.Data {
         private static Func<Getter, StatisticByYear> YearlyCharStatisticRm = YearlyStatisticRm(CHAR_ID, CHAR_NM, CHAR_COLOR_TX);
 
         private async Task<List<Statistic>> GetOverallStatistics(string username, string view, Func<Getter,Statistic> rm) {
-            var sql = SelectSql(["*"], view, new WhereConditionGroup([new(USER_NM), new(COMM_YEAR_NB)]));
+            var sql = SelectSql(["*"], view, new WhereConditionGroup([new(USER_NM)]));
 
             return await adoTemplate.Query(sql, (cmd) => {
                 cmd.SetString(USER_NM, username);
@@ -146,7 +146,7 @@ namespace Hue.Data {
         }
 
         private async Task<List<StatisticByYear>> GetYearlyStatistics(string username, string view, int year, Func<Getter, StatisticByYear> rm) {
-            var sql = SelectSql(["*"], view, new WhereConditionGroup([new(USER_NM), new(COMM_YEAR_NB)]));
+             var sql = SelectSql(["*"], view, new WhereConditionGroup([new(USER_NM), new(COMM_YEAR_NB)]));
 
             return await adoTemplate.Query(sql, (cmd) => {
                 cmd.SetString(USER_NM, username);

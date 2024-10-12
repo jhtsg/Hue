@@ -26,6 +26,7 @@
         public static readonly string CHAR_COLOR_TX = "char_color_tx";
         public static readonly string CHAR_IMG_BYTES = "char_img_bytes";
         public static readonly string CHAR_IMG_MIME_TX = "char_img_mime_tx";
+        public static readonly string PRIMARY_CHAR_IN = "primary_char_in";
 
         public static readonly string CHAR_CAT_TABLE = $"{SCHEMA}.char_cat";
         public static readonly string CHAR_CAT_ID = "char_cat_id";

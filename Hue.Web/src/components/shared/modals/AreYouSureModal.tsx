@@ -1,4 +1,4 @@
-import { Button, CircularProgress, Dialog, DialogActions } from "@mui/material"
+import { Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material"
 import ApiAlert from "../ApiAlert";
 
 export default function AreYouSureModal(props: {
@@ -7,16 +7,20 @@ export default function AreYouSureModal(props: {
     loading?: boolean,
     error?: any
     onYes: () => void,
+    title?: string
     children: any
 }) {
 
-    const { onYes, open, setOpen, loading, error, children } = props;
+    const { onYes, open, setOpen, loading, error, children, title } = props;
 
     return <Dialog open={open} onClose={() => setOpen(false)} fullWidth maxWidth="xs">
-        <div style={{ padding: "20px" }}>
+
+        {title && <DialogTitle>{title}</DialogTitle>}
+
+        <DialogContent>
             <ApiAlert result={error} style={{ marginBottom: "20px" }} />
             {children}
-        </div>
+        </DialogContent>
 
         <DialogActions>
             {loading

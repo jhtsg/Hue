@@ -6,5 +6,6 @@ export default class Character extends Identifiable {
     public species: string = "";
     public description: string = "";
     public color: string = "";
+    public isPrimary?: boolean;
     public category?: CharacterCategory;
 }

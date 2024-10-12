@@ -16,21 +16,21 @@ export const getGlance = (
 
 export const getPriceCats = (
     setLoading: (value: boolean) => void,
-    setItem: (value?: MonthlyPriceCat) => void,
+    setItem: (value?: MonthlyPriceCat[]) => void,
     onError: (value: any) => void,
     year: number
 ) => Get(setLoading, setItem, onError, ENDPOINT + "priceCat/" + year)
 
 export const getSpending = (
     setLoading: (value: boolean) => void,
-    setItem: (value?: MonthlySpend) => void,
+    setItem: (value?: MonthlySpend[]) => void,
     onError: (value: any) => void,
     year: number
 ) => Get(setLoading, setItem, onError, ENDPOINT + "spending/" + year)
 
 export const getStatuses = (
     setLoading: (value: boolean) => void,
-    setItem: (value?: MonthlyStatus) => void,
+    setItem: (value?: MonthlyStatus[]) => void,
     onError: (value: any) => void,
     year: number
 ) => Get(setLoading, setItem, onError, ENDPOINT + "status/" + year)
@@ -39,7 +39,7 @@ const getStatistics = (
     item: string
 ) => (
     setLoading: (value: boolean) => void,
-    setItem: (value?: Statistic) => void,
+    setItem: (value?: Statistic[]) => void,
     onError: (value: any) => void,
     year?: number
 ) => Get(setLoading, setItem, onError, ENDPOINT + item + (year ? `?year=${year}` : ''))

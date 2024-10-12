@@ -56,7 +56,7 @@ namespace Hue.API.Controllers
                 ? Unauthorized()
                 : Ok(await dao.Get(session.Username,ID));
         }
-
+        
         [HttpGet("category")]
         public async Task<IActionResult> GetAllCategories() {
             var session = GetSession(Request, Response);
@@ -101,6 +101,15 @@ namespace Hue.API.Controllers
             await dao.Update(session.Username, character);
             return Ok();
         }
+
+        [HttpPut("primary")]
+        public async Task<IActionResult> SetPrimary(Character character) {
+            var session = GetSession(Request, Response);
+            if (session == null) { return Unauthorized(); }
+            await dao.UpdatePrimary(session.Username, character);
+            return Ok();
+        }
+
 
         [HttpPut("category")]
         public async Task<IActionResult> UpdateCategory(CharacterCategory category) {

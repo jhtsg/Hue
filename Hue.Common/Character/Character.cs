@@ -14,6 +14,9 @@
         /// <summary>Color for this character's tile</summary>
         public string Color { get; set; } = "";
 
+        /// <summary>Whether or not this character is the primary</summary>
+        public bool? IsPrimary { get; set; }
+
         /// <summary>Category of this character</summary>
         public CharacterCategory? Category { get; set; }
     }
