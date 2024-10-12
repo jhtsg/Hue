@@ -2,6 +2,7 @@ import { Card, CardContent, Skeleton } from "@mui/material";
 import Statistic from "../../model/statistics/Statistic";
 import ApiAlert from "./ApiAlert";
 import { useWindowDimensions } from "../hooks/useWindowDimensions";
+import { useUser } from "../hooks/useUser";
 
 export function StatisticsPane(props: {
     overall?: Statistic,
@@ -13,6 +14,8 @@ export function StatisticsPane(props: {
 }) {
 
     const { width } = useWindowDimensions();
+    const { user } = useUser();
+    const artist = user?.isArtist
 
     const vertical = width < 700
 
@@ -32,7 +35,7 @@ export function StatisticsPane(props: {
                                 <td>{overall?.count?.toLocaleString() ?? 'None'}</td>
                             </tr>
                             <tr>
-                                <td>Total Spent</td>
+                                <td>Total {artist ? "earned" : "spent"}</td>
                                 <td>${overall?.spent?.toLocaleString() ?? '0'}</td>
                             </tr>
                             <tr>
@@ -61,7 +64,7 @@ export function StatisticsPane(props: {
                                 <td>{thisYear?.count?.toLocaleString() ?? 'None'}</td>
                             </tr>
                             <tr>
-                                <td>Total Spent</td>
+                                <td>Total {artist ? "earned" : "spent"}</td>
                                 <td>${thisYear?.spent?.toLocaleString() ?? 0}</td>
                             </tr>
                         </table>

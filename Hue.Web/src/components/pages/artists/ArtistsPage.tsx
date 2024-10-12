@@ -9,6 +9,7 @@ import { useState } from "react"
 import ArtistPane from "./subcomponents/ArtistPane"
 import Artist from "../../../model/artist/Artist"
 import { useWindowDimensions } from "../../hooks/useWindowDimensions"
+import { useUser } from "../../hooks/useUser"
 
 export default function ArtistsPage(props: {
     onSelect?: (val: Artist) => void
@@ -17,10 +18,12 @@ export default function ArtistsPage(props: {
     const [newOpen, setNewOpen] = useState(false)
     const artistsApi = useApi(getArtists, true)
     const { vertical } = useWindowDimensions();
+    const { user } = useUser();
+    const artist = user?.isArtist
 
     return <>
         <div style={{ display: "flex", alignItems: "end" }}>
-            <div style={{ fontSize: "1.7em", flex: "1" }}>Artists</div>
+            <div style={{ fontSize: "1.7em", flex: "1" }}>{Artist ? "Clients" : "Artist"}</div>
             <div><Button variant="contained" onClick={() => setNewOpen(true)} startIcon={<Add />}>New</Button></div>
         </div>
         <hr />

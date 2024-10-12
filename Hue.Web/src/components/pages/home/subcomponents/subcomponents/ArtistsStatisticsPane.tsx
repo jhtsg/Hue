@@ -5,6 +5,7 @@ import CommCountPieChartPane from "./subcomponents/CommCountPieChartPane";
 import CommSpentBarChartPane from "./subcomponents/CommSpentBarChartPane";
 import { Card, CardContent, CardHeader } from "@mui/material";
 import StatisticDataGrid from "./StatisticDataGrid";
+import { useUser } from "../../../../hooks/useUser";
 
 export default function ArtistsStatisticsPane(props: {
     year: number
@@ -13,6 +14,8 @@ export default function ArtistsStatisticsPane(props: {
     const { year } = props;
 
     const statsApi = useApi(getArtistStatistics)
+    const { user } = useUser();
+    const artist = user?.isArtist
 
     useEffect(() => {
         statsApi.fetch(undefined, undefined, year < 0 ? undefined : year)
@@ -20,14 +23,14 @@ export default function ArtistsStatisticsPane(props: {
 
     return <div>
         <div style={{ marginBottom: "20px" }}>
-            <CommCountPieChartPane statistics={statsApi.data} title="Commissions from Artists" statisticType="ARTIST" />
+            <CommCountPieChartPane statistics={statsApi.data} title={`Commissions from ${artist ? "Clients" : "Artists"}`} statisticType="ARTIST" />
         </div>
         <div>
-            <CommSpentBarChartPane statistics={statsApi.data} title="Spent on Artists" />
+            <CommSpentBarChartPane statistics={statsApi.data} title={artist ? "Earned from Clients" : "Spent on Artists"} />
         </div>
         <div>
             <Card style={{ marginTop: "20px" }} >
-                <CardHeader title="Artist Data" />
+                <CardHeader title={artist ? "Clients" : "Artists"} />
                 <CardContent>
                     <StatisticDataGrid statistics={statsApi.data} statisticType="ARTIST" />
                 </CardContent>

@@ -30,6 +30,7 @@ import { useNavigate } from "react-router-dom"
 import ArtistsPage from "../../artists/ArtistsPage"
 import AreYouSureModal from "../../../shared/modals/AreYouSureModal"
 import CharacterSelector from "../../chars/subcomponents/CharacterSelector"
+import { useUser } from "../../../hooks/useUser"
 
 
 export default function CommPane(props: {
@@ -647,6 +648,8 @@ export function ArtistInformation(props: {
     const [anchorEl, setAnchorEl] = useState(undefined as undefined | HTMLElement);
     const [artistPicker, setArtistPicker] = useState(false)
     const nav = useNavigate();
+    const { user } = useUser();
+    const isArtist = user?.isArtist
 
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);
@@ -668,7 +671,7 @@ export function ArtistInformation(props: {
     }
 
     return <>
-        <div>Artist</div>
+        <div>{isArtist ? "Client" : "Artist"}</div>
         <div style={vertical ? {} : { display: "flex", alignItems: 'center' }}>
             <div style={vertical ? { marginBottom: "20px" } : undefined}>
                 {artist ?
@@ -678,7 +681,7 @@ export function ArtistInformation(props: {
                         onClick={() => { setArtistPicker(true) }}
                         avatarColor="#999999"
                         avatarString={'+'}>
-                        Assign an Artist
+                        Assign {isArtist ? "a Client" : "an Artist"}
                     </AvatarTile>
                 }
             </div>

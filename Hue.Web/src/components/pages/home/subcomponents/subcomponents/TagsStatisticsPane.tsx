@@ -6,6 +6,7 @@ import CommSpentBarChartPane from "./subcomponents/CommSpentBarChartPane";
 import CommCountBarChart from "./subcomponents/CommCountBarChart";
 import { Card, CardContent, CardHeader } from "@mui/material";
 import StatisticDataGrid from "./StatisticDataGrid";
+import { useUser } from "../../../../hooks/useUser";
 
 export default function TagsStatisticsPane(props: {
     year: number
@@ -15,6 +16,8 @@ export default function TagsStatisticsPane(props: {
     const { vertical } = useWindowDimensions();
 
     const statsApi = useApi(getTagStatistics)
+    const { user } = useUser();
+    const artist = user?.isArtist
 
     useEffect(() => {
         statsApi.fetch(undefined, undefined, year < 0 ? undefined : year)
@@ -24,13 +27,13 @@ export default function TagsStatisticsPane(props: {
 
         <div style={vertical ? {} : { display: "flex" }}>
             <div style={vertical ? { marginBottom: "20px" } : { flex: "1", marginRight: "10px" }}>
-                <CommSpentBarChartPane title="Spent on Tags" statistics={statsApi.data} />
+                <CommSpentBarChartPane title={artist ? "Earned from Tags" : "Spent on Tags"} statistics={statsApi.data} />
             </div>
             <div style={vertical ? { marginBottom: "20px" } : { flex: "1", marginLeft: "10px", marginRight: "10px" }}>
                 <CommCountBarChart title="Commissions with Tags" statistics={statsApi.data} />
             </div>
             <Card style={vertical ? { marginBottom: "20px" } : { flex: "1", marginLeft: "10px" }}>
-                <CardHeader title="Tag Data" />
+                <CardHeader title="Tags" />
                 <CardContent>
                     <StatisticDataGrid statisticType="TAG" statistics={statsApi.data} pageSize={3} />
                 </CardContent>

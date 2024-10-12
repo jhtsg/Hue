@@ -1,5 +1,6 @@
 import { Box, Divider, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import { useUser } from "../../hooks/useUser";
 
 export default function BurgerMenu(props: {
     open: boolean,
@@ -9,6 +10,8 @@ export default function BurgerMenu(props: {
     const { open, setOpen } = props
 
     const close = () => setOpen(false)
+    const { user } = useUser();
+    const artist = user?.isArtist
 
     return <Drawer open={open} onClose={close}>
         <Box sx={{ width: 250 }} onClick={close} onKeyDown={close}>
@@ -21,7 +24,7 @@ export default function BurgerMenu(props: {
                 <Divider style={{ marginTop: "20px", marginBottom: "20px" }} />
                 <BurgerMenuItem navTo="/commissions" image="/icons/images.png" text="Commissions" />
                 <BurgerMenuItem navTo="/characters" image="/icons/chars.png" text="Characters" />
-                <BurgerMenuItem navTo="/artists" image="/icons/artist.png" text="Artists" />
+                <BurgerMenuItem navTo="/artists" image="/icons/artist.png" text={artist ? "Clients" : "Artists"} />
             </List>
         </Box>
     </Drawer>

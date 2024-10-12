@@ -10,6 +10,7 @@ import Artist from "../../../../model/artist/Artist"
 import SocialIcon from "../../../shared/SocialIcon"
 import Social from "../../../../model/Social"
 import { useSnackbar } from "notistack"
+import { useUser } from "../../../hooks/useUser"
 
 export default function ArtistPane(props: {
     create?: boolean,
@@ -23,6 +24,8 @@ export default function ArtistPane(props: {
     const { id, create, editable, onOk } = props
 
     const { enqueueSnackbar } = useSnackbar();
+    const { user } = useUser();
+    const artist = user?.isArtist
 
     const [editMode, setEditMode] = useState(create)
     const [name, setName] = useState("")
@@ -164,7 +167,7 @@ export default function ArtistPane(props: {
                                 }}
                             />
                         </div>
-                        <div style={{}}>
+                        <div hidden={artist} style={{}}>
                             <TextField label="Commission Sheet URL" value={commSheet} onChange={(e) => setCommSheet(e.target.value)} fullWidth />
                         </div>
                     </> :
