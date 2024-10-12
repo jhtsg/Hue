@@ -135,9 +135,14 @@ namespace Hue.Data
                 ],
                 table: $"{COMM_TABLE} C LEFT JOIN {ARTIST_TABLE} A ON C.{ARTIST_ID} = A.{ARTIST_ID}",
                 new(WhereConditionUnion.AND, conditions),
-                [new($"COALESCE({DONE_DT},COALESCE({UPDT_TS},{CRE_TS}))", SortOrder.DESC)],
-                PAGE_SIZE, PAGE_SIZE * (filter.Page ?? 0)
+                [new($"COALESCE({DONE_DT},COALESCE({UPDT_TS},{CRE_TS}))", SortOrder.DESC)]
             );
+
+            if (filter.Page != null) {
+                sql += $" LIMIT {PAGE_SIZE} OFFSET {PAGE_SIZE * filter.Page}";
+            }
+
+
 
             return await adoTemplate.Query(sql, (cmd) => {
                 cmd.SetString(USER_NM, username);

@@ -5,6 +5,7 @@ using Hue.Common;
 using static Hue.API.Controllers.AuthController;
 using Hue.Common.Commission;
 using Hue.API.utils;
+using System.Text;
 
 namespace Hue.API.Controllers
 {
@@ -50,6 +51,35 @@ namespace Hue.API.Controllers
             return session == null
                 ? Unauthorized()
                 : Ok(await dao.GetAll(session.Username,filter));
+        }
+
+        [HttpGet("Export")]
+        public async Task<IActionResult> Export(
+          [FromQuery] CommissionFilterOptions filter
+          ) {
+
+            var session = GetSession(Request, Response);
+            if (session == null) return Unauthorized();
+            filter.Page = null; //Clear this out
+
+            var all = await dao.GetAll(session.Username, filter);
+
+            List<string> headers = [
+                    "Name","Status","Artist","Price","Tags","Characters","CharCount","Start Date","Done Date","Publish Date"
+                ];
+
+            List<string> tsvLines = [string.Join("\t",headers)];
+            tsvLines.AddRange(all.Select(a => string.Join("\t",a.Name,a.Status,a.Artist?.Name ?? "", a.Price,
+                string.Join(",",a.CommissionTags.Select(a=>a.Name)),
+                string.Join(",", a.Characters.Select(a => a.Name)),
+                a.CharCount,a.StartTs,a.DoneTs,a.PublishTs
+                )));
+
+            var tsvString = string.Join(Environment.NewLine, tsvLines);
+            var tsvBytes = Encoding.UTF8.GetBytes(tsvString);
+            var filename = $"commissions-{session.Username}{(filter.Year != null ? "-" + filter.Year : "")}.tsv";
+
+            return File(tsvBytes, "text/tab-separated-values", filename);
         }
 
         [HttpGet("Count")]

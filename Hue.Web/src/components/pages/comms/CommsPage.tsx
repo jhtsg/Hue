@@ -1,4 +1,4 @@
-import { Add, Archive } from "@mui/icons-material";
+import { Add, Archive, Download } from "@mui/icons-material";
 import { Button, Dialog, Drawer, Tab, Tabs } from "@mui/material"
 import { useState } from "react"
 import CommBoard from "./subcomponents/CommBoard/Board";
@@ -10,6 +10,7 @@ import CommColumn from "./subcomponents/CommBoard/Column";
 import useApi from "../../hooks/useApi";
 import { getCommissionYears } from "../../../api/Comm";
 import { useWindowDimensions } from "../../hooks/useWindowDimensions";
+import { API_PREFIX } from "../../../api/Common";
 
 export default function CommsPage() {
 
@@ -43,8 +44,6 @@ export default function CommsPage() {
                     }
                 </Tabs>
             </div>
-
-
             <div><Button variant="outlined" onClick={() => setArchived(true)} startIcon={<Archive />} style={{ marginRight: "20px" }}>Archived</Button></div>
             <div><Button variant="contained" onClick={() => setNewOpen(true)} startIcon={<Add />}>New</Button></div>
         </div>
@@ -57,6 +56,9 @@ export default function CommsPage() {
         <div>
             <CommBoard year={year} />
         </div>
+
+        <div style={{ textAlign: "right" }}><Button variant="outlined" onClick={() => window.open(API_PREFIX + "comm/export?year=" + year)} startIcon={<Download />}> Export to TSV</Button></div >
+
         <Dialog open={newOpen} onClose={() => setNewOpen(false)} maxWidth="lg" fullWidth>
             <div style={{ padding: 20 }}>
                 <CommPane create open={newOpen} setOpen={setNewOpen} onOk={() => {
