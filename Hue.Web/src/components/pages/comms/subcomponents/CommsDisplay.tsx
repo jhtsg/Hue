@@ -17,6 +17,7 @@ export default function CommsDisplay(props: {
     return <>
         <div style={{ maxWidth: "1200px", margin: "40px auto", display: "flex", flexWrap: 'wrap', justifyContent: 'center', ...style }}>
             {comms.loading && comms.comms.length === 0 && <CircularProgress />}
+            {!comms.loading && comms.comms.length == 0 && <div style={{ marginTop: "20px", textAlign: 'center' }}>No commissions!</div>}
             {comms.comms.map(a => <div style={vertical ? { width: "50%" } : { width: "33%" }}>
                 <CommCard commission={a} noContextMenu />
             </div>)}

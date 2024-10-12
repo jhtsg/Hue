@@ -7,13 +7,14 @@ import LoginPage from "./components/pages/login/LoginPage";
 
 export default function App() {
 
-  const { loading: pingPongLoading } = usePingPong();
+  const { pong } = usePingPong();
   const { user } = useUser();
 
   return <>
     <Navbar />
     <div style={{ margin: "80px auto 0px auto", width: "95%" }}>
-      {pingPongLoading ? <PingPongPage /> : !user ? <LoginPage /> : <Outlet />}
+      {!pong ? <PingPongPage /> :
+        !user ? <LoginPage /> : <Outlet />}
     </div>
   </>
 }

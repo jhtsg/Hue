@@ -30,7 +30,7 @@ namespace Hue.Data
                 columns : [
                     COMM_NM, COMM_DESC_TX, COMM_PRICE_NB, COMM_CHAR_CNT, COMM_POST_TAGS_TX,
                     COMM_POST_DESC_TX, COMM_STATUS_CD, COMM_TYPE_CD, 
-                    CRE_TS, START_TS, DONE_TS, PBLSH_TS,
+                    CRE_TS, START_DT, DONE_DT, PBLSH_DT,
                     ARTIST_ID, USER_NM
                 ],
                 setValues: new Dictionary<string, string> { 
@@ -50,9 +50,9 @@ namespace Hue.Data
                 cmd.SetString(COMM_POST_TAGS_TX , comm.PostTags);
                 cmd.SetString(COMM_POST_DESC_TX, comm.PostDescription);
 
-                cmd.SetTimestamp(START_TS, comm.StartTs);
-                cmd.SetTimestamp(DONE_TS, comm.DoneTs);
-                cmd.SetTimestamp(PBLSH_TS, comm.PublishTs);
+                cmd.SetDate(START_DT, comm.StartTs);
+                cmd.SetDate(DONE_DT, comm.DoneTs);
+                cmd.SetDate(PBLSH_DT, comm.PublishTs);
 
                 cmd.SetInt(COMM_STATUS_CD, (int)comm.Status);
                 cmd.SetInt(COMM_TYPE_CD, (int)comm.Type);
@@ -103,9 +103,9 @@ namespace Hue.Data
 
                 CreateTs = reader.GetDateTime(CRE_TS),
                 UpdateTs = reader.GetOptionalDateTime(UPDT_TS),
-                StartTs = reader.GetOptionalDateTime(START_TS),
-                DoneTs = reader.GetOptionalDateTime(DONE_TS),
-                PublishTs = reader.GetOptionalDateTime(PBLSH_TS),
+                StartTs = reader.GetOptionalDateTime(START_DT),
+                DoneTs = reader.GetOptionalDateTime(DONE_DT),
+                PublishTs = reader.GetOptionalDateTime(PBLSH_DT),
 
                 Artist = reader.IsNull(ARTIST_ID) ? null : ArtistDAO.artistRm(reader),
                 Characters = await GetCommCharacters(reader.GetInt(COMM_ID)),
@@ -130,12 +130,12 @@ namespace Hue.Data
                     COMM_PRICE_NB, COMM_CHAR_CNT,
                     COMM_POST_TAGS_TX, COMM_POST_DESC_TX,
                     COMM_STATUS_CD, COMM_TYPE_CD,
-                    CRE_TS, UPDT_TS, START_TS, DONE_TS, PBLSH_TS,
+                    CRE_TS, UPDT_TS, START_DT, DONE_DT, PBLSH_DT,
                     "C."+ARTIST_ID, ARTIST_NM, ARTIST_COMM_SHEET_TX, ARTIST_SOCIAL_TX
                 ],
                 table: $"{COMM_TABLE} C LEFT JOIN {ARTIST_TABLE} A ON C.{ARTIST_ID} = A.{ARTIST_ID}",
                 new(WhereConditionUnion.AND, conditions),
-                [new($"COALESCE({DONE_TS},COALESCE({UPDT_TS},{CRE_TS}))", SortOrder.DESC)],
+                [new($"COALESCE({DONE_DT},COALESCE({UPDT_TS},{CRE_TS}))", SortOrder.DESC)],
                 PAGE_SIZE, PAGE_SIZE * (filter.Page ?? 0)
             );
 
@@ -209,7 +209,7 @@ namespace Hue.Data
                     COMM_PRICE_NB, COMM_CHAR_CNT,
                     COMM_POST_TAGS_TX, COMM_POST_DESC_TX,
                     COMM_STATUS_CD, COMM_TYPE_CD,
-                    CRE_TS, UPDT_TS, START_TS, DONE_TS, PBLSH_TS,
+                    CRE_TS, UPDT_TS, START_DT, DONE_DT, PBLSH_DT,
                     "C."+ARTIST_ID, ARTIST_NM, ARTIST_COMM_SHEET_TX, ARTIST_SOCIAL_TX
 ],
                 table: $"{COMM_TABLE} C LEFT JOIN {ARTIST_TABLE} A ON C.{ARTIST_ID} = A.{ARTIST_ID}",
@@ -227,7 +227,7 @@ namespace Hue.Data
 
         public async Task<List<double>> GetYears(string username) {
             var sql = SelectSql(
-                    columns:[$"extract(year from coalesce({START_TS},{CRE_TS})) as year"],
+                    columns:[$"extract(year from coalesce({START_DT},{CRE_TS})) as year"],
                     table:COMM_TABLE,
                     new([new(USER_NM)]),
                     [new("YEAR",SortOrder.DESC)],
@@ -334,7 +334,7 @@ namespace Hue.Data
             var CreateCommSql = UpdateSql(
                 columns: [
                     COMM_NM, COMM_DESC_TX, COMM_PRICE_NB, COMM_CHAR_CNT, COMM_POST_TAGS_TX,
-                    COMM_POST_DESC_TX, COMM_STATUS_CD, COMM_TYPE_CD, UPDT_TS, START_TS, DONE_TS, PBLSH_TS, ARTIST_ID
+                    COMM_POST_DESC_TX, COMM_STATUS_CD, COMM_TYPE_CD, UPDT_TS, START_DT, DONE_DT, PBLSH_DT, ARTIST_ID
                 ],
                 setValues: new Dictionary<string, string> { 
                     { UPDT_TS, "CURRENT_TIMESTAMP" } 
@@ -356,9 +356,9 @@ namespace Hue.Data
                 cmd.SetInt(COMM_STATUS_CD, (int)comm.Status);
                 cmd.SetInt(COMM_TYPE_CD, (int)comm.Type);
 
-                cmd.SetTimestamp(START_TS, comm.StartTs);
-                cmd.SetTimestamp(DONE_TS, comm.DoneTs);
-                cmd.SetTimestamp(PBLSH_TS, comm.PublishTs);
+                cmd.SetDate(START_DT, comm.StartTs);
+                cmd.SetDate(DONE_DT, comm.DoneTs);
+                cmd.SetDate(PBLSH_DT, comm.PublishTs);
 
                 cmd.SetInt(ARTIST_ID, comm.Artist?.Id);
                 

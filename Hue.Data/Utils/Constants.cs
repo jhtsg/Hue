@@ -87,21 +87,21 @@
         public static readonly string PUBLISH_CNT = "PUBLISH_CNT";
 
         public static readonly string CHAR_STATISTICS = $"{SCHEMA}.CHAR_STATISTICS";
-        public static readonly string YEARLY_CHAR_STATISTICS = $"{SCHEMA}.CHAR_STATISTICS";
-        public static readonly string ARTIST_STATISTICS = $"{SCHEMA}.CHAR_STATISTICS";
-        public static readonly string YEARLY_ARTIST_STATISTICS = $"{SCHEMA}.CHAR_STATISTICS";
-        public static readonly string TAG_STATISTICS = $"{SCHEMA}.CHAR_STATISTICS";
-        public static readonly string YEARLY_TAG_STATISTICS = $"{SCHEMA}.CHAR_STATISTICS";
+        public static readonly string YEARLY_CHAR_STATISTICS = $"{SCHEMA}.YEARLY_CHAR_STATISTICS";
+        public static readonly string ARTIST_STATISTICS = $"{SCHEMA}.ARTIST_STATISTICS";
+        public static readonly string YEARLY_ARTIST_STATISTICS = $"{SCHEMA}.YEARLY_ARTIST_STATISTICS";
+        public static readonly string TAG_STATISTICS = $"{SCHEMA}.TAG_STATISTICS";
+        public static readonly string YEARLY_TAG_STATISTICS = $"{SCHEMA}.YEARLY_TAG_STATISTICS";
 
         public static readonly string COMM_CNT = "COMM_CNT";
         public static readonly string SPENT_NB = "SPENT_NB";
-        public static readonly string LAST_PBLSH_TS = "LAST_PBLSH_TS";
+        public static readonly string LAST_PBLSH_DT = "LAST_PBLSH_DT";
 
         public static readonly string CRE_TS = "cre_ts";
         public static readonly string UPDT_TS = "updt_ts";
-        public static readonly string START_TS = "start_ts";
-        public static readonly string DONE_TS = "done_ts";
-        public static readonly string PBLSH_TS = "pblsh_ts";
+        public static readonly string START_DT = "start_dt";
+        public static readonly string DONE_DT = "done_dt";
+        public static readonly string PBLSH_DT = "pblsh_dt";
 
     }
 }

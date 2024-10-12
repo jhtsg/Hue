@@ -64,9 +64,9 @@ CREATE TABLE hue.comm (
 	comm_type_cd INT4 NULL,
 	cre_ts TIMESTAMP(6) NOT NULL,
 	updt_ts TIMESTAMP(6) NULL,
-	start_ts TIMESTAMP(6) NULL,
-	done_ts TIMESTAMP(6) NULL,
-	pblsh_ts TIMESTAMP(6) NULL,
+	start_dt DATE NULL,
+	done_dt DATE NULL,
+	pblsh_dt DATE NULL,
 	artist_id INT4 NULL,
 	user_nm VARCHAR(32) NULL,
 	comm_header_img_bytes BYTEA NULL,
@@ -92,7 +92,7 @@ CREATE TABLE hue.comm_tag_map (
 
 ALTER TABLE hue.comm
 ADD COLUMN COMM_YEAR_NB INT GENERATED ALWAYS AS (
-  EXTRACT(YEAR FROM COALESCE(START_TS, CRE_TS))
+  EXTRACT(YEAR FROM COALESCE(START_DT, CRE_TS::DATE))
 ) STORED;
 
 ALTER TABLE hue.comm
@@ -103,16 +103,20 @@ ADD COLUMN COMM_STARTED_IN BOOLEAN GENERATED ALWAYS AS (
 ALTER TABLE hue.comm
 ADD COLUMN COMM_TTC_NB INT GENERATED ALWAYS AS (
   CASE 
-    WHEN DONE_TS IS NOT NULL AND START_TS IS NOT NULL 
-    THEN EXTRACT(DAY FROM DONE_TS - START_TS)
+    WHEN DONE_DT IS NOT NULL AND START_DT IS NOT NULL 
+    THEN DONE_DT - START_DT
     ELSE NULL
   END
 ) STORED;
 
 ALTER TABLE hue.comm
 ADD COLUMN COMM_MONTH_NB INT GENERATED ALWAYS AS (
-  EXTRACT(MONTH FROM COALESCE(START_TS, CRE_TS))
+  EXTRACT(MONTH FROM COALESCE(START_DT, CRE_TS::DATE))
 ) STORED;
+
+ALTER TABLE hue.char
+	ADD COLUMN PRIMARY_CHAR_IN boolean;
+
 
 create view hue.AT_A_GLANCE_VIEW as 
 SELECT 
@@ -138,12 +142,12 @@ SELECT
 
     -- Average Money Spent Per Month: Total Spent / Months with any commissions with COMM_STATUS_IN
     SUM(CASE WHEN COMM_STARTED_IN THEN COMM_PRICE_NB ELSE 0 END) / 
-    NULLIF(COUNT(DISTINCT CASE WHEN COMM_STARTED_IN THEN DATE_TRUNC('month', COALESCE(START_TS, CRE_TS)) END), 0) 
+    NULLIF(COUNT(DISTINCT CASE WHEN COMM_STARTED_IN THEN DATE_TRUNC('month', COALESCE(START_DT, CRE_TS::DATE)) END), 0) 
     AS AVG_SPENT_NB,
 
     -- Average Commissions Per Month: Total Commissions / Months with any commissions regardless of state
     COUNT(*) / 
-    NULLIF(COUNT(DISTINCT DATE_TRUNC('month', COALESCE(START_TS, CRE_TS))), 0) 
+    NULLIF(COUNT(DISTINCT DATE_TRUNC('month', COALESCE(START_DT, CRE_TS::DATE))), 0) 
     AS AVG_COMM_BY_MONTH_NB
     
 FROM 
@@ -176,12 +180,12 @@ SELECT
 
     -- Average Money Spent Per Month: Total Spent / Months with any commissions with COMM_STATUS_IN
     SUM(CASE WHEN COMM_STARTED_IN THEN COMM_PRICE_NB ELSE 0 END) / 
-    NULLIF(COUNT(DISTINCT CASE WHEN COMM_STARTED_IN THEN DATE_TRUNC('month', COALESCE(START_TS, CRE_TS)) END), 0) 
+    NULLIF(COUNT(DISTINCT CASE WHEN COMM_STARTED_IN THEN DATE_TRUNC('month', COALESCE(START_DT, CRE_TS::DATE)) END), 0) 
     AS AVG_SPENT_NB,
 
     -- Average Commissions Per Month: Total Commissions / Months with any commissions regardless of state
     COUNT(*) / 
-    NULLIF(COUNT(DISTINCT DATE_TRUNC('month', COALESCE(START_TS, CRE_TS))), 0) 
+    NULLIF(COUNT(DISTINCT DATE_TRUNC('month', COALESCE(START_DT, CRE_TS::DATE))), 0) 
     AS AVG_COMM_BY_MONTH_NB
     
 FROM 
@@ -215,37 +219,37 @@ select USER_NM, COMM_YEAR_NB, COMM_MONTH_NB,
 	order by COMM_YEAR_NB, COMM_MONTH_NB;
 
 create view hue.YEARLY_CHAR_STATISTICS as 
-select co.USER_NM, COMM_YEAR_NB, CH.CHAR_ID, CH.CHAR_NM, CH.CHAR_COLOR_TX, Count(*) as COMM_CNT, sum(COMM_PRICE_NB) as SPENT_NB, max(PBLSH_TS) LAST_PBLSH_TS
+select co.USER_NM, COMM_YEAR_NB, CH.CHAR_ID, CH.CHAR_NM, CH.CHAR_COLOR_TX, Count(*) as COMM_CNT, sum(COMM_PRICE_NB) as SPENT_NB, max(PBLSH_DT) LAST_PBLSH_DT
 from hue.hue.char ch, hue.hue.comm co, hue.hue.comm_char_map cm 
 where ch.char_id = cm.char_id  and cm.comm_id = co.comm_id 
 group by CO.USER_NM, Ch.CHAR_ID, COMM_YEAR_NB, CH.CHAR_NM, CH.CHAR_COLOR_TX;
 
 create view hue.CHAR_STATISTICS as 
-select co.USER_NM, CH.CHAR_ID, CH.CHAR_NM, CH.CHAR_COLOR_TX, Count(*) as COMM_CNT, sum(COMM_PRICE_NB) as SPENT_NB, max(PBLSH_TS) LAST_PBLSH_TS
+select co.USER_NM, CH.CHAR_ID, CH.CHAR_NM, CH.CHAR_COLOR_TX, Count(*) as COMM_CNT, sum(COMM_PRICE_NB) as SPENT_NB, max(PBLSH_DT) LAST_PBLSH_DT
 from hue.hue.char ch, hue.hue.comm co, hue.hue.comm_char_map cm 
 where ch.char_id = cm.char_id  and cm.comm_id = co.comm_id 
 group by CO.USER_NM, CH.CHAR_ID, CH.CHAR_NM, CH.CHAR_COLOR_TX;
 
 create view hue.YEARLY_ARTIST_STATISTICS as 
-select co.USER_NM, COMM_YEAR_NB, co.ARTIST_ID, ar.ARTIST_NM, Count(*) as COMM_CNT, sum(COMM_PRICE_NB) as SPENT_NB, max(PBLSH_TS) LAST_PBLSH_TS
+select co.USER_NM, COMM_YEAR_NB, co.ARTIST_ID, ar.ARTIST_NM, Count(*) as COMM_CNT, sum(COMM_PRICE_NB) as SPENT_NB, max(PBLSH_DT) LAST_PBLSH_DT
 from hue.hue.artist ar, hue.hue.comm co 
 where ar.artist_id = co.artist_id 
 group by CO.USER_NM, co.artist_id, COMM_YEAR_NB, ar.ARTIST_NM;
 
 create view hue.ARTIST_STATISTICS as 
-select co.USER_NM, co.ARTIST_ID, ar.ARTIST_NM, Count(*) as COMM_CNT, sum(COMM_PRICE_NB) as SPENT_NB, max(PBLSH_TS) LAST_PBLSH_TS
+select co.USER_NM, co.ARTIST_ID, ar.ARTIST_NM, Count(*) as COMM_CNT, sum(COMM_PRICE_NB) as SPENT_NB, max(PBLSH_DT) LAST_PBLSH_DT
 from hue.hue.artist ar, hue.hue.comm co 
 where ar.artist_id = co.artist_id 
 group by CO.USER_NM, co.artist_id, ar.ARTIST_NM;
 
 create view hue.YEARLY_TAG_STATISTICS as 
-select co.USER_NM, CO.comm_year_nb, cm.comm_tag_id, ct.COMM_TAG_NM, ct.COMM_TAG_COLOR_TX, Count(*) as COMM_CNT, sum(COMM_PRICE_NB) as SPENT_NB, max(PBLSH_TS) LAST_PBLSH_TS
+select co.USER_NM, CO.comm_year_nb, cm.comm_tag_id, ct.COMM_TAG_NM, ct.COMM_TAG_COLOR_TX, Count(*) as COMM_CNT, sum(COMM_PRICE_NB) as SPENT_NB, max(PBLSH_DT) LAST_PBLSH_DT
 from hue.hue.comm_tag ct , hue.hue.comm co, hue.hue.comm_tag_map cm 
 where ct.comm_tag_id = cm.comm_tag_id  and cm.comm_id = co.comm_id 
 group by CO.USER_NM, cm.comm_tag_id , co.comm_year_nb, ct.COMM_TAG_NM, ct.COMM_TAG_COLOR_TX ;
 
 create view hue.TAG_STATISTICS as 
-select co.USER_NM, cm.comm_tag_id, ct.COMM_TAG_NM, ct.COMM_TAG_COLOR_TX , Count(*) as COMM_CNT, sum(COMM_PRICE_NB) as SPENT_NB, max(PBLSH_TS) LAST_PBLSH_TS
+select co.USER_NM, cm.comm_tag_id, ct.COMM_TAG_NM, ct.COMM_TAG_COLOR_TX , Count(*) as COMM_CNT, sum(COMM_PRICE_NB) as SPENT_NB, max(PBLSH_DT) LAST_PBLSH_DT
 from hue.hue.comm_tag ct , hue.hue.comm co, hue.hue.comm_tag_map cm 
 where ct.comm_tag_id = cm.comm_tag_id  and cm.comm_id = co.comm_id 
 group by CO.USER_NM, cm.comm_tag_id, ct.COMM_TAG_NM, ct.COMM_TAG_COLOR_TX  ;

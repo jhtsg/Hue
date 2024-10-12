@@ -26,3 +26,6 @@ export function RemoveIndex<T>(arr: T[], i: number) {
 
     return l;
 }
+
+export const dateFromBackend = (val: string): string => new Date(val).toISOString().split('T')[0]
+export const dateToBackend = (val?: string): string | undefined => val && val.length > 0 ? new Date(val).toISOString().replace("Z", "") : undefined;

@@ -114,7 +114,7 @@ namespace Hue.Data {
                 Color = colorColumn == null ? "" : reader.GetString(colorColumn),
                 Count = reader.GetInt(COMM_CNT),
                 Spent = reader.GetInt(SPENT_NB),
-                LastSeen = reader.GetDateTime(LAST_PBLSH_TS)
+                LastSeen = reader.GetOptionalDateTime(LAST_PBLSH_DT)
             };
         }
 
@@ -126,7 +126,7 @@ namespace Hue.Data {
                 Color = colorColumn == null ? "" : reader.GetString(colorColumn),
                 Count = reader.GetInt(COMM_CNT),
                 Spent = reader.GetInt(SPENT_NB),
-                LastSeen = reader.GetDateTime(LAST_PBLSH_TS)
+                LastSeen = reader.GetOptionalDateTime(LAST_PBLSH_DT)
             };
         }
 
@@ -154,18 +154,20 @@ namespace Hue.Data {
             }, rm);
         }
         private async Task<Statistic?> GetOverallStatisticForItem(string username, string view, string idColumn, int id, Func<Getter, Statistic> rm) {
-            var sql = SelectSql(["*"], view, new WhereConditionGroup([new(USER_NM), new(COMM_YEAR_NB)]));
+            var sql = SelectSql(["*"], view, new WhereConditionGroup([new(USER_NM), new(idColumn)]));
 
             return await adoTemplate.QuerySingle (sql, (cmd) => {
                 cmd.SetString(USER_NM, username);
+                cmd.SetInt(idColumn, id);
             }, rm);
 
         }
         private async Task<StatisticByYear?> GetYearlyStatisticForItem(string username, string view, string idColumn, int id, int year, Func<Getter, StatisticByYear> rm) {
-            var sql = SelectSql(["*"], view, new WhereConditionGroup([new(USER_NM), new(COMM_YEAR_NB)]));
+            var sql = SelectSql(["*"], view, new WhereConditionGroup([new(USER_NM), new(idColumn),new(COMM_YEAR_NB)]));
 
             return await adoTemplate.QuerySingle(sql, (cmd) => {
                 cmd.SetString(USER_NM, username);
+                cmd.SetInt(idColumn, id);
                 cmd.SetInt(COMM_YEAR_NB, year);
             }, rm);
         }
@@ -173,7 +175,7 @@ namespace Hue.Data {
         public async Task<List<Statistic>> GetOverallArtistStatistics(string username) => await GetOverallStatistics(username, ARTIST_STATISTICS, ArtistStatisticRm);
         public async Task<List<StatisticByYear>> GetYearlyArtistStatistics(string username,int year) => await GetYearlyStatistics(username, YEARLY_ARTIST_STATISTICS, year, YearlyArtistStatisticRm);
         public async Task<Statistic?> GetOverallStatisticForArtist(string username, int id) => await GetOverallStatisticForItem(username, ARTIST_STATISTICS, ARTIST_ID, id, ArtistStatisticRm);
-        public async Task<StatisticByYear?> GetYearlyStatisticForArtist(string username, int id, int year) => await GetYearlyStatisticForItem(username, ARTIST_STATISTICS, ARTIST_ID, id, year, YearlyArtistStatisticRm);
+        public async Task<StatisticByYear?> GetYearlyStatisticForArtist(string username, int id, int year) => await GetYearlyStatisticForItem(username, YEARLY_ARTIST_STATISTICS, ARTIST_ID, id, year, YearlyArtistStatisticRm);
 
         public async Task<List<Statistic>> GetOverallCharacterStatistics(string username) => await GetOverallStatistics(username, CHAR_STATISTICS, CharStatisticRm);
         public async Task<List<StatisticByYear>> GetYearlyCharacterStatistics(string username, int year) => await GetYearlyStatistics(username, YEARLY_CHAR_STATISTICS, year, YearlyCharStatisticRm);

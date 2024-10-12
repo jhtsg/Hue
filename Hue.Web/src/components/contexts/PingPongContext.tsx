@@ -7,6 +7,7 @@ export class PingPongContextType {
     public constructor(
         public refreshPing: () => void,
         public loading: boolean,
+        public error: boolean,
         public pong?: PongResponse
     ) { }
 }
@@ -15,9 +16,9 @@ export const PingPongContext = createContext<PingPongContextType | undefined>(un
 
 export const PingPongProvider = (props: { children: any }) => {
 
-    const authApi = useApi(pingPong, true);
+    const pingPongApi = useApi(pingPong, true);
 
-    return <PingPongContext.Provider value={{ pong: authApi.data, loading: authApi.loading, refreshPing: authApi.fetch }}>
+    return <PingPongContext.Provider value={{ pong: pingPongApi.data, loading: pingPongApi.loading, refreshPing: pingPongApi.fetch, error: pingPongApi.error }}>
         {props.children}
     </PingPongContext.Provider>
 

@@ -20,7 +20,7 @@ import BlockerConfirmModal from "../../../shared/modals/BlockerConfirmModal"
 import { CommissionStatus, CommissionTypes } from "../../../../model/commission/CommissionEnums"
 import LoadingBackdrop from "../../../shared/LoadingBackdrop"
 import CharacterTile from "../../chars/subcomponents/CharacterTile"
-import { RemoveIndex as removeIndex } from "../../../shared/Utils"
+import { dateFromBackend, dateToBackend, RemoveIndex as removeIndex } from "../../../shared/Utils"
 import AvatarTile from "../../../shared/AvatarTile"
 import CharsPage from "../../chars/CharsPage"
 import ColorPill from "../../../shared/ColorPill"
@@ -85,10 +85,6 @@ export default function CommPane(props: {
     const refreshComm = () => {
         commApi.fetch(undefined, undefined, id)
     }
-
-    const dateFromBackend = (val: string): string => new Date(val).toISOString().split('T')[0]
-
-    const dateToBackend = (val?: string): string | undefined => val && val.length > 0 ? new Date(val).toISOString() : undefined;
 
     useEffect(() => {
         setName("")
@@ -277,28 +273,11 @@ export default function CommPane(props: {
 
 
                     {/* Dates */}
-                    <div style={{ marginTop: "20px", marginBottom: "20px", display: vertical ? undefined : "flex", flexWrap: "wrap", alignItems: "center" }}>
-
-                        {/* Start Date */}
-                        <div style={vertical ? { marginBottom: "20px" } : { flex: "1", paddingRight: "10px" }}>
-                            <TextField type="date" value={startTs} label="Start" fullWidth onChange={(e) => {
-                                setStartTs(e.target.value)
-                                markDirty();
-                            }} />
-                        </div>
-
-                        <div style={vertical ? { marginBottom: "20px", textAlign: "center" } : undefined}>
-                            {vertical ? <ArrowDownward /> : <ArrowForward />}
-                        </div>
-                        {/* End Date */}
-                        <div style={vertical ? { marginBottom: "20px" } : { flex: "1", paddingLeft: "10px" }}>
-                            <TextField type="date" value={doneTs} label="Done" fullWidth onChange={(e) => {
-                                setDoneTs(e.target.value)
-                                markDirty();
-                            }} />
-                        </div>
-
-                    </div>
+                    <DateInformation
+                        vertical={vertical} markDirty={markDirty}
+                        startTs={startTs} setStartTs={setStartTs}
+                        doneTs={doneTs} setDoneTs={setDoneTs}
+                    />
                     <hr style={{ marginBottom: "25px" }} />
 
 
@@ -621,7 +600,44 @@ function TagsDisplay(props: {
 
 }
 
-function ArtistInformation(props: {
+export function DateInformation(props: {
+    vertical?: boolean,
+    startTs?: string,
+    doneTs?: string,
+    setStartTs: (val: string) => void,
+    setDoneTs: (val: string) => void,
+    markDirty: () => void
+
+}) {
+
+    const { doneTs, markDirty, setDoneTs, setStartTs, startTs, vertical } = props;
+
+    return <div style={{ marginTop: "20px", marginBottom: "20px", display: vertical ? undefined : "flex", flexWrap: "wrap", alignItems: "center" }}>
+
+        {/* Start Date */}
+        <div style={vertical ? { marginBottom: "20px" } : { flex: "1", paddingRight: "10px" }}>
+            <TextField type="date" value={startTs} label="Start" fullWidth onChange={(e) => {
+                setStartTs(e.target.value)
+                markDirty();
+            }} />
+        </div>
+
+        <div style={vertical ? { marginBottom: "20px", textAlign: "center" } : undefined}>
+            {vertical ? <ArrowDownward /> : <ArrowForward />}
+        </div>
+        {/* End Date */}
+        <div style={vertical ? { marginBottom: "20px" } : { flex: "1", paddingLeft: "10px" }}>
+            <TextField type="date" value={doneTs} label="Done" fullWidth onChange={(e) => {
+                setDoneTs(e.target.value)
+                markDirty();
+            }} />
+        </div>
+
+    </div>
+
+}
+
+export function ArtistInformation(props: {
     artist?: Artist,
     price: number,
     charCount: number,
@@ -672,29 +688,35 @@ function ArtistInformation(props: {
                 }
             </div>
             <div style={vertical ? {} : { flex: "1", marginLeft: "20px", display: 'flex' }}>
-                <TextField type="number" label='Price'
-                    style={vertical ? {
-                        marginBottom: "20px"
-                    } : { marginRight: "10px" }} value={price} fullWidth={vertical}
-                    onChange={(e) => {
-                        setPrice(new Number(e.target.value) as number)
-                        markDirty()
-                    }}
-                    slotProps={{
-                        input: {
-                            startAdornment: <InputAdornment position="start">
-                                $
-                            </InputAdornment>
-                        }
-                    }}
-                />
-                <TextField type="number" label='Character Count' fullWidth={vertical}
-                    style={vertical ? {} : { marginLeft: "10px" }} value={charCount}
-                    onChange={(e) => {
-                        setCharCount(new Number(e.target.value) as number)
-                        markDirty()
-                    }}
-                />
+
+                <div style={vertical ? {} : { width: "50%" }}>
+                    <TextField type="number" label='Price'
+                        style={vertical ? {
+                            marginBottom: "20px"
+                        } : { marginRight: "10px" }} value={price} fullWidth
+                        onChange={(e) => {
+                            setPrice(new Number(e.target.value) as number)
+                            markDirty()
+                        }}
+                        slotProps={{
+                            input: {
+                                startAdornment: <InputAdornment position="start">
+                                    $
+                                </InputAdornment>
+                            }
+                        }}
+                    />
+                </div>
+
+                <div style={vertical ? {} : { width: "50%" }}>
+                    <TextField type="number" label='Character Count' fullWidth
+                        style={vertical ? {} : { marginLeft: "10px" }} value={charCount}
+                        onChange={(e) => {
+                            setCharCount(new Number(e.target.value) as number)
+                            markDirty()
+                        }}
+                    />
+                </div>
             </div>
         </div >
 
@@ -723,7 +745,7 @@ function ArtistInformation(props: {
     </>
 }
 
-function PublishingInformation(props: {
+export function PublishingInformation(props: {
     postTags: string,
     publishTs?: string,
     postDescription: string,

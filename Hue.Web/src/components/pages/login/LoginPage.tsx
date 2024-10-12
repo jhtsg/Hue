@@ -9,6 +9,7 @@ import ApiAlert from "../../shared/ApiAlert";
 import RegisterRequest from "../../../model/requests/auth/RegisterRequest";
 import LoginRequest from "../../../model/requests/auth/LoginRequest";
 import LoadingBackdrop from "../../shared/LoadingBackdrop";
+import { usePingPong } from "../../hooks/usePingPong";
 
 export default function LoginPage() {
 
@@ -19,6 +20,7 @@ export default function LoginPage() {
         <div style={vertical ? {} : { display: "flex", flexDirection: "row-reverse" }}>
             <div style={{ width: vertical ? "100%" : "500px" }}>
                 <LoginPanel />
+                {!vertical && <Footer />}
             </div>
             <div style={vertical ? { marginTop: "20px" } : { flex: "1", marginRight: "20px" }}>
                 <Card>
@@ -28,16 +30,38 @@ export default function LoginPage() {
                     </CardContent>
                 </Card>
             </div>
+            {vertical && <Footer />}
         </div>
 
         <LoadingBackdrop loading={loading} />
     </>
 }
 
+function Footer() {
+
+    const { pong } = usePingPong();
+
+
+    return <div style={{ textAlign: 'center', fontSize: ".75em", color: '#999', marginTop: "20px" }}>
+        <div>(C)2024 TheSlimeGuy, No Rights Reserved</div>
+        <hr />
+        <div style={{ display: "flex", marginTop: "10px" }}>
+            <div style={{ width: "50%" }}>
+                <div>Server running since</div>
+                <div>{new Date(pong?.startupTime ?? 0).toLocaleString()}</div>
+            </div>
+            <div style={{ width: "50%" }}>
+                <div>Last ping pong game took</div>
+                <div>{(new Date(pong?.pongTime ?? 0).getTime() - new Date(pong?.pingTime ?? 0).getTime()) / 1000} seconds</div>
+            </div>
+
+        </div>
+    </div>
+}
+
 function LoginPanel() {
     const [value, setValue] = useState(0);
     const { enqueueSnackbar } = useSnackbar();
-
 
     const { refreshAuth } = useUser();
     const loginApi = useApi(login);

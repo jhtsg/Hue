@@ -1,4 +1,4 @@
-import { Card, CardActionArea, Divider, Menu, MenuItem } from "@mui/material"
+import { Card, CardActionArea, Divider, ListItemIcon, ListItemText, Menu, MenuItem } from "@mui/material"
 import Commission from "../../../../model/commission/Commission"
 import Character from "../../../../model/character/Character"
 
@@ -8,11 +8,17 @@ import ColorPill from "../../../shared/ColorPill";
 import CommissionTag from "../../../../model/commission/CommissionTag";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { commHeaderImage } from "../../../../api/Comm";
+import { commHeaderImage, updateCommission } from "../../../../api/Comm";
 import { CommissionStatus } from "../../../../model/commission/CommissionEnums";
 import SafeAvatar from "../../../shared/SafeAvatar";
 import { characterImage } from "../../../../api/Char";
 import { artistImage } from "../../../../api/Artist";
+import useApi from "../../../hooks/useApi";
+import { useSnackbar } from "notistack";
+import { useRefresh } from "../../../hooks/useRefresh";
+import { REFRESH_ALL_COLUMNS } from "../../../contexts/RefreshContext";
+import TransitionModal from "./TransitionModal/TransitionModal";
+import { Archive, ArrowBack, ArrowForward } from "@mui/icons-material";
 
 //An individual commission card
 export default function CommCard(props: {
@@ -20,11 +26,17 @@ export default function CommCard(props: {
     noContextMenu?: boolean
 }) {
 
-    const { commission } = props
+    const { commission, noContextMenu } = props
     const nav = useNavigate()
+    const { enqueueSnackbar } = useSnackbar();
     const [imageError, setImageError] = useState(false)
 
+    const updateCommApi = useApi(updateCommission)
+    const { refresh } = useRefresh(REFRESH_ALL_COLUMNS);
+
     const color = commission?.characters?.[0]?.color ?? "#999999"
+
+    const [transitionComm, setTransitionComm] = useState(false)
 
     const [contextMenu, setContextMenu] = useState(undefined as {
         mouseX: number;
@@ -58,12 +70,76 @@ export default function CommCard(props: {
         setContextMenu(undefined);
     };
 
+    const handleArchive = () => {
+        handleClose();
+
+        const val = { ...commission }
+        val.status = -1
+        val.startTs = val.startTs ? val.startTs.endsWith("Z") ? val.startTs : val.startTs + "Z" : undefined
+        val.doneTs = val.doneTs ? val.doneTs.endsWith("Z") ? val.doneTs : val.doneTs + "Z" : undefined
+        val.publishTs = val.publishTs ? val.publishTs.endsWith("Z") ? val.publishTs : val.publishTs + "Z" : undefined
+
+        enqueueSnackbar("Moving...", { variant: 'info' })
+
+        updateCommApi.fetch(() => {
+            enqueueSnackbar("Commission archived!", { variant: 'success' })
+            refresh();
+        }, () => {
+            enqueueSnackbar("Could not archive!", { variant: 'error' })
+        }, val);
+    }
+
+    const handleAdvanceState = () => {
+        handleClose();
+
+        const val = { ...commission }
+        val.status = commission.status + 1
+        val.startTs = val.startTs ? val.startTs.endsWith("Z") ? val.startTs : val.startTs + "Z" : undefined
+        val.doneTs = val.doneTs ? val.doneTs.endsWith("Z") ? val.doneTs : val.doneTs + "Z" : undefined
+        val.publishTs = val.publishTs ? val.publishTs.endsWith("Z") ? val.publishTs : val.publishTs + "Z" : undefined
+
+
+        if (commission.status === -1) {
+            enqueueSnackbar("Moving...", { variant: 'info' })
+            updateCommApi.fetch(() => {
+                enqueueSnackbar("Commission Moved!", { variant: 'success' })
+                refresh();
+            }, () => {
+                enqueueSnackbar("Could not archive!", { variant: 'error' })
+            }, { ...commission, status: 0 } as Commission);
+        } else {
+            setTransitionComm(true)
+        }
+
+    }
+
+    const handleRollbackState = () => {
+        handleClose();
+
+        const val = { ...commission }
+        val.status = commission.status - 1
+        val.startTs = val.startTs ? val.startTs.endsWith("Z") ? val.startTs : val.startTs + "Z" : undefined
+        val.doneTs = val.doneTs ? val.doneTs.endsWith("Z") ? val.doneTs : val.doneTs + "Z" : undefined
+        val.publishTs = val.publishTs ? val.publishTs.endsWith("Z") ? val.publishTs : val.publishTs + "Z" : undefined
+
+
+        enqueueSnackbar("Moving...", { variant: 'info' })
+
+        updateCommApi.fetch(() => {
+            enqueueSnackbar("Commission moved!", { variant: 'success' })
+            refresh();
+
+        }, () => {
+            enqueueSnackbar("Could not move!", { variant: 'error' })
+        }, val);
+    }
+
     const anyMetadata = commission.artist || commission.charCount > 0 || commission.price > 0 || commission.characters.length > 0
 
 
     return <>
         <Card elevation={10} style={{ margin: "10px" }}>
-            <CardActionArea onClick={() => nav(`/commissions/${commission.id}`)} onContextMenu={handleContextMenu}>
+            <CardActionArea onClick={() => nav(`/commissions/${commission.id}`)} onContextMenu={noContextMenu ? undefined : handleContextMenu}>
                 <div style={{
                     paddingBottom: imageError ? "15%" : "25%",
                     display: "block",
@@ -84,9 +160,15 @@ export default function CommCard(props: {
                 </div>
                 <div style={{ padding: "15px", fontSize: "1.1em" }}>
                     <div><b>{commission.name}</b></div>
-                    <div style={{ fontSize: ".75em" }}>
-                        <DateRow startDate={commission.startTs} doneDate={commission.doneTs} />
+                    <div style={{ fontSize: ".75em", display: "flex" }}>
+                        <div style={{ flex: "1", alignContent: "center" }}>
+                            <DateRow startDate={commission.startTs} doneDate={commission.doneTs} />
+                        </div>
+                        {noContextMenu && <div style={{ marginRight: "-5px", width: "100px" }}>
+                            <ColorPill color="#444444">{CommissionStatus[commission.status]}</ColorPill>
+                        </div>}
                     </div>
+
                     {anyMetadata && <>
                         <hr />
                         <CharRow characters={commission.characters} />
@@ -101,6 +183,8 @@ export default function CommCard(props: {
             </CardActionArea>
         </Card>
 
+        <TransitionModal comm={commission} open={transitionComm} setOpen={setTransitionComm} />
+
         <Menu
             open={!!contextMenu}
             onClose={handleClose}
@@ -111,10 +195,21 @@ export default function CommCard(props: {
                     : undefined
             }
         >
-            {commission.status !== 0 && <MenuItem onClick={handleClose}>Move to {CommissionStatus[commission.status - 1]}</MenuItem>}
-            {commission.status !== CommissionStatus.length - 1 && <MenuItem onClick={handleClose}>Move to {CommissionStatus[commission.status + 1]}</MenuItem>}
-            <Divider />
-            <MenuItem onClick={handleClose}>Archive</MenuItem>
+            {commission.status !== CommissionStatus.length - 1 && <MenuItem onClick={handleAdvanceState}>
+                <ListItemIcon><ArrowForward /></ListItemIcon>
+                <ListItemText primary={`Move to ${CommissionStatus[commission.status + 1]}`} />
+            </MenuItem>}
+            {commission.status > 0 && <MenuItem onClick={handleRollbackState} >
+                <ListItemIcon><ArrowBack /></ListItemIcon>
+                <ListItemText primary={`Move to ${CommissionStatus[commission.status - 1]}`} />
+            </MenuItem>}
+            {commission.status !== -1 && <>
+                <Divider />
+                <MenuItem onClick={handleArchive}>
+                    <ListItemIcon><Archive /></ListItemIcon>
+                    <ListItemText primary='Archive' />
+                </MenuItem>
+            </>}
         </Menu>
     </>
 }
