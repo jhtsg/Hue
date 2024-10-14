@@ -10,7 +10,7 @@ import RegisterRequest from "../../../model/requests/auth/RegisterRequest";
 import LoginRequest from "../../../model/requests/auth/LoginRequest";
 import LoadingBackdrop from "../../shared/LoadingBackdrop";
 import { usePingPong } from "../../hooks/usePingPong";
-import WelcomePane from "./subcomponents/welcomePane";
+import WelcomePane from "./subcomponents/WelcomePane";
 
 
 export default function LoginPage() {
