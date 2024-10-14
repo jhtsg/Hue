@@ -1,4 +1,4 @@
-import { Button, Card, CardContent, CardHeader, Checkbox, CircularProgress, FormControlLabel, FormGroup, Tab, Tabs, TextField } from "@mui/material";
+import { Button, Card, Checkbox, CircularProgress, FormControlLabel, FormGroup, Tab, Tabs, TextField } from "@mui/material";
 import { useWindowDimensions } from "../../hooks/useWindowDimensions"
 import { useUser } from "../../hooks/useUser";
 import { useState } from "react";
@@ -10,10 +10,12 @@ import RegisterRequest from "../../../model/requests/auth/RegisterRequest";
 import LoginRequest from "../../../model/requests/auth/LoginRequest";
 import LoadingBackdrop from "../../shared/LoadingBackdrop";
 import { usePingPong } from "../../hooks/usePingPong";
+import WelcomePane from "./subcomponents/welcomePane";
+
 
 export default function LoginPage() {
 
-    const { vertical } = useWindowDimensions();
+    const { vertical, maxComponentHeight } = useWindowDimensions();
     const { loading } = useUser();
 
     return <>
@@ -22,13 +24,11 @@ export default function LoginPage() {
                 <LoginPanel />
                 {!vertical && <Footer />}
             </div>
-            <div style={vertical ? { marginTop: "20px" } : { flex: "1", marginRight: "20px" }}>
-                <Card>
-                    <CardHeader title="Welcome to HUE" />
-                    <CardContent>
-                        Ding dong
-                    </CardContent>
-                </Card>
+            <div style={vertical
+                ? { marginTop: "20px" }
+                : { flex: "1", marginRight: "20px", maxHeight: maxComponentHeight + 20, overflowY: "auto" }}
+            >
+                <WelcomePane />
             </div>
             {vertical && <Footer />}
         </div>
@@ -43,7 +43,15 @@ function Footer() {
 
 
     return <div style={{ textAlign: 'center', fontSize: ".75em", color: '#999', marginTop: "20px" }}>
-        <div>(C)2024 TheSlimeGuy, No Rights Reserved</div>
+        <div style={{ display: "flex", justifyContent: "center", alignItems: "center", textAlign: "left", marginBottom: "20px" }}>
+            <img src="/tsg.png" width={64} style={{ marginRight: "20px" }} />
+            <div>
+                <div>(C)2024 TheSlimeGuy</div>
+                <div>No Rights Reserved</div>
+            </div>
+
+        </div>
+
         <hr />
         <div style={{ display: "flex", marginTop: "10px" }}>
             <div style={{ width: "50%" }}>

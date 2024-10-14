@@ -1,7 +1,7 @@
 import { useState } from "react";
 import useApi from "../../hooks/useApi";
 import { getCharacters } from "../../../api/Char";
-import { Button, Dialog } from "@mui/material";
+import { Dialog, Fab, Tooltip } from "@mui/material";
 import { Add } from "@mui/icons-material";
 import ApiAlert from "../../shared/ApiAlert";
 import LoadingBackdrop from "../../shared/LoadingBackdrop";
@@ -21,7 +21,6 @@ export default function CharsPage(props: {
     return <>
         <div style={{ display: "flex", alignItems: "end" }}>
             <div style={{ fontSize: "1.7em", flex: "1" }}>Characters</div>
-            <div><Button variant="contained" onClick={() => setNewOpen(true)} startIcon={<Add />}>New</Button></div>
         </div>
         <hr />
         <ApiAlert result={artistsApi.error} style={{ marginBottom: "20px" }} />
@@ -30,6 +29,14 @@ export default function CharsPage(props: {
                 props.onSelect?.(a)
             } : undefined} />)}
         </div>
+
+        <Tooltip title="Create a new Character">
+            <Fab color="primary" style={{ position: "fixed", bottom: "20px", right: "20px" }}
+                onClick={() => setNewOpen(true)} >
+                <Add />
+            </Fab>
+        </Tooltip>
+
 
         <LoadingBackdrop loading={artistsApi.loading} />
 

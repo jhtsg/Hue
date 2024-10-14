@@ -1,4 +1,4 @@
-import { Button, Dialog } from "@mui/material"
+import { Dialog, Fab, Tooltip } from "@mui/material"
 import { getArtists } from "../../../api/Artist"
 import useApi from "../../hooks/useApi"
 import ApiAlert from "../../shared/ApiAlert"
@@ -23,8 +23,7 @@ export default function ArtistsPage(props: {
 
     return <>
         <div style={{ display: "flex", alignItems: "end" }}>
-            <div style={{ fontSize: "1.7em", flex: "1" }}>{Artist ? "Clients" : "Artist"}</div>
-            <div><Button variant="contained" onClick={() => setNewOpen(true)} startIcon={<Add />}>New</Button></div>
+            <div style={{ fontSize: "1.7em", flex: "1" }}>{artist ? "Clients" : "Artist"}</div>
         </div>
         <hr />
         <ApiAlert result={artistsApi.error} style={{ marginBottom: "20px" }} />
@@ -33,6 +32,13 @@ export default function ArtistsPage(props: {
                 props.onSelect?.(a)
             } : undefined} />)}
         </div>
+
+        <Tooltip title={`Create a new ${artist ? 'client' : 'artist'}`}>
+            <Fab color="primary" style={{ position: "fixed", bottom: "20px", right: "20px" }}
+                onClick={() => setNewOpen(true)} >
+                <Add />
+            </Fab>
+        </Tooltip>
 
         <LoadingBackdrop loading={artistsApi.loading} />
 

@@ -1,5 +1,5 @@
 import { Add, Archive, Download } from "@mui/icons-material";
-import { Button, Dialog, Drawer, Fab, Tab, Tabs } from "@mui/material"
+import { Button, Dialog, Drawer, Fab, Tab, Tabs, Tooltip } from "@mui/material"
 import { useState } from "react"
 import CommBoard from "./subcomponents/CommBoard/Board";
 import { useSearchParams } from "react-router-dom";
@@ -45,7 +45,7 @@ export default function CommsPage() {
                 </Tabs>
             </div>
             <div><Button variant="outlined" onClick={() => setArchived(true)} startIcon={<Archive />} style={{ marginRight: "20px" }}>Archived</Button></div>
-            <div><Button variant="contained" onClick={() => setNewOpen(true)} startIcon={<Add />}>New</Button></div>
+            <div><Button variant="contained" onClick={() => window.open(API_PREFIX + "comm/export?year=" + year)} startIcon={<Download />}>Export</Button></div>
         </div>
         <hr />
 
@@ -57,10 +57,12 @@ export default function CommsPage() {
             <CommBoard year={year} />
         </div>
 
-        <Fab variant="extended" color="primary" style={{ position: "fixed", bottom: "20px", right: "20px" }}
-            onClick={() => window.open(API_PREFIX + "comm/export?year=" + year)} >
-            <Download style={{ marginRight: "5px" }} />Export to TSV
-        </Fab>
+        <Tooltip title="Create a new commission">
+            <Fab color="primary" style={{ position: "fixed", bottom: "20px", right: "20px" }}
+                onClick={() => setNewOpen(true)} >
+                <Add />
+            </Fab>
+        </Tooltip>
 
         <Dialog open={newOpen} onClose={() => setNewOpen(false)} maxWidth="lg" fullWidth>
             <div style={{ padding: 20 }}>

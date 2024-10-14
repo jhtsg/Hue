@@ -17,14 +17,13 @@ export default function CharPage() {
         </div>
         <hr />
 
-        <div style={{ maxWidth: "800px", margin: "20px auto 0 auto", display: "flex" }}>
-            <div style={{ flex: "1", paddingRight: "20px" }}>
-                <Card elevation={5}>
-                    <CardContent>
-                        <CharacterPane editable id={new Number(id) as number} />
-                    </CardContent>
-                </Card>
-            </div>
+        <div style={{ maxWidth: "800px", margin: "20px auto 0 auto" }}>
+            <Card elevation={5}>
+                <CardContent>
+                    <CharacterPane editable id={new Number(id) as number} />
+                </CardContent>
+            </Card>
+
         </div>
 
         <CharsStatisticPane id={Number(id)} />
