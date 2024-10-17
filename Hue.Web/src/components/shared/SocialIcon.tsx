@@ -19,6 +19,8 @@ export default function SocialIcon(props: {
                 return "reddit"
             case host.includes('furaffinity'):
                 return "fa"
+            case host.includes('instagram'):
+                return "instagram"
             default:
                 return "globe"
         }
