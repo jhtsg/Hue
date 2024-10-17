@@ -1,6 +1,7 @@
 export default class Social {
     public site: string = ''
     public username: string = ''
+    public url: string = '';
 
     public static fromUrl(url: string): Social {
 
@@ -11,12 +12,14 @@ export default class Social {
 
             return {
                 site: u.host,
-                username: segments[segments.length - 1]
+                username: segments[segments.length - 1],
+                url: url,
             } as Social;
         } catch {
             return {
                 site: "",
-                username: ""
+                username: "",
+                url: '',
             } as Social
         }
 

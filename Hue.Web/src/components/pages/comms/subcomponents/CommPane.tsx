@@ -1,4 +1,4 @@
-import { Alert, Button, CircularProgress, Dialog, DialogContent, FormControl, IconButton, InputAdornment, InputLabel, Menu, MenuItem, Select, TextField, Tooltip, Typography } from "@mui/material"
+import { Alert, Box, Button, CircularProgress, Dialog, DialogContent, FormControl, IconButton, InputAdornment, InputLabel, Menu, MenuItem, Select, TextField, Tooltip, Typography } from "@mui/material"
 import useApi from "../../../hooks/useApi"
 import useUpload from "../../../hooks/useUpload"
 import { CSSProperties, useEffect, useRef, useState } from "react"
@@ -765,6 +765,8 @@ export function PublishingInformation(props: {
 }) {
 
     const { markDirty, postDescription, postTags, publishTs, postUrl, setPostDescription, setPostTags, setPublishTs, setPostUrl, vertical } = props
+    const social = Social.fromUrl(postUrl);
+
 
     return <>
         <div style={vertical ? {} : { display: "flex" }}>
@@ -809,8 +811,12 @@ export function PublishingInformation(props: {
                 }} fullWidth
                 slotProps={{
                     input: {
-                        startAdornment: <InputAdornment position="start">
-                            <SocialIcon social={Social.fromUrl(postUrl)} size={25} />
+                        startAdornment: <InputAdornment position="start" style={{ cursor: social.url.length > 0 ? "pointer" : "" }}>
+                            <Box height={'100%'} display={'flex'} onClick={() => {
+                                if (social.url.length > 0) {
+                                    window.open(social.url)
+                                }
+                            }}><SocialIcon social={social} size={25} /></Box>
                         </InputAdornment>
                     }
                 }}
