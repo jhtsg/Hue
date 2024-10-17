@@ -24,6 +24,9 @@ namespace Hue.Common.Commission
         /// <summary>Body for the Post once posted to Twitter, Itaku, or Furaffinity</summary>
         public string PostDescription { get; set; } = "";
 
+        /// <summary>Main URL where the commission was posted to</summary>
+        public string PostUrl { get; set; } = "";
+
         /// <summary>Days its taken to complete this piece. 0 if the piece hasn't finished yet</summary>
         public int? DaysToComplete => StartTs == null ? null
             : DoneTs == null

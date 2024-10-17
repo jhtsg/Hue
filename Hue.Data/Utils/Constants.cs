@@ -42,6 +42,7 @@
         public static readonly string COMM_CHAR_CNT = "comm_char_cnt";
         public static readonly string COMM_POST_TAGS_TX = "comm_post_tags_tx";
         public static readonly string COMM_POST_DESC_TX = "comm_post_desc_tx";
+        public static readonly string COMM_POST_URL_TX = "comm_post_url_tx";
         public static readonly string COMM_STATUS_CD = "comm_status_cd";
         public static readonly string COMM_TYPE_CD = "comm_type_cd";
         public static readonly string COMM_HEADER_IMG_BYTES = "comm_header_img_bytes";

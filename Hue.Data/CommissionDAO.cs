@@ -29,7 +29,7 @@ namespace Hue.Data
             var CreateCommSql = InsertSql(
                 columns : [
                     COMM_NM, COMM_DESC_TX, COMM_PRICE_NB, COMM_CHAR_CNT, COMM_POST_TAGS_TX,
-                    COMM_POST_DESC_TX, COMM_STATUS_CD, COMM_TYPE_CD, 
+                    COMM_POST_DESC_TX, COMM_POST_URL_TX, COMM_STATUS_CD, COMM_TYPE_CD, 
                     CRE_TS, START_DT, DONE_DT, PBLSH_DT,
                     ARTIST_ID, USER_NM
                 ],
@@ -49,6 +49,7 @@ namespace Hue.Data
                 
                 cmd.SetString(COMM_POST_TAGS_TX , comm.PostTags);
                 cmd.SetString(COMM_POST_DESC_TX, comm.PostDescription);
+                cmd.SetString(COMM_POST_URL_TX, comm.PostUrl);
 
                 cmd.SetDate(START_DT, comm.StartTs);
                 cmd.SetDate(DONE_DT, comm.DoneTs);
@@ -97,6 +98,7 @@ namespace Hue.Data
                 CharCount = reader.GetInt(COMM_CHAR_CNT),
                 PostTags = reader.GetString(COMM_POST_TAGS_TX),
                 PostDescription = reader.GetString(COMM_POST_DESC_TX),
+                PostUrl = reader.GetString(COMM_POST_URL_TX),
 
                 Status = (CommissionStatus)reader.GetInt(COMM_STATUS_CD),
                 Type = (CommissionType)reader.GetInt(COMM_TYPE_CD),
@@ -128,7 +130,7 @@ namespace Hue.Data
                 columns: [
                     COMM_ID, COMM_NM, COMM_DESC_TX,
                     COMM_PRICE_NB, COMM_CHAR_CNT,
-                    COMM_POST_TAGS_TX, COMM_POST_DESC_TX,
+                    COMM_POST_TAGS_TX, COMM_POST_DESC_TX, COMM_POST_URL_TX,
                     COMM_STATUS_CD, COMM_TYPE_CD,
                     CRE_TS, UPDT_TS, START_DT, DONE_DT, PBLSH_DT,
                     "C."+ARTIST_ID, ARTIST_NM, ARTIST_COMM_SHEET_TX, ARTIST_SOCIAL_TX
@@ -212,7 +214,7 @@ namespace Hue.Data
                 columns: [
                     COMM_ID, COMM_NM, COMM_DESC_TX,
                     COMM_PRICE_NB, COMM_CHAR_CNT,
-                    COMM_POST_TAGS_TX, COMM_POST_DESC_TX,
+                    COMM_POST_TAGS_TX, COMM_POST_DESC_TX, COMM_POST_URL_TX,
                     COMM_STATUS_CD, COMM_TYPE_CD,
                     CRE_TS, UPDT_TS, START_DT, DONE_DT, PBLSH_DT,
                     "C."+ARTIST_ID, ARTIST_NM, ARTIST_COMM_SHEET_TX, ARTIST_SOCIAL_TX
@@ -338,7 +340,7 @@ namespace Hue.Data
 
             var CreateCommSql = UpdateSql(
                 columns: [
-                    COMM_NM, COMM_DESC_TX, COMM_PRICE_NB, COMM_CHAR_CNT, COMM_POST_TAGS_TX,
+                    COMM_NM, COMM_DESC_TX, COMM_PRICE_NB, COMM_CHAR_CNT, COMM_POST_TAGS_TX, COMM_POST_URL_TX,
                     COMM_POST_DESC_TX, COMM_STATUS_CD, COMM_TYPE_CD, UPDT_TS, START_DT, DONE_DT, PBLSH_DT, ARTIST_ID
                 ],
                 setValues: new Dictionary<string, string> { 
@@ -357,7 +359,8 @@ namespace Hue.Data
                 
                 cmd.SetString(COMM_POST_TAGS_TX, comm.PostTags);
                 cmd.SetString(COMM_POST_DESC_TX, comm.PostDescription);
-                
+                cmd.SetString(COMM_POST_URL_TX, comm.PostUrl);
+
                 cmd.SetInt(COMM_STATUS_CD, (int)comm.Status);
                 cmd.SetInt(COMM_TYPE_CD, (int)comm.Type);
 

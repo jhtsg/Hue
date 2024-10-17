@@ -10,6 +10,7 @@ export default class Commission extends Identifiable {
     public charCount: number = 0;
     public postTags: string = "";
     public postDescription: string = "";
+    public postUrl: string = ""
     public daysToComplete?: number
     public status: number = 0;
     public type: number = 0;

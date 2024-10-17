@@ -60,6 +60,7 @@ CREATE TABLE hue.comm (
 	comm_char_cnt INT4 NULL,
 	comm_post_tags_tx TEXT NULL,
 	comm_post_desc_tx TEXT NULL,
+	comm_post_url_tx varchar(512) null,
 	comm_status_cd INT4 NULL,
 	comm_type_cd INT4 NULL,
 	cre_ts TIMESTAMP(6) NOT NULL,

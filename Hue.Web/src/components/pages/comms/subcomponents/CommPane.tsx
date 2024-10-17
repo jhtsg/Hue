@@ -31,6 +31,8 @@ import ArtistsPage from "../../artists/ArtistsPage"
 import AreYouSureModal from "../../../shared/modals/AreYouSureModal"
 import CharacterSelector from "../../chars/subcomponents/CharacterSelector"
 import { useUser } from "../../../hooks/useUser"
+import Social from "../../../../model/Social"
+import SocialIcon from "../../../shared/SocialIcon"
 
 
 export default function CommPane(props: {
@@ -56,6 +58,7 @@ export default function CommPane(props: {
     const [description, setDescription] = useState("")
     const [postTags, setPostTags] = useState("")
     const [postDescription, setPostDescription] = useState("")
+    const [postUrl, setPostUrl] = useState("")
     const [charCount, setCharCount] = useState(0);
     const [price, setPrice] = useState(0);
     const [status, setStatus] = useState(0);
@@ -100,6 +103,7 @@ export default function CommPane(props: {
 
         setPostTags("")
         setPostDescription("")
+        setPostUrl("")
 
         setCharCount(0)
         setPrice(0)
@@ -133,6 +137,7 @@ export default function CommPane(props: {
 
         setPostTags(comm.postTags)
         setPostDescription(comm.postDescription)
+        setPostUrl(comm.postUrl)
 
         setCharCount(comm.charCount)
         setPrice(comm.price)
@@ -171,6 +176,7 @@ export default function CommPane(props: {
 
             postTags: postTags,
             postDescription: postDescription,
+            postUrl: postUrl,
 
             charCount: charCount,
             price: price,
@@ -197,6 +203,7 @@ export default function CommPane(props: {
 
             postTags: postTags,
             postDescription: postDescription,
+            postUrl: postUrl,
 
             charCount: charCount,
             price: price,
@@ -302,6 +309,7 @@ export default function CommPane(props: {
 
                     <PublishingInformation markDirty={markDirty}
                         postDescription={postDescription} setPostDescription={setPostDescription}
+                        postUrl={postUrl} setPostUrl={setPostUrl}
                         postTags={postTags} setPostTags={setPostTags}
                         publishTs={publishTs} setPublishTs={setPublishTs}
                         vertical={vertical}
@@ -358,7 +366,7 @@ export default function CommPane(props: {
                     }
                     {
                         !create && <Button fullWidth variant="contained" color="secondary" onClick={() => { setDeleteOpen(true) }}
-                            style={{ marginTop: "10px", marginBottom: "25px" }}>
+                            style={{ marginTop: "10px", marginBottom: "12px" }}>
                             Delete Commission
                         </Button>
                     }
@@ -747,14 +755,16 @@ export function PublishingInformation(props: {
     postTags: string,
     publishTs?: string,
     postDescription: string,
+    postUrl: string,
     setPostTags: (val: string) => void,
     setPublishTs: (val: string) => void,
     setPostDescription: (val: string) => void,
+    setPostUrl: (val: string) => void,
     markDirty: () => void
     vertical?: boolean
 }) {
 
-    const { markDirty, postDescription, postTags, publishTs, setPostDescription, setPostTags, setPublishTs, vertical } = props
+    const { markDirty, postDescription, postTags, publishTs, postUrl, setPostDescription, setPostTags, setPublishTs, setPostUrl, vertical } = props
 
     return <>
         <div style={vertical ? {} : { display: "flex" }}>
@@ -789,6 +799,23 @@ export function PublishingInformation(props: {
                 setPostDescription(e.target.value)
                 markDirty();
             }} />
+
+
+        <div style={{ marginTop: '20px' }}>
+            <TextField label="Post URL" value={postUrl}
+                onChange={(e) => {
+                    setPostUrl(e.target.value)
+                    markDirty();
+                }} fullWidth
+                slotProps={{
+                    input: {
+                        startAdornment: <InputAdornment position="start">
+                            <SocialIcon social={Social.fromUrl(postUrl)} size={25} />
+                        </InputAdornment>
+                    }
+                }}
+            />
+        </div>
 
     </>
 }

@@ -19,6 +19,7 @@ export default function PublishedTransitionBody(props: {
     const [name, setName] = useState("")
     const [postTags, setPostTags] = useState("")
     const [postDescription, setPostDescription] = useState("")
+    const [postUrl, setPostUrl] = useState("")
     const [publishTs, setPublishTs] = useState("")
 
     const [dirty, setDirty] = useState(false);
@@ -28,6 +29,7 @@ export default function PublishedTransitionBody(props: {
         setName(comm.name)
         setPostTags(comm.postTags)
         setPostDescription(comm.postDescription)
+        setPostUrl(comm.postUrl)
         setPublishTs(comm.publishTs ? dateFromBackend(comm.publishTs) : dateFromBackend(new Date().toLocaleDateString()))
         setDirty(false)
     }, [comm])
@@ -40,6 +42,7 @@ export default function PublishedTransitionBody(props: {
                 name: name,
                 postTags: postTags,
                 postDescription: postDescription,
+                postUrl: postUrl,
                 publishTs: publishTs
             })
         }
@@ -58,6 +61,7 @@ export default function PublishedTransitionBody(props: {
                 postDescription={postDescription} setPostDescription={setPostDescription}
                 postTags={postTags} setPostTags={setPostTags}
                 publishTs={publishTs} setPublishTs={setPublishTs}
+                postUrl={postUrl} setPostUrl={setPostUrl}
             />
         </DialogContent>
         <DialogActions>
