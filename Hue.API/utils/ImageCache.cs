@@ -16,6 +16,7 @@ namespace Hue.API.utils {
 
 
         public ImageDownload? AddToCache(string key, ImageDownload? imageData) {
+            if (imageData == null) return imageData;
             _cache.Set(key, imageData, _policy);
             return imageData;
         }
