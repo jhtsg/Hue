@@ -27,9 +27,12 @@ export default function CommColumn(props: {
     const comms = useCommissions(filter)
 
     useEffect(() => {
-        setFilter({
+        setFilter(year ? {
             Page: 0,
             year: year,
+            CommissionStatus: code
+        } as CommissionFilterOptions : {
+            Page: 0,
             CommissionStatus: code
         } as CommissionFilterOptions)
     }, [year])
@@ -43,7 +46,7 @@ export default function CommColumn(props: {
             <div style={{ padding: "20px 20px 10px 20px", fontSize: "1.1em", background: "gray" }}>
                 <b>{title} ({comms.count ?? '...'})</b>
             </div>
-            <div style={{ height: fullHeight ? height - 60 : height - 240, overflowY: "auto" }}>
+            <div style={{ height: fullHeight ? height - 60 : height - 245, overflowY: "auto" }}>
                 {comms.loading && comms.comms.length === 0 ? <div style={{
                     height: "100%",
                     width: "32px", margin: "0 auto",

@@ -18,7 +18,7 @@ export default function CommsPage() {
 
     const yearFromParams = Number(searchParams.get("year"))
     const { refresh } = useRefresh(REFRESH_SPECIFIC_COLUMN_PREFIX + "0")
-    const { width } = useWindowDimensions()
+    const { width, vertical } = useWindowDimensions()
 
     //We will not support commissions from before the 80s and after the 31st century
     const year = yearFromParams > 1980 && yearFromParams < 3000 ? yearFromParams : new Date().getFullYear();
@@ -34,7 +34,7 @@ export default function CommsPage() {
 
     return <>
         <div style={{ display: "flex", alignItems: "end" }}>
-            <div style={{ flex: "1", maxWidth: `${width - 280}px`, marginRight: "20px" }}>
+            <div style={{ flex: "1", maxWidth: `${width - (vertical ? 186 : 280)}px`, marginRight: "20px" }}>
                 <Tabs value={year} onChange={(_, newval) => { setYear(newval) }}
                     variant="scrollable"
                 >
@@ -44,8 +44,9 @@ export default function CommsPage() {
                     }
                 </Tabs>
             </div>
-            <div><Button variant="outlined" onClick={() => setArchived(true)} startIcon={<Archive />} style={{ marginRight: "20px" }}>Archived</Button></div>
-            <div><Button variant="contained" onClick={() => window.open(API_PREFIX + "comm/export?year=" + year)} startIcon={<Download />}>Export</Button></div>
+
+            <Button variant="outlined" onClick={() => setArchived(true)} startIcon={vertical ? undefined : <Archive />} style={{ marginRight: "20px" }}>{vertical ? <Archive /> : 'Archived'}</Button>
+            <Button variant="contained" onClick={() => window.open(API_PREFIX + "comm/export?year=" + year)} startIcon={vertical ? undefined : <Download />}>{vertical ? <Download /> : 'Export'}</Button>
         </div>
         <hr />
 
