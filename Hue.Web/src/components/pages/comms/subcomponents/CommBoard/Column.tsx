@@ -1,6 +1,6 @@
 import { Button, Card, CircularProgress } from "@mui/material"
 import { useWindowDimensions } from "../../../../hooks/useWindowDimensions"
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import CommissionFilterOptions from "../../../../../model/commission/CommissionFilterOptions";
 import { useRefresh } from "../../../../hooks/useRefresh";
 import { REFRESH_ALL_COLUMNS, REFRESH_SPECIFIC_COLUMN_PREFIX } from "../../../../contexts/RefreshContext";
@@ -18,17 +18,25 @@ export default function CommColumn(props: {
     const { height } = useWindowDimensions();
     const { flag: AllColumnsFlag } = useRefresh(REFRESH_ALL_COLUMNS)
     const { flag: StatusColumnsFlag } = useRefresh(REFRESH_SPECIFIC_COLUMN_PREFIX + `${code}`)
-
-    const comms = useCommissions(year ? {
+    const [filter, setFilter] = useState({
         Page: 0,
         year: year,
         CommissionStatus: code
-    } as CommissionFilterOptions : {
-        Page: 0,
-        CommissionStatus: code
     } as CommissionFilterOptions)
 
-    useEffect(comms.refresh, [AllColumnsFlag, StatusColumnsFlag, year])
+    const comms = useCommissions(filter)
+
+    useEffect(() => {
+        setFilter({
+            Page: 0,
+            year: year,
+            CommissionStatus: code
+        } as CommissionFilterOptions)
+    }, [year])
+
+    useEffect(() => {
+        comms.refresh()
+    }, [AllColumnsFlag, StatusColumnsFlag])
 
     return <div style={{ minWidth: "300px", maxWidth: "300px", marginRight: fullHeight ? undefined : "20px", paddingBottom: fullHeight ? undefined : "20px" }}>
         <Card >
