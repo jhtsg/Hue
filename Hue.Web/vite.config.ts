@@ -11,6 +11,7 @@ export default defineConfig({
       short_name: 'Hue',
       description: "Hue is your new home for commission management, planning, and tracking. See where your commissions stand in one easy board. Track the artists you've worked with, their works, and their prices. See your characters and how much you've commissioned for them. All in one place!",
       theme_color: '#5BA56A',
+      background_color: "#000000",
       icons: [
         {
           src: 'icon192.png',
