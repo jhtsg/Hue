@@ -39,7 +39,12 @@ export default function StatusBarChartPane(props: {
                     { data: publishedAxis, label: 'Published', color: '#292', stack: "SpendingStack" }
                 ]}
                 xAxis={[{
-                    data: xAxis, scaleType: 'band', valueFormatter: (val) => Months[val - 1]
+                    data: xAxis, scaleType: 'band', valueFormatter: (val) => Months[val - 1],
+                    tickLabelStyle: {
+                        angle: -25,
+                        textAnchor: 'end',
+                        fontSize: '.66em'
+                    },
                 }]}
             /> : <Skeleton width={500} height={300} />}
         </CardContent>

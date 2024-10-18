@@ -3,14 +3,16 @@ import { Autocomplete, Box, CircularProgress, debounce, InputAdornment, TextFiel
 import useApi from "../../hooks/useApi";
 import { artistImage, getArtists } from "../../../api/Artist";
 import { characterImage, getCharacters } from "../../../api/Char";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import SafeAvatar from "../../shared/SafeAvatar";
 import { commHeaderImage } from "../../../api/Comm";
 import { useNavigate } from "react-router-dom";
 import { useCommissions } from "../../hooks/useCommissions";
 import CommissionFilterOptions from "../../../model/commission/CommissionFilterOptions";
 
-export default function GlobalSearchBar() {
+export default function GlobalSearchBar(props: {
+    onExit?: () => void
+}) {
 
     class SearchResult {
         public type: 'Artists' | 'Characters' | 'Commissions' = 'Artists'
@@ -19,8 +21,9 @@ export default function GlobalSearchBar() {
         public id: number = 0
     }
 
+    const { onExit } = props
 
-
+    const inputRef = useRef(null);
     const [query, setQuery] = useState("")
     const [commissionFilter, setCommissionFilter] = useState(undefined as CommissionFilterOptions | undefined)
 
@@ -29,6 +32,12 @@ export default function GlobalSearchBar() {
     const characterApi = useApi(getCharacters)
     const commissionsApi = useCommissions(commissionFilter)
     const nav = useNavigate();
+
+    useEffect(() => {
+        if (inputRef.current) {
+            (inputRef.current as any).focus();
+        }
+    }, [])
 
     const onOpen = () => {
         if (!artistApi.data && !artistApi.loading) {
@@ -41,17 +50,14 @@ export default function GlobalSearchBar() {
 
     const onInputChange = (value: string) => {
         setQuery(value)
-        console.log("Resetting!")
         commissionsApi.reset()
         if (value.length !== 0) {
-            console.log("There could be commissions out there!")
             setCommissionDebounce(true)
             handleSearch(value)
         }
     }
 
     const handleSearch = useCallback(debounce((value: string) => {
-        console.log("Looking!!")
         setCommissionFilter({ Page: 0, Query: value })
         setCommissionDebounce(false)
     }, 1000), [])
@@ -153,6 +159,8 @@ export default function GlobalSearchBar() {
         }}
         renderInput={(params: any) =>
             <TextField {...params}
+                onBlur={onExit}
+                inputRef={inputRef}
                 placeholder="Search" variant="outlined"
                 slotProps={{
                     input: {

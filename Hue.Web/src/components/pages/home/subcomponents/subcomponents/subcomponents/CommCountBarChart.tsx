@@ -29,6 +29,11 @@ export default function CommCountBarChart(props: {
                 ]}
                 xAxis={[{
                     data: xAxis, scaleType: 'band',
+                    tickLabelStyle: {
+                        angle: -25,
+                        textAnchor: 'end',
+                        fontSize: '.66em'
+                    },
                     colorMap: {
                         type: 'ordinal',
                         values: xAxis,

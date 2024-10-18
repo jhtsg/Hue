@@ -29,7 +29,12 @@ export default function PriceCatBarChartPane(props: {
                     { data: lgAxis, label: 'Large (>80)', color: '#922', stack: "PriceStack" },
                 ]}
                 xAxis={[{
-                    data: xAxis, scaleType: 'band', valueFormatter: (val) => Months[val - 1]
+                    data: xAxis, scaleType: 'band', valueFormatter: (val) => Months[val - 1],
+                    tickLabelStyle: {
+                        angle: -25,
+                        textAnchor: 'end',
+                        fontSize: '.66em'
+                    },
                 }]}
             /> : <Skeleton width={500} height={300} />}
         </CardContent>

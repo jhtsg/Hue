@@ -20,6 +20,7 @@ export default function CommSpentBarChartPane(props: {
         <CardHeader title={title} />
         <CardContent>
             {statistics ? <BarChart
+                title="AGAIn"
                 height={300}
                 slotProps={{
                     legend: { hidden: true },
@@ -29,6 +30,11 @@ export default function CommSpentBarChartPane(props: {
                 ]}
                 xAxis={[{
                     data: xAxis, scaleType: 'band',
+                    tickLabelStyle: {
+                        angle: -25,
+                        textAnchor: 'end',
+                        fontSize: '.66em'
+                    },
                     colorMap: {
                         type: 'ordinal',
                         values: xAxis,
