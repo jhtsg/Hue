@@ -6,7 +6,7 @@ import CommCard from "./CommCard"
 
 export default function CommsDisplay(props: {
     style?: React.CSSProperties
-    filter: CommissionFilterOptions
+    filter?: CommissionFilterOptions
 }) {
 
     const { filter, style } = props

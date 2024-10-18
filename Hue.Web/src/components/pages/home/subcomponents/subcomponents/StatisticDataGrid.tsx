@@ -9,9 +9,10 @@ export default function StatisticDataGrid(props: {
     statistics: Statistic[]
     statisticType: 'ARTIST' | 'CHARACTER' | 'TAG'
     pageSize?: number
+    onClick?: (id: Statistic) => void
 }) {
 
-    const { statisticType, statistics, pageSize } = props
+    const { statisticType, statistics, pageSize, onClick } = props
 
     const nav = useNavigate();
 
@@ -47,6 +48,13 @@ export default function StatisticDataGrid(props: {
         initialState={{ pagination: { paginationModel: { pageSize: pageSize ?? 5 } } }}
         pageSizeOptions={[pageSize ?? 5]}
         onCellClick={(cell) => {
+
+            if (onClick) {
+                console.log(cell)
+                onClick(cell.row as Statistic);
+                return;
+            }
+
             if (statisticType === 'CHARACTER') {
                 navToCharacter(cell.id as number)
             }
