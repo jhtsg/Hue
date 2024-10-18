@@ -148,13 +148,7 @@ namespace Hue.Data
 
             return await adoTemplate.Query(sql, (cmd) => {
                 cmd.SetString(USER_NM, username);
-                
-                if (filter.ArtistId != null) {cmd.SetInt(ARTIST_ID, filter.ArtistId);}
-                if (filter.CommissionStatus != null) {cmd.SetInt(COMM_STATUS_CD,(int)filter.CommissionStatus);}
-                if (filter.Year != null) { cmd.SetInt(COMM_YEAR_NB, filter.Year); }
-                if (filter.CharacterId != null) { cmd.SetInt(CHAR_ID, filter.CharacterId); }
-                if (filter.CommissionTagId != null) { cmd.SetInt(COMM_TAG_ID, filter.CommissionTagId); }
-
+                CommissionFilterApplier(filter, cmd);
             }, CommissionRm);
 
         }
@@ -171,21 +165,14 @@ namespace Hue.Data
 
             return await adoTemplate.QuerySingle(sql, (cmd) => {
                 cmd.SetString(USER_NM, username);
-
-                if (filter.ArtistId != null) { cmd.SetInt(ARTIST_ID, filter.ArtistId); }
-                if (filter.CommissionStatus != null) { cmd.SetInt(COMM_STATUS_CD, (int)filter.CommissionStatus); }
-                if (filter.Year != null) { cmd.SetInt(COMM_YEAR_NB, filter.Year); }
-                if (filter.CharacterId != null) { cmd.SetInt(CHAR_ID, filter.CharacterId); }
-                if (filter.CommissionTagId != null) { cmd.SetInt(COMM_TAG_ID, filter.CommissionTagId); }
-
+                CommissionFilterApplier(filter, cmd);
             }, (reader) => reader.GetInt(0));
 
         }
 
         private static List<WhereCondition> CommissionFilterOptionsToWhereConditions(CommissionFilterOptions filter) {
             List<WhereCondition> conditions = [
-                new("c."+USER_NM, WhereConditionOperator.EQUALS,$"@{USER_NM}"),
-                //new JoinCondition("C","A",ARTIST_ID)
+                new("c."+USER_NM, WhereConditionOperator.EQUALS,$"@{USER_NM}")
             ];
 
             if (filter.ArtistId != null) {
@@ -205,7 +192,25 @@ namespace Hue.Data
                 ));
             }
 
+            if (filter.Query?.Trim().Length > 0) {
+                conditions.Add(new WhereConditionSubgroup(new(WhereConditionUnion.OR,[
+                    new(COMM_NM, WhereConditionOperator.ILIKE, "@QUERY"),
+                    new(COMM_DESC_TX, WhereConditionOperator.ILIKE, "@QUERY"),
+                    new(COMM_POST_TAGS_TX, WhereConditionOperator.ILIKE, "@QUERY"),
+                    new(COMM_POST_DESC_TX, WhereConditionOperator.ILIKE, "@QUERY")
+                ])));
+            }
+
             return conditions;
+        }
+
+        private static void CommissionFilterApplier(CommissionFilterOptions filter, Setter cmd) {
+            if (filter.ArtistId != null) { cmd.SetInt(ARTIST_ID, filter.ArtistId); }
+            if (filter.CommissionStatus != null) { cmd.SetInt(COMM_STATUS_CD, (int)filter.CommissionStatus); }
+            if (filter.Year != null) { cmd.SetInt(COMM_YEAR_NB, filter.Year); }
+            if (filter.CharacterId != null) { cmd.SetInt(CHAR_ID, filter.CharacterId); }
+            if (filter.CommissionTagId != null) { cmd.SetInt(COMM_TAG_ID, filter.CommissionTagId); }
+            if (filter.Query?.Trim().Length > 0) { cmd.SetString("QUERY", $"%{filter.Query}%"); }
         }
 
         public async Task<Commission?> Get(string username, int id) {

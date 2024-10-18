@@ -2,7 +2,7 @@
     public class SqlBuilder {
 
         public enum WhereConditionOperator {
-            EQUALS, GREATER_THAN, LESS_THAN, GREATER_OR_EQUAL, LESS_OR_EQUAL, IN, NOT_EQUALS, NOT_IN
+            EQUALS, GREATER_THAN, LESS_THAN, GREATER_OR_EQUAL, LESS_OR_EQUAL, IN, NOT_EQUALS, NOT_IN, LIKE, ILIKE, NOT_LIKE, NOT_ILIKE
         };
 
         public enum WhereConditionUnion {
@@ -22,6 +22,12 @@
                     WhereConditionUnion.OR => " OR ",
                     _ => ""
                 }, conditions.Select(a => a.ToString()));
+            }
+        }
+
+        public class WhereConditionSubgroup(WhereConditionGroup group) : WhereCondition("") {
+            public override string ToString() {
+                return "(" + group.ToString() + ")";
             }
         }
 
@@ -45,6 +51,10 @@
                 WhereConditionOperator.LESS_OR_EQUAL => "<=",
                 WhereConditionOperator.IN => "IN",
                 WhereConditionOperator.NOT_IN => "NOT IN",
+                WhereConditionOperator.ILIKE => "ILIKE",
+                WhereConditionOperator.NOT_ILIKE => "NOT ILIKE",
+                WhereConditionOperator.LIKE => "LIKE",
+                WhereConditionOperator.NOT_LIKE => "NOT LIKE",
                 _ => throw new NotImplementedException(),
             }} {value}";
 
