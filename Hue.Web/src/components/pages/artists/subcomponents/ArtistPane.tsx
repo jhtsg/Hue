@@ -11,6 +11,7 @@ import SocialIcon from "../../../shared/SocialIcon"
 import Social from "../../../../model/Social"
 import { useSnackbar } from "notistack"
 import { useUser } from "../../../hooks/useUser"
+import { useWindowDimensions } from "../../../hooks/useWindowDimensions"
 
 export default function ArtistPane(props: {
     create?: boolean,
@@ -26,6 +27,9 @@ export default function ArtistPane(props: {
     const { enqueueSnackbar } = useSnackbar();
     const { user } = useUser();
     const artist = user?.isArtist
+
+    const { width } = useWindowDimensions();
+    const ultraVertical = width < 500
 
     const [editMode, setEditMode] = useState(create)
     const [name, setName] = useState("")
@@ -146,14 +150,14 @@ export default function ArtistPane(props: {
         <ApiAlert result={updateArtistApi.error} style={{ marginBottom: "20px" }} />
         <ApiAlert result={createArtistApi.error} style={{ marginBottom: "20px" }} />
         <ApiAlert result={updateArtistProfileApi.error} style={{ marginBottom: "20px" }} />
-        <div style={{ width: "100%", display: "flex" }}>
-            <div style={{ marginRight: "20px", textAlign: 'center' }}>
+        <div style={{ width: "100%", display: "flex", flexDirection: ultraVertical ? 'column' : undefined }}>
+            <div style={ultraVertical ? { textAlign: 'center', margin: "0px auto 20px auto" } : { marginRight: "20px", textAlign: 'center' }}>
                 <SafeAvatar size={128} src={
                     selectedFile ? selectedFileUrl : artistImage(id ?? 0)
                 } text={"?"} />
                 {editMode && <Button style={{ marginTop: "10px" }} onClick={() => { (fileInputRef?.current as any)?.click(); }}>Change</Button>}
             </div>
-            <div style={{ flex: "1", display: "flex", flexDirection: "column" }}>
+            <div style={{ flex: "1", display: "flex", flexDirection: "column", margin: ultraVertical && !editMode ? "0 auto" : undefined }}>
                 <div style={{ flex: "1" }}>
                     {editMode ? <>
                         <div style={{ marginBottom: "20px" }}>

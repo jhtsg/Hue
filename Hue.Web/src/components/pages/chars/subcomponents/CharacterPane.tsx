@@ -28,6 +28,7 @@ export default function CharacterPane(props: {
     const { enqueueSnackbar } = useSnackbar();
     const { width } = useWindowDimensions();
     const vertical = width < 700
+    const ultraVertical = width < 500
 
     const [editMode, setEditMode] = useState(create)
 
@@ -206,8 +207,8 @@ export default function CharacterPane(props: {
         <ApiAlert result={createCharacterApi.error} style={{ marginBottom: "20px" }} />
         <ApiAlert result={updateCharacterProfileApi.error} style={{ marginBottom: "20px" }} />
 
-        <div style={{ width: "100%", display: "flex" }}>
-            <div style={{ marginRight: "20px", textAlign: 'center' }}>
+        <div style={{ width: "100%", display: "flex", flexDirection: ultraVertical ? 'column' : undefined }}>
+            <div style={ultraVertical ? { width: "128", margin: "0px auto 20px auto", textAlign: "center" } : { marginRight: "20px", textAlign: 'center' }}>
                 <SafeAvatar size={128} src={
                     selectedFile ? selectedFileUrl : characterImage(id ?? 0)
                 } text={"?"} />
