@@ -34,7 +34,7 @@ export default function CharsPage(props: {
                     }} />
                 </div>
                 <div>
-                    <Button variant="contained" startIcon={vertical ? undefined : <Add />}>
+                    <Button variant="contained" onClick={() => setNewOpen(true)} startIcon={vertical ? undefined : <Add />}>
                         {vertical ? <Add /> : 'New Character'}
                     </Button>
                 </div>

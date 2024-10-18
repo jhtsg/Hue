@@ -38,7 +38,7 @@ export default function ArtistsPage(props: {
                     }} />
                 </div>
                 <div>
-                    <Button variant="contained" startIcon={vertical ? undefined : <Add />}>
+                    <Button onClick={() => setNewOpen(true)} variant="contained" startIcon={vertical ? undefined : <Add />}>
                         {vertical ? <Add /> : 'New Artist'}
                     </Button>
                 </div>
