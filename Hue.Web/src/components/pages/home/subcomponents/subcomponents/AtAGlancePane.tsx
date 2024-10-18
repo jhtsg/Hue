@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { getGlance } from "../../../../../api/Statistics";
 import useApi from "../../../../hooks/useApi";
 import { useWindowDimensions } from "../../../../hooks/useWindowDimensions";
-import { Card, CardContent } from "@mui/material";
+import { Card, CardContent, Skeleton } from "@mui/material";
 import AtAGlance from "../../../../../model/statistics/AtAGlance";
 import { useUser } from "../../../../hooks/useUser";
 
@@ -37,29 +37,27 @@ function TotalCard(props: {
     const { user } = useUser();
     const artist = user?.isArtist
 
-    if (!glance) return <></>
-
     return <Card><CardContent>
         <div style={vertical ? {} : { display: "flex" }}>
             <table style={vertical ? undefined : { width: "50%" }}>
                 <tr>
                     <td style={{ width: "50%", paddingRight: "20px" }}><b>Total Started Commissions</b></td>
-                    <td>{glance.totalComms?.toLocaleString() ?? 0}</td>
+                    <td>{!glance ? <Skeleton variant="text" /> : glance.totalComms?.toLocaleString() ?? 0}</td>
                 </tr>
                 <tr>
                     <td style={{ width: "50%", paddingRight: "20px" }}><b>Total {artist ? "Earned" : "Spent"}</b></td>
-                    <td>${glance.totalSpent?.toLocaleString() ?? 0}</td>
+                    <td>{!glance ? <Skeleton variant="text" /> : '$' + (glance.totalSpent?.toLocaleString() ?? 0)}</td>
                 </tr>
             </table>
             {vertical && <hr />}
             <table style={vertical ? undefined : { width: "50%" }}>
                 <tr>
                     <td style={{ width: "50%", paddingRight: "20px" }}><b>Total Pending Commissions</b></td>
-                    <td>{glance.totalYetToComm?.toLocaleString() ?? 0}</td>
+                    <td>{!glance ? <Skeleton variant="text" /> : glance.totalYetToComm?.toLocaleString() ?? 0}</td>
                 </tr>
                 <tr>
                     <td style={{ width: "50%", paddingRight: "20px" }}><b>Total Potential {artist ? "Earnings" : "Spend"}</b></td>
-                    <td>${glance.totalYetToSpend?.toLocaleString() ?? 0}</td>
+                    <td>{!glance ? <Skeleton variant="text" /> : '$' + (glance.totalYetToSpend?.toLocaleString() ?? 0)}</td>
                 </tr>
             </table>
         </div>
@@ -79,29 +77,27 @@ function AverageCard(props: {
     const { user } = useUser();
     const artist = user?.isArtist
 
-    if (!glance) return <></>
-
     return <Card><CardContent>
         <div style={vertical ? undefined : { display: "flex" }}>
             <table style={vertical ? undefined : { width: "50%" }}>
                 <tr>
                     <td style={{ width: "50%", paddingRight: "20px" }}><b>Avg. Commission Price</b></td>
-                    <td>${glance.averagePrice?.toFixed(2) ?? 0}</td>
+                    <td>{!glance ? <Skeleton variant="text" /> : '$' + (glance.averagePrice?.toFixed(2) ?? 0)}</td>
                 </tr>
                 <tr>
                     <td style={{ width: "50%", paddingRight: "20px" }}><b>Avg. days to Completion</b></td>
-                    <td>{glance.totalSpent?.toFixed(2) ?? 0}</td>
+                    <td>{!glance ? <Skeleton variant="text" /> : glance.totalSpent?.toFixed(2) ?? 0}</td>
                 </tr>
             </table>
             {vertical && <hr />}
             <table style={vertical ? undefined : { width: "50%" }}>
                 <tr>
                     <td style={{ width: "50%", paddingRight: "20px" }}><b>Avg. Monthly {artist ? "Earning" : "Spending"}</b></td>
-                    <td>${glance.averageSpentPerMonth?.toFixed(2) ?? 0}</td>
+                    <td>{!glance ? <Skeleton variant="text" /> : '$' + (glance.averageSpentPerMonth?.toFixed(2) ?? 0)}</td>
                 </tr>
                 <tr>
                     <td style={{ width: "50%", paddingRight: "20px" }}><b>Avg. Commissions per Month</b></td>
-                    <td>{glance.averageCommsPerMonth?.toFixed(2) ?? 0}</td>
+                    <td>{!glance ? <Skeleton variant="text" /> : glance.averageCommsPerMonth?.toFixed(2) ?? 0}</td>
                 </tr>
             </table>
         </div>

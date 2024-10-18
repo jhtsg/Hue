@@ -5,10 +5,11 @@ import { useTheme } from "@emotion/react";
 
 export default function CommSpentBarChartPane(props: {
     statistics?: Statistic[],
-    title: string
+    title: string,
+    loading: boolean,
 }) {
 
-    const { statistics, title } = props;
+    const { statistics, title, loading } = props;
     const theme = useTheme() as any
 
     statistics?.sort((a, b) => b.spent - a.spent)
@@ -19,7 +20,7 @@ export default function CommSpentBarChartPane(props: {
     return <Card>
         <CardHeader title={title} />
         <CardContent>
-            {statistics ? <BarChart
+            {statistics ? <BarChart loading={loading}
                 title="AGAIn"
                 height={300}
                 slotProps={{

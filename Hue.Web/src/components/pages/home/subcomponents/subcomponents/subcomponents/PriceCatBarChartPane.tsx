@@ -6,9 +6,10 @@ import { Months } from "../../../../../../model/Months";
 export default function PriceCatBarChartPane(props: {
     priceCats?: MonthlyPriceCat[],
     title: string
+    loading: boolean,
 }) {
 
-    const { priceCats, title } = props;
+    const { priceCats, title, loading } = props;
 
     const xAxis = priceCats?.map(a => a.month)
     const smAxis = priceCats?.map(a => a.small)
@@ -18,7 +19,7 @@ export default function PriceCatBarChartPane(props: {
     return <Card>
         <CardHeader title={title} />
         <CardContent>
-            {priceCats ? <BarChart
+            {priceCats ? <BarChart loading={loading}
                 height={300}
                 slotProps={{
                     legend: { hidden: true },

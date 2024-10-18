@@ -5,10 +5,11 @@ import { PieChart, PieValueType } from "@mui/x-charts";
 export default function CommCountPieChartPane(props: {
     statistics?: Statistic[]
     title: string
-    statisticType: 'ARTIST' | 'CHARACTER' | 'TAG'
+    statisticType: 'ARTIST' | 'CHARACTER' | 'TAG',
+    loading: boolean
 }) {
 
-    const { statistics, title } = props;
+    const { statistics, title, loading } = props;
 
     statistics?.sort((a, b) => b.count - a.count)
 
@@ -30,7 +31,7 @@ export default function CommCountPieChartPane(props: {
         <CardHeader title={title} />
         <CardContent>
             {data ? <div style={{ display: "flex" }}>
-                <PieChart
+                <PieChart loading={loading}
                     height={300}
                     slotProps={{
                         legend: { hidden: true },

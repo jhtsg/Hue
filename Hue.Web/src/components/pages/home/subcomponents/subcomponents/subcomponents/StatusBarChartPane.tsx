@@ -5,10 +5,11 @@ import { Months } from '../../../../../../model/Months'
 
 export default function StatusBarChartPane(props: {
     statuses?: MonthlyStatus[],
-    title: string
+    title: string,
+    loading: boolean
 }) {
 
-    const { statuses: priceCats, title } = props;
+    const { statuses: priceCats, title, loading } = props;
 
     const xAxis = priceCats?.map(a => a.month)
 
@@ -23,7 +24,7 @@ export default function StatusBarChartPane(props: {
     return <Card>
         <CardHeader title={title} />
         <CardContent>
-            {priceCats ? <BarChart
+            {priceCats ? <BarChart loading={loading}
                 height={300}
                 slotProps={{
                     legend: { hidden: true },

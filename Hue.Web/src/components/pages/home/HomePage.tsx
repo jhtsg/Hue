@@ -3,11 +3,14 @@ import useApi from "../../hooks/useApi"
 import { getCommissionYears } from "../../../api/Comm"
 import { useState } from "react"
 import StatisticsPane from "./subcomponents/StatisticPane"
+import { useWindowDimensions } from "../../hooks/useWindowDimensions"
 
 export default function HomePage() {
 
     const [year, setYear] = useState(-1)
     const yearsApi = useApi(getCommissionYears, true)
+
+    const { maxComponentHeight } = useWindowDimensions();
 
     return <>
         <Tabs value={year} onChange={(_, newval) => { setYear(newval) }}
@@ -18,7 +21,7 @@ export default function HomePage() {
         </Tabs>
         <hr />
 
-        <div style={{ marginBottom: "40px" }}>
+        <div style={{ height: maxComponentHeight - 50, overflowY: 'auto' }}>
             <StatisticsPane year={year} />
         </div>
 

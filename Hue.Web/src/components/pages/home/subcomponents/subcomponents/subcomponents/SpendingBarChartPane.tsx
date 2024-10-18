@@ -5,10 +5,11 @@ import { Months } from "../../../../../../model/Months";
 
 export default function SpendingBarChartPane(props: {
     spending?: MonthlySpend[],
-    title: string
+    title: string,
+    loading: boolean
 }) {
 
-    const { spending: priceCats, title } = props;
+    const { spending: priceCats, title, loading } = props;
 
     const xAxis = priceCats?.map(a => a.month)
     const committedAxis = priceCats?.map(a => a.confirmed)
@@ -18,6 +19,7 @@ export default function SpendingBarChartPane(props: {
         <CardHeader title={title} />
         <CardContent>
             {priceCats ? <BarChart
+                loading={loading}
                 height={300}
                 slotProps={{
                     legend: { hidden: true },

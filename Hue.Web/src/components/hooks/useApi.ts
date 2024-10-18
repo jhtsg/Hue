@@ -41,13 +41,59 @@ export class Api<T> {
 
 class ApiResponse {
     public constructor(
-        public data :any,
+        public data: any,
         public ok: boolean,
-        public status:number
-    ){}
+        public status: number
+    ) { }
+}
+
+class ApiOptions {
+    /**
+     * Whether or not to maintain the data when fetching
+     */
+    public maintainData?: boolean = false
+
+    /**
+     * Whether or not to maintain the error when fetching
+     */
+    public maintainError?: boolean = false
 }
 
 export default function useApi<T>(
+
+    /**API function to use */
+    apiFunc: (
+        setLoading: (value: boolean) => void,
+        setItem: (value?: T) => void,
+        onError: (value?: any) => void,
+        ...args: any
+    ) => void,
+
+    /** Whether or not to fetch when the component is mounted */
+    fetchOnStart?: boolean,
+
+    /** Callback function that'll occur on ONLY fetchOnStart success */
+    fetchOnStartOnSuccess?: (
+        /** Data retrieved from the API */
+        val?: T
+    ) => void,
+
+    /** Callback function that'll occur on ONLY fetchOnStart error */
+    fetchOnStartOnError?: (
+        /** Error return from the API */
+        val: any
+    ) => void,
+
+    /** Arguments for the fetchOnStart */
+    ...fetchOnStartArgs: any
+
+) {
+    return useOptionedApi({} as ApiOptions, apiFunc, fetchOnStart, fetchOnStartOnSuccess, fetchOnStartOnError, ...fetchOnStartArgs)
+}
+
+export function useOptionedApi<T>(
+
+    options: ApiOptions,
 
     /**API function to use */
     apiFunc: (
@@ -90,12 +136,13 @@ export default function useApi<T>(
         onError?: (val?: any) => void,
         ...args: any
     ) => {
-        resetData()
-        resetError()
+        if (!options.maintainData) { resetData() }
+        if (!options.maintainError) { resetError() }
+
         apiFunc(setLoading,
             onSuccess
                 ? (val?: T) => { onSuccess(val); setData(val ?? undefined as any) }
-                : (val?: T) => { setData(val ?? undefined as any)},
+                : (val?: T) => { setData(val ?? undefined as any) },
             onError ? (val: any) => {
                 setError(val)
                 if (val !== undefined) {
@@ -122,17 +169,17 @@ export function generateSimpleApi<T>(
     body?: any,
 ) {
 
-    const init = generateInit(method,body)
+    const init = generateInit(method, body)
 
     const apiFunc = (
         setLoading: (value: boolean) => void,
         setItem: (value: T) => void,
         onError: (value?: any) => void
-    ) =>{
-        fetch(url,init)
+    ) => {
+        fetch(url, init)
             .then(handleResponse)
-            .then((data:ApiResponse)=>handleData(data,setLoading,setItem,onError))
-            .catch(()=>handleError)
+            .then((data: ApiResponse) => handleData(data, setLoading, setItem, onError))
+            .catch(() => handleError)
 
     }
 
@@ -140,7 +187,7 @@ export function generateSimpleApi<T>(
 }
 
 export function generateApi<T>(
-    argsFunc: (...args : any) => {url : string, body? : any},
+    argsFunc: (...args: any) => { url: string, body?: any },
     method: "GET" | "POST" | "PUT" | "DELETE" = "GET",
 ) {
 
@@ -148,41 +195,41 @@ export function generateApi<T>(
         setLoading: (value: boolean) => void,
         setItem: (value: T) => void,
         onError: (value?: any) => void,
-        ...args : any
-    ) =>{
+        ...args: any
+    ) => {
 
-        const {url,body} = argsFunc(...args);
-        const init = generateInit(method,body)
+        const { url, body } = argsFunc(...args);
+        const init = generateInit(method, body)
 
-        fetch(url,init)
+        fetch(url, init)
             .then(handleResponse)
-            .then((data:ApiResponse)=>handleData(data,setLoading,setItem,onError))
-            .catch(()=>handleError)
+            .then((data: ApiResponse) => handleData(data, setLoading, setItem, onError))
+            .catch(() => handleError)
     }
 
     return apiFunc;
 }
 
 function handleError(
-    error : any, 
-    setLoading: (value: boolean) => void, 
+    error: any,
+    setLoading: (value: boolean) => void,
     onError: (value?: any) => void
-){
+) {
     onError(error);
     setLoading(false);
 
 }
 
 function handleData<T>(
-    response: ApiResponse, 
+    response: ApiResponse,
     setLoading: (value: boolean) => void,
     setItem: (value: T) => void,
     onError: (value?: any) => void
-){
+) {
 
-    if(!response.ok){
+    if (!response.ok) {
         console.error(response)
-        onError(response.data ?? new Error(`API responded with ${response.status}`))            
+        onError(response.data ?? new Error(`API responded with ${response.status}`))
     } else {
         setItem(response.data as T)
     }
@@ -190,13 +237,13 @@ function handleData<T>(
     setLoading(false)
 }
 
-async function handleResponse<T>(response:Response){
-    try{
+async function handleResponse<T>(response: Response) {
+    try {
         const data = (await response.json()) as T
-        return new ApiResponse(data,response.ok,response.status)
-    } catch{
+        return new ApiResponse(data, response.ok, response.status)
+    } catch {
         console.error("Could not parse response as JSON!")
-        return new ApiResponse(undefined, response.ok,response.status)
+        return new ApiResponse(undefined, response.ok, response.status)
     }
 }
 
@@ -204,12 +251,13 @@ function generateInit(
     method: "GET" | "POST" | "PUT" | "DELETE" = "GET",
     body?: any
 ): RequestInit | undefined {
-    if(method==="GET") return undefined
-    let init = {method:method} as RequestInit
-    if(body){
-        init = {...init,
-            headers:{'Content-Type':'application/json'},
-            body:JSON.stringify(body)
-         }
+    if (method === "GET") return undefined
+    let init = { method: method } as RequestInit
+    if (body) {
+        init = {
+            ...init,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
+        }
     }
 }

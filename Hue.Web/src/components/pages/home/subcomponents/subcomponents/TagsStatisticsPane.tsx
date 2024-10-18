@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { getTagStatistics } from "../../../../../api/Statistics";
-import useApi from "../../../../hooks/useApi";
+import { useOptionedApi } from "../../../../hooks/useApi";
 import { useWindowDimensions } from "../../../../hooks/useWindowDimensions";
 import CommSpentBarChartPane from "./subcomponents/CommSpentBarChartPane";
 import CommCountBarChart from "./subcomponents/CommCountBarChart";
@@ -23,7 +23,7 @@ export default function TagsStatisticsPane(props: {
     const [statistic, setStatistic] = useState(undefined as Statistic | undefined)
     const [filter, setFilter] = useState(undefined as CommissionFilterOptions | undefined)
 
-    const statsApi = useApi(getTagStatistics)
+    const statsApi = useOptionedApi({ maintainData: true }, getTagStatistics)
     const { user } = useUser();
     const artist = user?.isArtist
 
@@ -45,15 +45,15 @@ export default function TagsStatisticsPane(props: {
 
         <div style={vertical ? {} : { display: "flex" }}>
             <div style={vertical ? { marginBottom: "20px" } : { flex: "1", marginRight: "10px" }}>
-                <CommSpentBarChartPane title={artist ? "Earned from Tags" : "Spent on Tags"} statistics={statsApi.data} />
+                <CommSpentBarChartPane title={artist ? "Earned from Tags" : "Spent on Tags"} statistics={statsApi.data} loading={statsApi.loading} />
             </div>
             <div style={vertical ? { marginBottom: "20px" } : { flex: "1", marginLeft: "10px", marginRight: "10px" }}>
-                <CommCountBarChart title="Commissions with Tags" statistics={statsApi.data} />
+                <CommCountBarChart title="Commissions with Tags" statistics={statsApi.data} loading={statsApi.loading} />
             </div>
             <Card style={vertical ? { marginBottom: "20px" } : { flex: "1", marginLeft: "10px" }}>
                 <CardHeader title="Tags" />
                 <CardContent>
-                    <StatisticDataGrid statisticType="TAG" statistics={statsApi.data} pageSize={3} onClick={handleClick} />
+                    <StatisticDataGrid statisticType="TAG" statistics={statsApi.data} pageSize={3} onClick={handleClick} loading={statsApi.loading} />
                 </CardContent>
             </Card>
             <CommissionModal open={tagOpen} setOpen={setTagOpen} filter={filter}>

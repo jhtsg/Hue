@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { getCharacterStatistics } from "../../../../../api/Statistics";
-import useApi from "../../../../hooks/useApi";
+import { useOptionedApi } from "../../../../hooks/useApi";
 import CommCountPieChartPane from "./subcomponents/CommCountPieChartPane";
 import CommSpentBarChartPane from "./subcomponents/CommSpentBarChartPane";
 import StatisticDataGrid from "./StatisticDataGrid";
@@ -13,7 +13,7 @@ export default function CharactersStatisticsPane(props: {
 
     const { year } = props;
 
-    const statsApi = useApi(getCharacterStatistics)
+    const statsApi = useOptionedApi({ maintainData: true }, getCharacterStatistics)
     const { user } = useUser();
     const artist = user?.isArtist
 
@@ -23,16 +23,16 @@ export default function CharactersStatisticsPane(props: {
 
     return <div>
         <div style={{ marginBottom: "20px" }}>
-            <CommCountPieChartPane statistics={statsApi.data} title="Commissions with Character" statisticType="CHARACTER" />
+            <CommCountPieChartPane statistics={statsApi.data} title="Commissions with Character" statisticType="CHARACTER" loading={statsApi.loading} />
         </div>
         <div>
-            <CommSpentBarChartPane statistics={statsApi.data} title={artist ? "Earned from Characters" : "Spent on Characters"} />
+            <CommSpentBarChartPane statistics={statsApi.data} title={artist ? "Earned from Characters" : "Spent on Characters"} loading={statsApi.loading} />
         </div>
         <div>
             <Card style={{ marginTop: "20px" }} >
                 <CardHeader title="Characters" />
                 <CardContent>
-                    <StatisticDataGrid statistics={statsApi.data} statisticType="CHARACTER" />
+                    <StatisticDataGrid statistics={statsApi.data} statisticType="CHARACTER" loading={statsApi.loading} />
                 </CardContent>
             </Card>
         </div>
