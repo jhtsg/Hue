@@ -77,7 +77,7 @@ export default function CommPane(props: {
 
     const [deleteOpen, setDeleteOpen] = useState(false)
 
-    const commApi = useApi(getCommission, !!id, undefined, undefined, id)
+    const commApi = useApi(getCommission)
 
     const updateCommApi = useApi(updateCommission);
     const createCommApi = useApi(createCommission)
@@ -89,6 +89,10 @@ export default function CommPane(props: {
     const refreshComm = () => {
         commApi.fetch(undefined, undefined, id)
     }
+
+    useEffect(() => {
+        if (id) { refreshComm() }
+    }, [id])
 
     useEffect(() => {
         setName("")
@@ -419,12 +423,13 @@ function CoverHeader(props: {
     const { id, color, selectedFileUrl, setSelectedFile, setSelectedFileUrl, setDirty } = props
 
     useEffect(() => {
+        setImageError(false)
         const img = new Image();
         img.src = commHeaderImage(id ?? 0)
         img.onerror = () => {
             setImageError(true)
         }
-    }, [])
+    }, [id])
 
     const fileInputRef = useRef(null);
 

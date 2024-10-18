@@ -4,6 +4,7 @@ import { useState } from "react"
 import { useUser } from "../hooks/useUser"
 import BurgerMenu from "./subcomponents/BurgerMenu"
 import { UserButton } from "./subcomponents/UserButton"
+import GlobalSearchBar from "./subcomponents/GlobalSearchBar"
 
 export default function Navbar() {
 
@@ -13,14 +14,24 @@ export default function Navbar() {
     return <>
         <AppBar color={"primary"} enableColorOnDark>
             <Toolbar>
-                <div style={{ display: "flex", width: "100%", alignContent: "center", alignItems: "center", justifyContent: "center" }}>
-                    {user && <IconButton onClick={() => { setMenuOpen(true) }} style={{ marginRight: "15px" }}>
-                        <MenuIcon />
-                    </IconButton>}
-                    <div style={{ flex: "1" }}>
+                <div style={{ display: "flex", width: "100%", alignContent: "center", alignItems: "center", justifyContent: "space-between" }}>
+
+                    {/* Left Side */}
+                    <div style={{ display: 'flex', alignContent: 'center', alignItems: 'center' }}>
+                        {user && <IconButton onClick={() => { setMenuOpen(true) }} style={{ marginRight: "15px" }}>
+                            <MenuIcon />
+                        </IconButton>}
                         <img src={"/logo.png"} alt="Hue logo" height="50" />
                     </div>
-                    <UserButton />
+
+                    {/* Right side */}
+                    <div style={{ display: 'flex', alignContent: 'center', alignItems: 'center' }}>
+                        <div style={{ width: "400px" }}>
+                            <GlobalSearchBar />
+                        </div>
+                        <UserButton />
+                    </div>
+
                 </div>
             </Toolbar>
         </AppBar>

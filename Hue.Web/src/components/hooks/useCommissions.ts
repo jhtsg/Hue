@@ -5,7 +5,7 @@ import useApi from "./useApi";
 import Commission from "../../model/commission/Commission";
 
 
-export const useCommissions = (filter: CommissionFilterOptions) => {
+export const useCommissions = (filter: CommissionFilterOptions | undefined) => {
 
     const [comms, setComms] = useState([] as Commission[])
     const [page, setPage] = useState(0)
@@ -14,6 +14,7 @@ export const useCommissions = (filter: CommissionFilterOptions) => {
     const countApi = useApi(getCommissionsCount)
 
     const refresh = () => {
+        if (!filter) return;
         setComms([])
         setPage(0);
         countApi.fetch(undefined, undefined, filter)
@@ -33,11 +34,17 @@ export const useCommissions = (filter: CommissionFilterOptions) => {
 
     }
 
-    useEffect(refresh, [])
+    const reset = () => {
+        setComms([])
+        commsApi.resetData();
+        countApi.resetData();
+    }
+
+    useEffect(refresh, [filter])
 
 
 
 
-    return { comms, hasMore, showMore: () => showMore(), refresh, loading: commsApi.loading || countApi.loading, count: countApi.data?.count };
+    return { comms, hasMore, showMore: () => showMore(), refresh, loading: commsApi.loading || countApi.loading, count: countApi.data?.count, reset: reset };
 
 }

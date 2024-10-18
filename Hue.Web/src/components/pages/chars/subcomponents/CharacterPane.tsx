@@ -45,7 +45,7 @@ export default function CharacterPane(props: {
     const [selectedFile, setSelectedFile] = useState(null as File | null)
     const [selectedFileUrl, setSelectedFileUrl] = useState(undefined as string | undefined)
 
-    const characterApi = useApi(getCharacter, !!id, undefined, undefined, id)
+    const characterApi = useApi(getCharacter)
     const characterCategoriesApi = useApi(getCharacterCategories, editable || create)
 
     const createCharacterCategoryApi = useApi(createCharacterCategory)
@@ -64,6 +64,12 @@ export default function CharacterPane(props: {
     const refreshCharacters = () => {
         characterApi.fetch(undefined, undefined, id)
     }
+
+    useEffect(() => {
+        if (id) {
+            refreshCharacters();
+        }
+    }, [id]);
 
     useEffect(() => {
         setName("")

@@ -34,7 +34,7 @@ export default function ArtistPane(props: {
     const [selectedFile, setSelectedFile] = useState(null as File | null)
     const [selectedFileUrl, setSelectedFileUrl] = useState(undefined as string | undefined)
 
-    const artistApi = useApi(getArtist, !!id, undefined, undefined, id)
+    const artistApi = useApi(getArtist)
     const updateArtistApi = useApi(updateArtist);
     const createArtistApi = useApi(createArtist)
     const updateArtistProfileApi = useUpload(updateArtistProfile)
@@ -44,6 +44,10 @@ export default function ArtistPane(props: {
     const refreshArtist = () => {
         artistApi.fetch(undefined, undefined, id)
     }
+
+    useEffect(() => {
+        if (id) { refreshArtist() }
+    }, [id])
 
     useEffect(() => {
         setName("")

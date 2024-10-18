@@ -11,4 +11,6 @@ export default class CommissionFilterOptions {
     public CommissionStatus?: number;
     public Year?: number;
 
+    public Query?: string;
+
 }
