@@ -1,6 +1,15 @@
 import { Box, Divider, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../../hooks/useUser";
+import BarChartIcon from '@mui/icons-material/BarChart';
+import ImageSearchIcon from '@mui/icons-material/ImageSearch';
+import PhotoLibraryIcon from '@mui/icons-material/PhotoLibrary';
+import GroupsIcon from '@mui/icons-material/Groups';
+import ColorLensIcon from '@mui/icons-material/ColorLens';
+import PaymentsIcon from '@mui/icons-material/Payments';
+
+
+
 
 export default function BurgerMenu(props: {
     open: boolean,
@@ -20,11 +29,12 @@ export default function BurgerMenu(props: {
             </div>
             <Divider style={{ marginBottom: "20px" }} />
             <List>
-                <BurgerMenuItem navTo="/" image="/icons/statistics.png" text="Dashboard" />
+                <BurgerMenuItem navTo="/" icon={<BarChartIcon fontSize="large" />} text="Dashboard" />
+                <BurgerMenuItem navTo="/search" icon={<ImageSearchIcon fontSize="large" />} text="Advanced Search" />
                 <Divider style={{ marginTop: "20px", marginBottom: "20px" }} />
-                <BurgerMenuItem navTo="/commissions" image="/icons/images.png" text="Commissions" />
-                <BurgerMenuItem navTo="/characters" image="/icons/chars.png" text="Characters" />
-                <BurgerMenuItem navTo="/artists" image="/icons/artist.png" text={artist ? "Clients" : "Artists"} />
+                <BurgerMenuItem navTo="/commissions" icon={<PhotoLibraryIcon fontSize="large" />} text="Commissions" />
+                <BurgerMenuItem navTo="/characters" icon={<GroupsIcon fontSize="large" />} text="Characters" />
+                <BurgerMenuItem navTo="/artists" icon={artist ? <PaymentsIcon fontSize="large" /> : <ColorLensIcon fontSize="large" />} text={artist ? "Clients" : "Artists"} />
             </List>
         </Box>
     </Drawer>
@@ -34,17 +44,18 @@ export default function BurgerMenu(props: {
 function BurgerMenuItem(props: {
     navTo: string,
     text: string
-    image: string
+    image?: string
+    icon?: any
 }) {
 
-    const { image, navTo, text } = props
+    const { icon, image, navTo, text } = props
     const nav = useNavigate();
 
     return <ListItem disablePadding>
         <ListItemButton onClick={() => nav(navTo)}>
             <ListItemIcon>
                 <div style={{ width: "100%", textAlign: "center" }}>
-                    <img src={image} height="30px" />
+                    {icon ? icon : <img src={image} height="30px" />}
                 </div>
             </ListItemIcon>
             <ListItemText><div style={{ marginLeft: "10px" }}>{text}</div></ListItemText>

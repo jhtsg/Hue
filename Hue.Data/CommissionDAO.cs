@@ -11,7 +11,7 @@ namespace Hue.Data
 {
     public class CommissionDAO(string connectionString) {
 
-        private const int PAGE_SIZE = 10;
+        private const int PAGE_SIZE = 9;
         readonly AdoTemplate adoTemplate = new(connectionString);
         readonly ArtistDAO artistDAO = new(connectionString);
         readonly CharacterDAO characterDAO = new(connectionString);

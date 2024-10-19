@@ -165,7 +165,7 @@ export default function CommCard(props: {
                             <DateRow startDate={commission.startTs} doneDate={commission.doneTs} />
                         </div>
                         {noContextMenu && <div style={{ marginRight: "-5px", width: "100px" }}>
-                            <ColorPill color="#444444">{CommissionStatus[commission.status]}</ColorPill>
+                            <ColorPill color="#444444">{commission.status === -1 ? 'Archived' : CommissionStatus[commission.status]}</ColorPill>
                         </div>}
                     </div>
 
