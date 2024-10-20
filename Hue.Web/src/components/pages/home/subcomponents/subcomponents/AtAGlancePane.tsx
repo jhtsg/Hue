@@ -86,7 +86,7 @@ function AverageCard(props: {
                 </tr>
                 <tr>
                     <td style={{ width: "50%", paddingRight: "20px" }}><b>Avg. days to Completion</b></td>
-                    <td>{!glance ? <Skeleton variant="text" /> : glance.totalSpent?.toFixed(2) ?? 0}</td>
+                    <td>{!glance ? <Skeleton variant="text" /> : glance.averageTTC?.toFixed(2) ?? 0}</td>
                 </tr>
             </table>
             {vertical && <hr />}
