@@ -42,7 +42,7 @@ export default function ArtistsPage(props: {
                         {vertical ? <Add /> : 'New Artist'}
                     </Button>
                 </div>
-            </div> : <div style={{ fontSize: "1.7em", flex: "1" }}>{artist ? "Clients" : "Artist"}</div>}
+            </div> : <div style={{ fontSize: "1.7em", flex: "1" }}>{artist ? "Clients" : "Artists"}</div>}
         </div>
 
         <hr />
