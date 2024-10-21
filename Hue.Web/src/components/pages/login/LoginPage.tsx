@@ -127,6 +127,12 @@ function LoginPanel() {
                     label="Username" fullWidth variant="filled"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
+                    onKeyDown={(e) => {
+                        //Login on enter hit if we have a password and we're in login mode
+                        if (e.key === 'Enter' && password.length > 0 && value === 0) {
+                            handleClick();
+                        }
+                    }}
                 />
             </div>
             <div style={{ marginTop: "20px" }}>
@@ -134,6 +140,12 @@ function LoginPanel() {
                     label="Password" fullWidth variant="filled" type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                    onKeyDown={(e) => {
+                        //Login on enter hit if we have a username and we're in login mode
+                        if (e.key === 'Enter' && username.length > 0 && value === 0) {
+                            handleClick();
+                        }
+                    }}
                 />
             </div>
             <div hidden={value !== 1}>
