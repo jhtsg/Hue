@@ -47,7 +47,7 @@ export default function ArtistsPage(props: {
 
         <hr />
         <ApiAlert result={artistsApi.error} style={{ marginBottom: "20px" }} />
-        <div style={onSelect ? { overflowY: 'auto', height: maxComponentHeight - 200, } : undefined}>
+        <div style={{ overflowY: 'auto', height: maxComponentHeight - (onSelect ? 200 : 30), }}>
             <div style={{
                 display: 'flex', flexWrap: 'wrap',
                 width: '100%', marginTop: "20px",

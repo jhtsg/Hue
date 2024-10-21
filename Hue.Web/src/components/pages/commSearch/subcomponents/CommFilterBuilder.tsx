@@ -92,7 +92,7 @@ export default function CommFilterBuilder(props: {
     ]
 
     return <Card style={{ height: "100%", width: "100%" }}>
-        <CardContent style={{ display: "flex", flexDirection: 'column', justifyContent: 'space-between', height: "100%" }}>
+        <CardContent style={{ display: "flex", flexDirection: 'column', justifyContent: 'space-between', height: "100%", overflowY: 'auto' }}>
             <div>
 
                 <TextField label="Text" fullWidth value={query} onChange={(e) => setQuery(e.target.value)} style={{ marginBottom: "10px" }} />

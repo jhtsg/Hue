@@ -42,7 +42,7 @@ export default function CharsPage(props: {
         </div>
         <hr />
         <ApiAlert result={charactersApi.error} style={{ marginBottom: "20px" }} />
-        <div style={onSelect ? { overflowY: 'auto', height: maxComponentHeight - 200, } : {}}>
+        <div style={{ overflowY: 'auto', height: maxComponentHeight - (onSelect ? 200 : 30), }}>
             <div style={{ display: 'flex', flexWrap: 'wrap', width: '100%', marginTop: "20px", justifyContent: props.onSelect || vertical ? "center" : undefined }} >
                 {charactersApi.data?.filter((a) => search.trim().length === 0
                     ? true
