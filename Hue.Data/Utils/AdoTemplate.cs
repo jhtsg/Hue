@@ -67,7 +67,7 @@ namespace Hue.Data.Utils {
 
         }
 
-        private static readonly BasicLogger log = new(LogSeverity.DEBUG);
+        private static readonly BasicLogger log = new(LogSeverity.INFO);
 
         private readonly string ConnectionString = connectionString;
 
