@@ -12,8 +12,6 @@ import { updateCommTag } from "../../../../api/CommTag"
 import Artist from "../../../../model/artist/Artist"
 import Commission from "../../../../model/commission/Commission"
 
-// @ts-ignore
-import { LightenDarkenColor } from 'lighten-darken-color';
 import { ArrowDownward, ArrowForward, Close, InsertPhoto } from "@mui/icons-material"
 import useEnhancedBlocker from "../../../hooks/useEnhancedBlocker"
 import BlockerConfirmModal from "../../../shared/modals/BlockerConfirmModal"
@@ -454,15 +452,16 @@ function CoverHeader(props: {
             paddingTop: "15%",
             display: "block",
             boxSizing: 'border-box',
+            backgroundColor: color,
             backgroundImage: selectedFileUrl ? `url("${selectedFileUrl}")`
                 : imageError || !id ? `
-            repeating-linear-gradient(
-                45deg, /* Diagonal angle */
-                ${color}, /* First color stop (the given color) */
-                ${color} 10px, /* Width of the first stripe */
-                ${LightenDarkenColor(color, -20)} 10px, /* Slightly darker stripe */
-                ${LightenDarkenColor(color, -20)} 20px /* Total width of a stripe pair */
-            )
+           repeating-linear-gradient(
+                    45deg, /* Diagonal angle */
+                    rgba(0,0,0,0), /* First color stop (the given color) */
+                    rgba(0,0,0,0) 10px, /* Width of the first stripe */
+                    rgba(0,0,0,0.15) 10px, /* Slightly darker stripe */
+                    rgba(0,0,0,0.15) 20px /* Total width of a stripe pair */
+                )
         ` : `url("${commHeaderImage(id ?? 0)}")`,
             backgroundPosition: imageError && !selectedFileUrl ? undefined : 'center',
             backgroundRepeat: imageError && !selectedFileUrl ? undefined : 'no-repeat',

@@ -2,8 +2,6 @@ import { Card, CardActionArea, Divider, ListItemIcon, ListItemText, Menu, MenuIt
 import Commission from "../../../../model/commission/Commission"
 import Character from "../../../../model/character/Character"
 
-// @ts-ignore
-import { LightenDarkenColor } from 'lighten-darken-color';
 import ColorPill from "../../../shared/ColorPill";
 import CommissionTag from "../../../../model/commission/CommissionTag";
 import { useNavigate } from "react-router-dom";
@@ -144,13 +142,14 @@ export default function CommCard(props: {
                     paddingBottom: imageError ? "15%" : "25%",
                     display: "block",
                     boxSizing: 'border-box',
+                    backgroundColor: color,
                     backgroundImage: imageError ? `
                 repeating-linear-gradient(
                     45deg, /* Diagonal angle */
-                    ${color}, /* First color stop (the given color) */
-                    ${color} 10px, /* Width of the first stripe */
-                    ${LightenDarkenColor(color, -20)} 10px, /* Slightly darker stripe */
-                    ${LightenDarkenColor(color, -20)} 20px /* Total width of a stripe pair */
+                    rgba(0,0,0,0), /* First color stop (the given color) */
+                    rgba(0,0,0,0) 10px, /* Width of the first stripe */
+                    rgba(0,0,0,0.15) 10px, /* Slightly darker stripe */
+                    rgba(0,0,0,0.15) 20px /* Total width of a stripe pair */
                 )
             ` : `url("${commHeaderImage(commission.id)}")`,
                     backgroundPosition: imageError ? undefined : 'center',
