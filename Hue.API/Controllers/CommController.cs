@@ -135,9 +135,9 @@ namespace Hue.API.Controllers
             var file =
                 imgCache.GetFromCache(key) ?? //Try getting it from the cache first. 
                 imgCache.AddToCache(key, await dao.GetImage(session.Username, ID)); //Otherwise get it from the DB
-            if (file== null || file.Data==null || file.Mime==null) return NotFound(); 
+            if (file== null || file.Data==null || file.Mime==null) return NotFound();
 
-            Response.Headers.Append("Content-Disposition", "inline; filename=" + file.FullFilename);
+            Response.Headers.Append("Content-Disposition", "inline; filename=" + new string(file.FullFilename.Where(c => c < 128).ToArray()));
             return File(file.Data,file.Mime);
         }
 
