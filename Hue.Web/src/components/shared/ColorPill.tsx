@@ -1,6 +1,4 @@
 import { Card, CardActionArea, Typography } from "@mui/material";
-// @ts-ignore
-import { LightenDarkenColor } from 'lighten-darken-color';
 
 
 export default function ColorPill(props: {
@@ -11,9 +9,9 @@ export default function ColorPill(props: {
 
     const { color, children, onClick } = props
 
-    const Body = () => <div style={{ display: "flex" }}>
-        <div style={{ padding: "0px 5px", backgroundColor: color }}></div>
-        <div style={{ padding: "2px 10px 2px 4px", flex: "1", backgroundColor: LightenDarkenColor(color, -30) }}>{children}</div>
+
+    const Body = () => <div style={{ backgroundColor: color }}>
+        <div style={{ marginLeft: "10px", padding: "2px 10px 2px 4px", backgroundColor: 'rgba(0,0,0,0.25)' }}>{children}</div>
     </div>
 
     return <Card style={{ margin: "5px" }} elevation={8}>
