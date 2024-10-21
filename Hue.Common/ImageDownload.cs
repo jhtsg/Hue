@@ -15,7 +15,7 @@
 
         public string? Extension => AcceptableMimeTypeExtensions.GetValueOrDefault(Mime ?? "");
 
-        public string FullFilename => Filename + (!string.IsNullOrWhiteSpace(Extension) ? "." + Extension : "");
+        public string FullFilename => Filename + (!string.IsNullOrWhiteSpace(Extension) ? Extension : "");
 
         public string? Mime { get; set; } = "";
         public byte[]? Data { get; set; } = [];
