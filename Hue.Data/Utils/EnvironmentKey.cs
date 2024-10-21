@@ -1,27 +1,21 @@
-﻿namespace Hue.Data.Utils
-{
-    public class EnvironmentKey(string key)
-    {
+﻿namespace Hue.Data.Utils {
+    public class EnvironmentKey(string key) {
 
         readonly Func<string>? Generator;
 
-        public EnvironmentKey(string key, Func<string> generator) : this(key)
-        {
+        public EnvironmentKey(string key, Func<string> generator) : this(key) {
             Generator = generator;
         }
 
         string? Val = null;
 
-        public override string ToString()
-        {
+        public override string ToString() {
             if (Val != null) { return Val; }
             Val = Environment.GetEnvironmentVariable(key);
-            if (Val == null)
-            {
+            if (Val == null) {
                 //OK uh..
 
-                if (File.Exists(key + ".txt"))
-                {
+                if (File.Exists(key + ".txt")) {
                     Val = File.ReadAllText(key + ".txt");
                     return Val;
                 }
@@ -37,11 +31,9 @@
             return Val;
         }
 
-        static string DefaultGenerator()
-        {
+        static string DefaultGenerator() {
             return new Guid().ToString();
         }
-
 
     }
 }

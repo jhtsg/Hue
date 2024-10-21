@@ -87,8 +87,7 @@ namespace Hue.Data.Utils {
 
             using var cmd = new NpgsqlCommand(sql, conn);
 
-            void setParam(string key, NpgsqlDbType type, object? val)
-            {
+            void setParam(string key, NpgsqlDbType type, object? val) {
                 cmd.Parameters.Add(new NpgsqlParameter(key, type) { Value = val ?? DBNull.Value });
             }
 
