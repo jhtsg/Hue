@@ -75,7 +75,7 @@ namespace Hue.API.Controllers
 
 
         [HttpGet("{ID}/image")]
-        public async Task<IActionResult> GetImage(int ID) {
+        public async Task<IActionResult> GetImage(int ID, [FromQuery] bool NoCache = false) {
             var session = GetSession(Request, Response);
             if (session == null) return Unauthorized();
 
@@ -87,7 +87,7 @@ namespace Hue.API.Controllers
             if (file== null || file.Data==null || file.Mime==null) return NotFound();
 
             Response.Headers.Append("Content-Disposition", "inline; filename=" + new string(file.FullFilename.Where(c => c < 128).ToArray()));
-            Response.Headers.CacheControl = "public, max-age=10";
+            Response.Headers.CacheControl = NoCache ? "no-cache" : "public, max-age=600";
             Response.Headers.Vary = "Cookie";
             Response.Headers.ETag = file.Hash;
 
