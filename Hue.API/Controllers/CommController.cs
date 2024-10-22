@@ -138,7 +138,7 @@ namespace Hue.API.Controllers
             if (file== null || file.Data==null || file.Mime==null) return NotFound();
                         
             Response.Headers.Append("Content-Disposition", "inline; filename=" + new string(file.FullFilename.Where(c => c < 128).ToArray()));
-            Response.Headers.CacheControl = "public, max-age=31536000";
+            Response.Headers.CacheControl = "public, max-age=10";
             Response.Headers.Vary = "Cookie";
             Response.Headers.ETag = file.Hash;
 
