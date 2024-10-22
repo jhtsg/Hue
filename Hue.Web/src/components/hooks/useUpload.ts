@@ -25,6 +25,9 @@ export class Upload<T> {
         /** Tell Fido to Fetch */
         public fetch: (
 
+            /** URL that will be hit with a fetch to bust the cache */
+            cacheBustUrl: string,
+
             /** Callback function that'll occur on success */
             onSuccess?: (
                 /** Data retrieved from the API */
@@ -64,7 +67,8 @@ export default function useUpload<T>(
     const resetData = () => setData(undefined as any as T)
     const resetError = () => setError(undefined as any)
 
-    const fetch = (
+    const f = (
+        cacheBustUrl: string,
         onSuccess?: (val?: T) => void,
         onError?: (val?: any) => void,
         ...args: any
@@ -73,9 +77,16 @@ export default function useUpload<T>(
         resetError()
         setProgress(0)
         uploadFunc(setLoading, setProgress,
-            onSuccess
-                ? (val?: T) => { onSuccess(val); setData(val ?? undefined as any) }
-                : (val?: T) => { setData(val ?? undefined as any) },
+            (val?: T) => {
+                fetch(cacheBustUrl + "?NoCache=true", {
+                    method: 'GET',
+                    credentials: 'include'
+                }).then(() => {
+                    if (onSuccess) { onSuccess(val) }
+                    setData(val ?? undefined as any)
+                })
+            }
+            ,
             onError ? (val: any) => {
                 setError(val)
                 if (val !== undefined) {
@@ -88,7 +99,7 @@ export default function useUpload<T>(
     }
 
 
-    return { loading, progress, data, error, resetData, resetError, fetch } as Upload<T>;
+    return { loading, progress, data, error, resetData, resetError, fetch: f } as Upload<T>;
 
 }
 

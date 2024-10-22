@@ -148,7 +148,7 @@ export default function CharacterPane(props: {
 
     const onCreateSuccess = (val?: Character) => {
         if (selectedFile) {
-            updateCharacterProfileApi.fetch(onUploadCreateSuccess, undefined, val?.id, selectedFile)
+            updateCharacterProfileApi.fetch(characterImage(val?.id ?? 0), onUploadCreateSuccess, undefined, val?.id, selectedFile)
         } else {
             enqueueSnackbar("Character created!", { variant: 'success' })
             if (onOk) onOk();
@@ -157,11 +157,11 @@ export default function CharacterPane(props: {
 
     const onUpdateSuccess = () => {
         if (onOk) onOk();
-        setEditMode(false)
         refreshCharacters();
         if (selectedFile) {
-            updateCharacterProfileApi.fetch(onUploadSuccess, undefined, id, selectedFile)
+            updateCharacterProfileApi.fetch(characterImage(id ?? 0), onUploadSuccess, undefined, id, selectedFile)
         } else {
+            setEditMode(false)
             enqueueSnackbar("Character Updated!", { variant: 'success' })
         }
     }
@@ -176,6 +176,7 @@ export default function CharacterPane(props: {
     const onUploadSuccess = () => {
         if (selectedFileUrl) { URL.revokeObjectURL(selectedFileUrl) }
         setSelectedFile(null)
+        setEditMode(false)
         enqueueSnackbar("Character Updated!", { variant: 'success' })
     }
 

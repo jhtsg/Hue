@@ -218,7 +218,7 @@ export default function CommPane(props: {
 
     const onCreateSuccess = (val?: Commission) => {
         if (selectedFile) {
-            updateCommHeaderApi.fetch(onUploadCreateSuccess, undefined, val?.id, selectedFile)
+            updateCommHeaderApi.fetch(commHeaderImage(val?.id ?? 0), onUploadCreateSuccess, undefined, val?.id, selectedFile)
 
         } else {
             enqueueSnackbar("Commission created!", { variant: 'success' })
@@ -228,11 +228,11 @@ export default function CommPane(props: {
 
     const onUpdateSuccess = () => {
         if (onOk) onOk();
-        setDirty(false)
-        refreshComm();
         if (selectedFile) {
-            updateCommHeaderApi.fetch(onUploadSuccess, undefined, id, selectedFile)
+            updateCommHeaderApi.fetch(commHeaderImage(id ?? 0), onUploadSuccess, undefined, id, selectedFile)
         } else {
+            setDirty(false)
+            refreshComm();
             enqueueSnackbar("Commission Updated!", { variant: 'success' })
             nav(-1)
         }
@@ -248,6 +248,8 @@ export default function CommPane(props: {
     const onUploadSuccess = () => {
         if (selectedFileUrl) { URL.revokeObjectURL(selectedFileUrl) }
         setSelectedFile(null)
+        setDirty(false)
+        refreshComm();
         enqueueSnackbar("Commission Updated!", { variant: 'success' })
         nav(-1)
     }
