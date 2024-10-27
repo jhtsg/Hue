@@ -17,6 +17,9 @@
         /// <summary>Whether or not this character is the primary</summary>
         public bool? IsPrimary { get; set; }
 
+        /// <summary>Whether or not this character has an image</summary>
+        public bool HasImage { get; set; } = false;
+
         /// <summary>Category of this character</summary>
         public CharacterCategory? Category { get; set; }
     }

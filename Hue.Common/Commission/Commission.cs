@@ -27,6 +27,8 @@ namespace Hue.Common.Commission
         /// <summary>Main URL where the commission was posted to</summary>
         public string PostUrl { get; set; } = "";
 
+        public bool HasImage { get; set; } = false;
+
         /// <summary>Days its taken to complete this piece. 0 if the piece hasn't finished yet</summary>
         public int? DaysToComplete => StartTs == null ? null
             : DoneTs == null

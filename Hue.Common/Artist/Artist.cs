@@ -10,5 +10,8 @@
 
         /// <summary>URL to the current commission pricing sheet for this artist</summary>
         public string CommSheetUrl { get; set; } = "";
+
+        /// <summary>Whether or not this artist has an image</summary>
+        public bool HasImage { get; set; } = false;
     }
 }
