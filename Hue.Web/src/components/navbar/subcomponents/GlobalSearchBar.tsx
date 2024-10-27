@@ -16,6 +16,7 @@ export default function GlobalSearchBar(props: {
 
     class SearchResult {
         public type: 'Artists' | 'Characters' | 'Commissions' = 'Artists'
+        public hasImage: boolean = false
         public name: string = ""
         public color: string = ""
         public id: number = 0
@@ -77,6 +78,7 @@ export default function GlobalSearchBar(props: {
                 return {
                     id: a.id,
                     name: a.name,
+                    hasImage: a.hasImage,
                     color: '#999',
                     type: 'Artists'
                 } as SearchResult
@@ -89,6 +91,7 @@ export default function GlobalSearchBar(props: {
                     id: a.id,
                     name: a.name,
                     color: a.color,
+                    hasImage: a.hasImage,
                     type: 'Characters'
                 } as SearchResult
             }),
@@ -98,7 +101,8 @@ export default function GlobalSearchBar(props: {
                     id: a.id,
                     color: a.characters[0]?.color ?? "#999",
                     name: a.name,
-                    type: 'Commissions'
+                    type: 'Commissions',
+                    hasImage: a.hasImage
                 } as SearchResult
             })
 
@@ -147,7 +151,7 @@ export default function GlobalSearchBar(props: {
                     {...optionProps}
                     style={{ display: "flex" }}
                 >
-                    <SafeAvatar color={option.color} size={32} src={
+                    <SafeAvatar hasImage={option.hasImage} color={option.color} size={32} src={
                         option.type === "Artists" ? artistImage(option.id) :
                             option.type === 'Characters' ? characterImage(option.id)
                                 : commHeaderImage(option.id)

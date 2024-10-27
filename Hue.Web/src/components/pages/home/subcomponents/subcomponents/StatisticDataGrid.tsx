@@ -24,7 +24,7 @@ export default function StatisticDataGrid(props: {
             renderCell: (params) => statisticType === 'TAG' ? <>
                 <div style={{ width: "48px", height: "48px", background: params.value, borderRadius: "5px" }} />
             </> :
-                <SafeAvatar size={48} src={
+                <SafeAvatar size={48} hasImage src={
                     statisticType === 'ARTIST' ? artistImage(params.value)
                         : statisticType === 'CHARACTER' ? characterImage(params.value)
                             : ''

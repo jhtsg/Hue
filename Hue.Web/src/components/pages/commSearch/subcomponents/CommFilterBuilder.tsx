@@ -59,35 +59,35 @@ export default function CommFilterBuilder(props: {
             'anyValue': -1,
             'value': year,
             'setter': setYear,
-            'data': yearsApi.data?.map(a => { return { 'value': a, 'label': a, 'image': undefined as undefined | string, 'color': '' } })
+            'data': yearsApi.data?.map(a => { return { 'value': a, 'label': a, 'image': undefined as undefined | string, 'color': '', 'hasImage': false } })
         },
         {
             'label': 'Status',
             'anyValue': -3,
             'value': status,
             'setter': setStatus,
-            'data': ["Archived", ...CommissionStatus].map((a, i) => { return { 'value': i - 1, 'label': a, 'image': undefined as undefined | string, 'color': '' } })
+            'data': ["Archived", ...CommissionStatus].map((a, i) => { return { 'value': i - 1, 'label': a, 'image': undefined as undefined | string, 'color': '', 'hasImage': false } })
         },
         {
             'label': isArtist ? 'Client' : 'Artist',
             'anyValue': -1,
             'value': artistId,
             'setter': setArtistId,
-            'data': artistApi.data?.map(a => { return { 'value': a.id, 'label': a.name, 'image': artistImage(a.id), 'color': '#999' } })
+            'data': artistApi.data?.map(a => { return { 'value': a.id, 'label': a.name, 'image': artistImage(a.id), 'color': '#999', 'hasImage': a.hasImage } })
         },
         {
             'label': 'Character',
             'anyValue': -1,
             'value': characterId,
             'setter': setCharacterId,
-            'data': charApi.data?.map(a => { return { 'value': a.id, 'label': a.name, 'image': characterImage(a.id), 'color': a.color } })
+            'data': charApi.data?.map(a => { return { 'value': a.id, 'label': a.name, 'image': characterImage(a.id), 'color': a.color, 'hasImage': a.hasImage } })
         },
         {
             'label': 'Tag',
             'anyValue': -1,
             'value': tagId,
             'setter': setTagId,
-            'data': tagsApi.data?.map(a => { return { 'value': a.id, 'label': a.name, 'image': undefined, 'color': a.color } })
+            'data': tagsApi.data?.map(a => { return { 'value': a.id, 'label': a.name, 'image': undefined, 'color': a.color, 'hasImage': false } })
         }
     ]
 
@@ -107,7 +107,7 @@ export default function CommFilterBuilder(props: {
                         <MenuItem value={a.anyValue}><div style={{ color: "#CCC" }}>Any</div></MenuItem>
                         {a.data?.map((y) => <MenuItem value={y.value}>
                             <div style={{ display: "flex" }}>
-                                {(y.image || y.color.length > 0) && <SafeAvatar color={y.color} src={y.image} text={y.label.toString()} size={22} style={{ marginRight: "10px" }} />}
+                                {(y.image || y.color.length > 0) && <SafeAvatar hasImage={y.hasImage} color={y.color} src={y.image} text={y.label.toString()} size={22} style={{ marginRight: "10px" }} />}
                                 {y.label}
                             </div>
                         </MenuItem>)}
