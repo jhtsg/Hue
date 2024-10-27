@@ -126,6 +126,7 @@ export function UserProfile(props: {
 
     return user?.primaryCharacterId
         ? <SafeAvatar
+            hasImage
             color={user.primaryCharacterColor}
             size={32} style={style}
             src={characterImage(user.primaryCharacterId)}
