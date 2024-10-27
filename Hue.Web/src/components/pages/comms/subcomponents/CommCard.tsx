@@ -162,7 +162,7 @@ export default function CommCard(props: {
 
     return <>
         <Card elevation={10} style={{ margin: "10px" }}>
-            <CardActionArea onClick={() => nav(`/commissions/${commission.id}`)} onContextMenu={noContextMenu ? undefined : handleContextMenu}>
+            <CardActionArea onClick={() => nav(`/commissions/${commission.id}`)} onContextMenu={handleContextMenu}>
                 <div style={{
                     paddingBottom: imageError ? "15%" : "25%",
                     display: "block",
