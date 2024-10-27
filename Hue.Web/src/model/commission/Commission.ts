@@ -22,4 +22,5 @@ export default class Commission extends Identifiable {
     public artist?: Artist
     public characters: Character[] = []
     public commissionTags: CommissionTag[] = []
+    public hasImage: boolean = false;
 }

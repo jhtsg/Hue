@@ -8,4 +8,5 @@ export default class Character extends Identifiable {
     public color: string = "";
     public isPrimary?: boolean;
     public category?: CharacterCategory;
+    public hasImage: boolean = false;
 }

@@ -4,4 +4,5 @@ export default class Artist extends Identifiable {
     public name: string = "";
     public socialUrl: string = "";
     public commSheetUrl: string = "";
+    public hasImage: boolean = false;
 }
