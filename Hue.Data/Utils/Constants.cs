@@ -17,6 +17,7 @@
         public static readonly string ARTIST_COMM_SHEET_TX = "artist_comm_sheet_tx";
         public static readonly string ARTIST_IMG_BYTES = "artist_img_bytes";
         public static readonly string ARTIST_IMG_MIME_TX = "artist_img_mime_tx";
+        public static readonly string ARTIST_IMG_PRESENT_IN = "artist_img_present_in";
 
         public static readonly string CHAR_TABLE = $"{SCHEMA}.char";
         public static readonly string CHAR_ID = "char_id";
@@ -27,6 +28,7 @@
         public static readonly string CHAR_IMG_BYTES = "char_img_bytes";
         public static readonly string CHAR_IMG_MIME_TX = "char_img_mime_tx";
         public static readonly string PRIMARY_CHAR_IN = "primary_char_in";
+        public static readonly string CHAR_IMG_PRESENT_IN = "char_img_present_in";
 
         public static readonly string CHAR_CAT_TABLE = $"{SCHEMA}.char_cat";
         public static readonly string CHAR_CAT_ID = "char_cat_id";
@@ -51,6 +53,7 @@
         public static readonly string COMM_MONTH_NB = "comm_month_nb";
         public static readonly string COMM_STARTED_IN = "comm_started_in";
         public static readonly string COMM_TTC_NB = "comm_ttc_nb";
+        public static readonly string COMM_HEADER_IMG_PRESENT_IN = "comm_header_img_present_in";
 
         public static readonly string COMM_TAG_TABLE = $"{SCHEMA}.comm_tag";
         public static readonly string COMM_TAG_ID = "comm_tag_id";

@@ -99,6 +99,7 @@ namespace Hue.Data
                 PostTags = reader.GetString(COMM_POST_TAGS_TX),
                 PostDescription = reader.GetString(COMM_POST_DESC_TX),
                 PostUrl = reader.GetString(COMM_POST_URL_TX),
+                HasImage = reader.GetBoolean(COMM_HEADER_IMG_PRESENT_IN),
 
                 Status = (CommissionStatus)reader.GetInt(COMM_STATUS_CD),
                 Type = (CommissionType)reader.GetInt(COMM_TYPE_CD),
@@ -108,7 +109,7 @@ namespace Hue.Data
                 StartTs = reader.GetOptionalDateTime(START_DT),
                 DoneTs = reader.GetOptionalDateTime(DONE_DT),
                 PublishTs = reader.GetOptionalDateTime(PBLSH_DT),
-
+                
                 Artist = reader.IsNull(ARTIST_ID) ? null : ArtistDAO.artistRm(reader),
                 Characters = await GetCommCharacters(reader.GetInt(COMM_ID)),
                 CommissionTags = await GetCommTags(reader.GetInt(COMM_ID))
@@ -133,7 +134,8 @@ namespace Hue.Data
                     COMM_POST_TAGS_TX, COMM_POST_DESC_TX, COMM_POST_URL_TX,
                     COMM_STATUS_CD, COMM_TYPE_CD,
                     CRE_TS, UPDT_TS, START_DT, DONE_DT, PBLSH_DT,
-                    "C."+ARTIST_ID, ARTIST_NM, ARTIST_COMM_SHEET_TX, ARTIST_SOCIAL_TX
+                    "C."+ARTIST_ID, ARTIST_NM, ARTIST_COMM_SHEET_TX, ARTIST_SOCIAL_TX,
+                    ARTIST_IMG_PRESENT_IN, COMM_HEADER_IMG_PRESENT_IN
                 ],
                 table: $"{COMM_TABLE} C LEFT JOIN {ARTIST_TABLE} A ON C.{ARTIST_ID} = A.{ARTIST_ID}",
                 new(WhereConditionUnion.AND, conditions),
@@ -222,7 +224,8 @@ namespace Hue.Data
                     COMM_POST_TAGS_TX, COMM_POST_DESC_TX, COMM_POST_URL_TX,
                     COMM_STATUS_CD, COMM_TYPE_CD,
                     CRE_TS, UPDT_TS, START_DT, DONE_DT, PBLSH_DT,
-                    "C."+ARTIST_ID, ARTIST_NM, ARTIST_COMM_SHEET_TX, ARTIST_SOCIAL_TX
+                    "C."+ARTIST_ID, ARTIST_NM, ARTIST_COMM_SHEET_TX, ARTIST_SOCIAL_TX,
+                    ARTIST_IMG_PRESENT_IN, COMM_HEADER_IMG_PRESENT_IN
 ],
                 table: $"{COMM_TABLE} C LEFT JOIN {ARTIST_TABLE} A ON C.{ARTIST_ID} = A.{ARTIST_ID}",
                 new WhereConditionGroup(WhereConditionUnion.AND, [
@@ -302,7 +305,7 @@ namespace Hue.Data
         private async Task<List<Character>> GetCommCharacters(int id) {
             var sql = SelectSql(
                 columns: [
-                    "C." + CHAR_ID, CHAR_NM, CHAR_COLOR_TX, CHAR_SPECIES_TX, CHAR_DESC_TX, 
+                    "C." + CHAR_ID, CHAR_NM, CHAR_COLOR_TX, CHAR_SPECIES_TX, CHAR_DESC_TX, CHAR_IMG_PRESENT_IN,
                     "CCAT." + CHAR_CAT_ID, CHAR_CAT_NM, CHAR_CAT_COLOR_TX, CHAR_CAT_DESC_TX
                     ],
                 table: $"{COMM_CHAR_MAP} CCM, {CHAR_TABLE} C, {CHAR_CAT_TABLE} ccat",

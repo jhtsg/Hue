@@ -37,13 +37,14 @@ namespace Hue.Data
             Id = reader.GetInt(ARTIST_ID),
             Name = reader.GetString(ARTIST_NM),
             SocialUrl = reader.GetString(ARTIST_SOCIAL_TX),
-            CommSheetUrl = reader.GetString(ARTIST_COMM_SHEET_TX)
+            CommSheetUrl = reader.GetString(ARTIST_COMM_SHEET_TX),
+            HasImage = reader.GetBoolean(ARTIST_IMG_PRESENT_IN)
         };
 
         public async Task<List<Artist>> GetAll(string username) {
 
             var sql = SelectSql(
-                columns: [ARTIST_ID, ARTIST_NM, ARTIST_SOCIAL_TX, ARTIST_COMM_SHEET_TX],
+                columns: [ARTIST_ID, ARTIST_NM, ARTIST_SOCIAL_TX, ARTIST_COMM_SHEET_TX, ARTIST_IMG_PRESENT_IN],
                 table: ARTIST_TABLE,
                 new(WhereConditionUnion.AND, [
                     new(USER_NM)
@@ -58,7 +59,7 @@ namespace Hue.Data
         public async Task<Artist?> Get(string username, int id) {
 
             var sql = SelectSql(
-              columns: [ARTIST_ID, ARTIST_NM, ARTIST_SOCIAL_TX, ARTIST_COMM_SHEET_TX],
+              columns: [ARTIST_ID, ARTIST_NM, ARTIST_SOCIAL_TX, ARTIST_COMM_SHEET_TX,ARTIST_IMG_PRESENT_IN],
               table: ARTIST_TABLE,
               new WhereConditionGroup(WhereConditionUnion.AND, [
                   new(USER_NM), new(ARTIST_ID)

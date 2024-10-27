@@ -63,7 +63,9 @@ namespace Hue.Data
             Species = reader.GetString(CHAR_SPECIES_TX),
             Description = reader.GetString(CHAR_DESC_TX),
             IsPrimary = reader.ContainsKey(PRIMARY_CHAR_IN) ? reader.GetOptionalBoolean(PRIMARY_CHAR_IN) : null,
-            Category = !reader.IsNull(CHAR_CAT_NM) && reader.ContainsKey(CHAR_CAT_COLOR_TX) ? characterCatRm!(reader) : null
+            Category = !reader.IsNull(CHAR_CAT_NM) && reader.ContainsKey(CHAR_CAT_COLOR_TX) ? characterCatRm!(reader) : null,
+            HasImage = reader.GetBoolean(CHAR_IMG_PRESENT_IN)
+
         };
 
         public static readonly Func<Getter, CharacterCategory> characterCatRm = (reader) => new() {
@@ -75,7 +77,8 @@ namespace Hue.Data
 
         public async Task<List<Character>> GetAll(string username) {
             var sql = SelectSql(
-                columns: [CHAR_ID, CHAR_NM, CHAR_COLOR_TX, CHAR_SPECIES_TX, CHAR_DESC_TX, "cat." + CHAR_CAT_ID, CHAR_CAT_NM, CHAR_CAT_COLOR_TX, CHAR_CAT_DESC_TX, PRIMARY_CHAR_IN],
+                columns: [CHAR_ID, CHAR_NM, CHAR_COLOR_TX, CHAR_SPECIES_TX, CHAR_DESC_TX, CHAR_IMG_PRESENT_IN,
+                    "cat." + CHAR_CAT_ID, CHAR_CAT_NM, CHAR_CAT_COLOR_TX, CHAR_CAT_DESC_TX, PRIMARY_CHAR_IN],
                 table: $"{CHAR_TABLE} c, {CHAR_CAT_TABLE} cat",
                 new(WhereConditionUnion.AND, [
                     new ("c." + USER_NM, WhereConditionOperator.EQUALS, "@" + USER_NM ),
@@ -90,7 +93,8 @@ namespace Hue.Data
         public async Task<Character?> Get(string username, int id) {
 
             var sql = SelectSql(
-                columns: [CHAR_ID, CHAR_NM, CHAR_COLOR_TX, CHAR_SPECIES_TX, CHAR_DESC_TX, "cat." + CHAR_CAT_ID, CHAR_CAT_NM, CHAR_CAT_COLOR_TX, CHAR_CAT_DESC_TX, PRIMARY_CHAR_IN],
+                columns: [CHAR_ID, CHAR_NM, CHAR_COLOR_TX, CHAR_SPECIES_TX, CHAR_DESC_TX, CHAR_IMG_PRESENT_IN,
+                    "cat." + CHAR_CAT_ID, CHAR_CAT_NM, CHAR_CAT_COLOR_TX, CHAR_CAT_DESC_TX, PRIMARY_CHAR_IN],
                 table: $"{CHAR_TABLE} c, {CHAR_CAT_TABLE} cat",
                 new WhereConditionGroup(WhereConditionUnion.AND, [
                     new ("c." + USER_NM, WhereConditionOperator.EQUALS, "@" + USER_NM ),
