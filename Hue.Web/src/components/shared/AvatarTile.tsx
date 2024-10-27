@@ -8,10 +8,11 @@ export default function AvatarTile(props: {
     avatarSize?: number,
     avatarString: string
     avatarColor?: string
+    hasImage: boolean
     onClick?: (e: any) => void
 }) {
 
-    const { avatarUrl, onClick, children, width, avatarString, avatarColor } = props
+    const { avatarUrl, onClick, children, width, avatarString, avatarColor, hasImage } = props
     const avatarSize = props.avatarSize ?? 32
 
     const handleClick = (e: any) => {
@@ -24,7 +25,7 @@ export default function AvatarTile(props: {
         <CardActionArea style={{ padding: "10px" }} onClick={handleClick}>
             <div style={{ display: "flex", justifyContent: "center", alignContent: "center", alignItems: "center", maxWidth: width ? `${width - 20}px` : '' }}>
                 <div style={{ marginRight: "20px" }}>
-                    <SafeAvatar color={avatarColor} size={avatarSize} src={avatarUrl} text={avatarString} />
+                    <SafeAvatar color={avatarColor} size={avatarSize} src={avatarUrl} text={avatarString} hasImage={hasImage} />
                 </div>
                 <div style={width ? { width: `${width - 80}px` } : { flex: "1" }}>
                     <Typography noWrap>{children}</Typography>

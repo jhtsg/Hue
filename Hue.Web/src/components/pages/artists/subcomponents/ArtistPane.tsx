@@ -155,7 +155,7 @@ export default function ArtistPane(props: {
             <div style={ultraVertical ? { textAlign: 'center', margin: "0px auto 20px auto" } : { marginRight: "20px", textAlign: 'center' }}>
                 <SafeAvatar size={128} src={
                     selectedFile ? selectedFileUrl : artistImage(id ?? 0)
-                } text={"?"} />
+                } text={"?"} hasImage={!create} /> {/* Assume we have an image if we're not creating since it'd be faster to error out than to wait for the artist */}
                 {editMode && <Button style={{ marginTop: "10px" }} onClick={() => { (fileInputRef?.current as any)?.click(); }}>Change</Button>}
             </div>
             <div style={{ flex: "1", display: "flex", flexDirection: "column", margin: ultraVertical && !editMode ? "0 auto" : undefined }}>

@@ -18,6 +18,7 @@ export default function ArtistTile(props: {
         avatarUrl={artistImage(artist.id)}
         onClick={onClick ? onClick : () => nav(`/artists/${artist.id}`)}
         avatarString={artist.name}
+        hasImage={artist.hasImage}
     >
         <div>{artist.name}</div>
         <div><SocialDisplay url={artist.socialUrl} /></div>

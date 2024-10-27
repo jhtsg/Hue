@@ -212,7 +212,7 @@ export default function CharacterPane(props: {
             <div style={ultraVertical ? { width: "128", margin: "0px auto 20px auto", textAlign: "center" } : { marginRight: "20px", textAlign: 'center' }}>
                 <SafeAvatar size={128} src={
                     selectedFile ? selectedFileUrl : characterImage(id ?? 0)
-                } text={"?"} />
+                } text={"?"} hasImage={!create} />
                 {editMode && <Button style={{ marginTop: "10px" }} onClick={() => { (fileInputRef?.current as any)?.click(); }}>Change</Button>}
             </div>
             <div style={{ flex: "1", display: "flex", flexDirection: "column" }}>

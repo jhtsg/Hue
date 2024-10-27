@@ -6,7 +6,7 @@ import ColorPill from "../../../shared/ColorPill";
 import CommissionTag from "../../../../model/commission/CommissionTag";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { commHeaderImage, updateCommission } from "../../../../api/Comm";
+import { commHeaderImage, deleteCommission, updateCommission } from "../../../../api/Comm";
 import { CommissionStatus } from "../../../../model/commission/CommissionEnums";
 import SafeAvatar from "../../../shared/SafeAvatar";
 import { characterImage } from "../../../../api/Char";
@@ -16,7 +16,8 @@ import { useSnackbar } from "notistack";
 import { useRefresh } from "../../../hooks/useRefresh";
 import { REFRESH_ALL_COLUMNS } from "../../../contexts/RefreshContext";
 import TransitionModal from "./TransitionModal/TransitionModal";
-import { Archive, ArrowBack, ArrowForward } from "@mui/icons-material";
+import { Archive, ArrowBack, ArrowForward, Delete, Edit, Public } from "@mui/icons-material";
+import AreYouSureModal from "../../../shared/modals/AreYouSureModal";
 
 //An individual commission card
 export default function CommCard(props: {
@@ -27,14 +28,17 @@ export default function CommCard(props: {
     const { commission, noContextMenu } = props
     const nav = useNavigate()
     const { enqueueSnackbar } = useSnackbar();
-    const [imageError, setImageError] = useState(false)
+    const [imageError, setImageError] = useState(!commission.hasImage)
 
     const updateCommApi = useApi(updateCommission)
+    const deleteCommApi = useApi(deleteCommission);
+
     const { refresh } = useRefresh(REFRESH_ALL_COLUMNS);
 
     const color = commission?.characters?.[0]?.color ?? "#999999"
 
     const [transitionComm, setTransitionComm] = useState(false)
+    const [deleteOpen, setDeleteOpen] = useState(false);
 
     const [contextMenu, setContextMenu] = useState(undefined as {
         mouseX: number;
@@ -42,12 +46,15 @@ export default function CommCard(props: {
     } | undefined);
 
     useEffect(() => {
+        if (!commission.hasImage) return; //Do not conduct this check if we're already told there's no image.
         const img = new Image();
         img.src = commHeaderImage(commission.id)
         img.onerror = () => {
             setImageError(true)
         }
     }, [])
+
+    const handleClick = () => nav(`/commissions/${commission.id}`);
 
     const handleContextMenu = (event: React.MouseEvent) => {
         event.preventDefault();
@@ -67,6 +74,11 @@ export default function CommCard(props: {
     const handleClose = () => {
         setContextMenu(undefined);
     };
+
+    const handleView = () => {
+        handleClose();
+        window.open(commission.postUrl);
+    }
 
     const handleArchive = () => {
         handleClose();
@@ -109,6 +121,19 @@ export default function CommCard(props: {
             setTransitionComm(true)
         }
 
+    }
+
+    const handleDelete = () => {
+        handleClose();
+        setDeleteOpen(true);
+    }
+
+    const handleRealDelete = () => {
+        deleteCommApi.fetch(() => {
+            enqueueSnackbar("Commission deleted!", { variant: 'success' })
+            setDeleteOpen(false)
+            refresh();
+        }, undefined, commission.id)
     }
 
     const handleRollbackState = () => {
@@ -194,22 +219,46 @@ export default function CommCard(props: {
                     : undefined
             }
         >
-            {commission.status !== CommissionStatus.length - 1 && <MenuItem onClick={handleAdvanceState}>
-                <ListItemIcon><ArrowForward /></ListItemIcon>
-                <ListItemText primary={`Move to ${CommissionStatus[commission.status + 1]}`} />
-            </MenuItem>}
-            {commission.status > 0 && <MenuItem onClick={handleRollbackState} >
-                <ListItemIcon><ArrowBack /></ListItemIcon>
-                <ListItemText primary={`Move to ${CommissionStatus[commission.status - 1]}`} />
-            </MenuItem>}
-            {commission.status !== -1 && <>
-                <Divider />
-                <MenuItem onClick={handleArchive}>
-                    <ListItemIcon><Archive /></ListItemIcon>
-                    <ListItemText primary='Archive' />
+            <MenuItem onClick={handleClick}>
+                <ListItemIcon><Edit /></ListItemIcon>
+                <ListItemText primary='Edit' />
+            </MenuItem>
+            {
+                commission.status === 4 && <MenuItem onClick={handleView} disabled={commission.postUrl?.trim().length === 0}>
+                    <ListItemIcon><Public /></ListItemIcon>
+                    <ListItemText primary='View Post' />
                 </MenuItem>
+            }
+
+            {!noContextMenu && <>
+                <Divider />
+                {commission.status !== CommissionStatus.length - 1 && <MenuItem onClick={handleAdvanceState}>
+                    <ListItemIcon><ArrowForward /></ListItemIcon>
+                    <ListItemText primary={`Move to ${CommissionStatus[commission.status + 1]}`} />
+                </MenuItem>}
+                {commission.status > 0 && <MenuItem onClick={handleRollbackState} >
+                    <ListItemIcon><ArrowBack /></ListItemIcon>
+                    <ListItemText primary={`Move to ${CommissionStatus[commission.status - 1]}`} />
+                </MenuItem>}
+                <Divider />
+                {commission.status == -1 ? <MenuItem onClick={handleDelete}>
+                    <ListItemIcon><Delete /></ListItemIcon>
+                    <ListItemText primary='Delete' />
+                </MenuItem> :
+                    <MenuItem onClick={handleArchive}>
+                        <ListItemIcon><Archive /></ListItemIcon>
+                        <ListItemText primary='Archive' />
+                    </MenuItem>
+                }
             </>}
         </Menu>
+
+        {/* Performance */}
+        {commission.status === -1 && <AreYouSureModal open={deleteOpen} setOpen={setDeleteOpen}
+            error={deleteCommApi.error} loading={deleteCommApi.loading} onYes={handleRealDelete} >
+            Are you sure you want to delete this commission?
+        </AreYouSureModal>}
+
     </>
 }
 
@@ -220,14 +269,8 @@ function DateRow(props: {
 
     const { doneDate, startDate } = props
 
-    if (!startDate) {
-        return <>Unscheduled</>
-    }
-
-    if (!doneDate) {
-        return <>Started {new Date(startDate).toLocaleDateString()}</>
-    }
-
+    if (!startDate) { return <>Unscheduled</> }
+    if (!doneDate) { return <>Started {new Date(startDate).toLocaleDateString()}</> }
     return <>{new Date(startDate).toLocaleDateString()} - {new Date(doneDate).toLocaleDateString()}</>
 
 }
@@ -243,7 +286,7 @@ function CharRow(props: {
         {characters.map(a => <ColorPill color={a.color}>
             <div style={{ display: "flex", alignItems: 'center' }}>
                 <div style={{ marginRight: "5px" }}>
-                    <SafeAvatar color="#999999" text={a.name} src={characterImage(a.id)} size={16} />
+                    <SafeAvatar hasImage={a.hasImage} color="#999999" text={a.name} src={characterImage(a.id)} size={16} />
                 </div>
                 <div>{a.name}</div>
             </div>
@@ -266,7 +309,7 @@ function MetadataRow(props: {
                     🎨
                 </div>
                 <div style={{ marginRight: "5px" }}>
-                    <SafeAvatar color="#999999" text={commission.artist.name} src={artistImage(commission.artist.id)} size={16} />
+                    <SafeAvatar hasImage={commission.artist.hasImage} color="#999999" text={commission.artist.name} src={artistImage(commission.artist.id)} size={16} />
                 </div>
                 <div>{commission.artist.name}</div>
             </div>

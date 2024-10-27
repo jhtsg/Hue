@@ -21,6 +21,7 @@ export default function CharacterTile(props: {
         avatarUrl={characterImage(character.id)}
         onClick={() => onClick ? onClick() : nav(`/characters/${character.id}`)}
         avatarString={character.name}
+        hasImage={character.hasImage}
     >
         <div style={{ marginBottom: "7px", display: "flex" }}>
             <div style={{ padding: "5px", backgroundColor: character.color, borderRadius: "2px", marginRight: "7px" }} />

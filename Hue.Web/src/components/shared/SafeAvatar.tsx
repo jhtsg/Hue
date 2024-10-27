@@ -8,10 +8,11 @@ export default function SafeAvatar(props: {
     text?: string,
     color?: string,
     style?: CSSProperties,
+    hasImage: boolean,
     variant?: "rounded" | "circular" | "square"
 }) {
 
-    const { size, text, src, variant, color, style } = props
+    const { size, text, src, variant, color, style, hasImage } = props
 
     const [imgError, setImgError] = useState(false);
 
@@ -22,7 +23,7 @@ export default function SafeAvatar(props: {
     return <Avatar
         variant={variant ?? "rounded"} style={style}
         sx={{ bgcolor: color ?? (text ? stringToColor(text) : '#999'), width: size, height: size }}
-        src={!imgError ? src ?? undefined : undefined} // Fallback to undefined if there's an error
+        src={!imgError && hasImage ? src ?? undefined : undefined} // Fallback to undefined if there's an error
         onError={() => setImgError(true)} // If image fails to load, set error state
     >
         {text?.[0] ?? '?'}

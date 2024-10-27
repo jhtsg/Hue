@@ -537,7 +537,7 @@ function CharactersDisplay(props: {
             </div>
         </div>)}
 
-        <AvatarTile avatarString="+New" avatarColor="#999" onClick={() => setCharSelector(true)}>
+        <AvatarTile hasImage={false} avatarString="+New" avatarColor="#999" onClick={() => setCharSelector(true)}>
             Add a Character
         </AvatarTile>
 
@@ -690,7 +690,7 @@ export function ArtistInformation(props: {
             <div style={vertical ? { marginBottom: "20px" } : undefined}>
                 {artist ?
                     <ArtistTile artist={artist} onClick={handleClick} />
-                    : <AvatarTile width={280}
+                    : <AvatarTile hasImage={false} width={280}
                         avatarSize={48}
                         onClick={() => { setArtistPicker(true) }}
                         avatarColor="#999999"
