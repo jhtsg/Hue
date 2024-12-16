@@ -107,7 +107,7 @@ namespace Hue.Data {
 
         #region OTHER STATISTICS
 
-        private static Func<Getter, Statistic> StatisticRm(string idColumn, string nameColumn, string? colorColumn = null) {
+        private static Func<Getter, T> StatisticRm<T>(string idColumn, string nameColumn, string? colorColumn = null) where T : Statistic, new() {
             return (reader) => new() {
                 Id = reader.GetInt(idColumn),
                 Name = reader.GetString(nameColumn),
@@ -130,14 +130,19 @@ namespace Hue.Data {
             };
         }
 
-        private static Func<Getter,Statistic> ArtistStatisticRm = StatisticRm(ARTIST_ID, ARTIST_NM);
+        private static Func<Getter, ArtistStatistic> ArtistStatisticRm => (reader) => {
+                var statistic = StatisticRm<ArtistStatistic>(ARTIST_ID, ARTIST_NM).Invoke(reader);
+                statistic.AverageDaysToComplete = reader.GetDouble(AVG_TTC_NB);
+                return statistic;
+            };
+        
         private static Func<Getter, StatisticByYear> YearlyArtistStatisticRm = YearlyStatisticRm(ARTIST_ID, ARTIST_NM);
-        private static Func<Getter, Statistic> TagStatisticRm = StatisticRm(COMM_TAG_ID,COMM_TAG_NM,COMM_TAG_COLOR_TX);
+        private static Func<Getter, Statistic> TagStatisticRm = StatisticRm<Statistic>(COMM_TAG_ID,COMM_TAG_NM,COMM_TAG_COLOR_TX);
         private static Func<Getter, StatisticByYear> YearlyTagStatisticRm = YearlyStatisticRm(COMM_TAG_ID,COMM_TAG_NM,COMM_TAG_COLOR_TX);
-        private static Func<Getter, Statistic> CharStatisticRm = StatisticRm(CHAR_ID, CHAR_NM, CHAR_COLOR_TX);
+        private static Func<Getter, Statistic> CharStatisticRm = StatisticRm<Statistic>(CHAR_ID, CHAR_NM, CHAR_COLOR_TX);
         private static Func<Getter, StatisticByYear> YearlyCharStatisticRm = YearlyStatisticRm(CHAR_ID, CHAR_NM, CHAR_COLOR_TX);
 
-        private async Task<List<Statistic>> GetOverallStatistics(string username, string view, Func<Getter,Statistic> rm) {
+        private async Task<List<T>> GetOverallStatistics<T>(string username, string view, Func<Getter,T> rm) where T : Statistic, new() {
             var sql = SelectSql(["*"], view, new WhereConditionGroup([new(USER_NM)]));
 
             return await adoTemplate.Query(sql, (cmd) => {
@@ -153,7 +158,7 @@ namespace Hue.Data {
                 cmd.SetInt(COMM_YEAR_NB, year);
             }, rm);
         }
-        private async Task<Statistic?> GetOverallStatisticForItem(string username, string view, string idColumn, int id, Func<Getter, Statistic> rm) {
+        private async Task<T?> GetOverallStatisticForItem<T>(string username, string view, string idColumn, int id, Func<Getter, T> rm) where T : Statistic, new() {
             var sql = SelectSql(["*"], view, new WhereConditionGroup([new(USER_NM), new(idColumn)]));
 
             return await adoTemplate.QuerySingle (sql, (cmd) => {
@@ -172,9 +177,9 @@ namespace Hue.Data {
             }, rm);
         }
 
-        public async Task<List<Statistic>> GetOverallArtistStatistics(string username) => await GetOverallStatistics(username, ARTIST_STATISTICS, ArtistStatisticRm);
+        public async Task<List<ArtistStatistic>> GetOverallArtistStatistics(string username) => await GetOverallStatistics(username, ARTIST_STATISTICS, ArtistStatisticRm);
         public async Task<List<StatisticByYear>> GetYearlyArtistStatistics(string username,int year) => await GetYearlyStatistics(username, YEARLY_ARTIST_STATISTICS, year, YearlyArtistStatisticRm);
-        public async Task<Statistic?> GetOverallStatisticForArtist(string username, int id) => await GetOverallStatisticForItem(username, ARTIST_STATISTICS, ARTIST_ID, id, ArtistStatisticRm);
+        public async Task<ArtistStatistic?> GetOverallStatisticForArtist(string username, int id) => await GetOverallStatisticForItem(username, ARTIST_STATISTICS, ARTIST_ID, id, ArtistStatisticRm);
         public async Task<StatisticByYear?> GetYearlyStatisticForArtist(string username, int id, int year) => await GetYearlyStatisticForItem(username, YEARLY_ARTIST_STATISTICS, ARTIST_ID, id, year, YearlyArtistStatisticRm);
 
         public async Task<List<Statistic>> GetOverallCharacterStatistics(string username) => await GetOverallStatistics(username, CHAR_STATISTICS, CharStatisticRm);

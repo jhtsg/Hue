@@ -1,10 +1,5 @@
-﻿using Hue.Common.Artist;
-using Hue.Common.Character;
-
-namespace Hue.Common.Commission
-{
-    public class Commission : Identifiable
-    {
+﻿namespace Hue.Common.Commission {
+    public class Commission : Identifiable {
 
         /// <summary>Name of this Commission</summary>
         public string Name { get; set; } = "";

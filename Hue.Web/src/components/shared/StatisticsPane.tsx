@@ -3,6 +3,7 @@ import Statistic from "../../model/statistics/Statistic";
 import ApiAlert from "./ApiAlert";
 import { useWindowDimensions } from "../hooks/useWindowDimensions";
 import { useUser } from "../hooks/useUser";
+import ArtistStatistic from "../../model/statistics/ArtistStatistic";
 
 export function StatisticsPane(props: {
     overall?: Statistic,
@@ -21,6 +22,7 @@ export function StatisticsPane(props: {
 
     const { overall, thisYear, overallError, overallLoading, thisYearError, thisYearLoading } = props;
 
+
     return <div style={{ margin: "20px auto 20px auto", maxWidth: "800px", display: vertical ? "" : "flex" }}>
         <Card style={vertical ? { marginBottom: "20px" } : { flex: "1", marginRight: "10px" }}>
             <CardContent>
@@ -34,6 +36,12 @@ export function StatisticsPane(props: {
                                 <td width="50%">Commissions</td>
                                 <td>{overall?.count?.toLocaleString() ?? 'None'}</td>
                             </tr>
+                            {
+                                (overall as any)?.averageDaysToComplete ? <tr>
+                                    <td>Avg. Turnaround</td>
+                                    <td>{Math.ceil((overall as ArtistStatistic).averageDaysToComplete)} Day(s)</td>
+                                </tr> : <></>
+                            }
                             <tr>
                                 <td>Total {artist ? "earned" : "spent"}</td>
                                 <td>${overall?.spent?.toLocaleString() ?? '0'}</td>
