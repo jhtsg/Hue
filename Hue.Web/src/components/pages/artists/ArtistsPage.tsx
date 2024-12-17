@@ -1,4 +1,4 @@
-import { Button, Dialog, Fab, InputAdornment, TextField, Tooltip } from "@mui/material"
+import { Button, Fab, InputAdornment, TextField, Tooltip } from "@mui/material"
 import { getArtists } from "../../../api/Artist"
 import useApi from "../../hooks/useApi"
 import ApiAlert from "../../shared/ApiAlert"
@@ -6,10 +6,10 @@ import LoadingBackdrop from "../../shared/LoadingBackdrop"
 import ArtistTile from "./subcomponents/ArtistTile"
 import { Add, Search } from "@mui/icons-material"
 import { useState } from "react"
-import ArtistPane from "./subcomponents/ArtistPane"
 import Artist from "../../../model/artist/Artist"
 import { useWindowDimensions } from "../../hooks/useWindowDimensions"
 import { useUser } from "../../hooks/useUser"
+import CreateArtistModal from "./subcomponents/CreateArtistModal"
 
 export default function ArtistsPage(props: {
     onSelect?: (val: Artist) => void
@@ -72,16 +72,7 @@ export default function ArtistsPage(props: {
         </Tooltip>}
 
         <LoadingBackdrop loading={artistsApi.loading} />
-
-        <Dialog open={newOpen} onClose={() => setNewOpen(false)} maxWidth="sm" fullWidth>
-            <div style={{ padding: 20 }}>
-                <ArtistPane create open={newOpen} setOpen={setNewOpen} onOk={() => {
-                    setNewOpen(false);
-                    artistsApi.fetch();
-                }} />
-
-            </div>
-        </Dialog>
+        <CreateArtistModal open={newOpen} setOpen={setNewOpen} onOk={artistsApi.fetch} />
 
     </>
 }

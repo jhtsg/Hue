@@ -9,6 +9,7 @@ import CharacterTile from "./subcomponents/CharacterTile";
 import CharacterPane from "./subcomponents/CharacterPane";
 import Character from "../../../model/character/Character";
 import { useWindowDimensions } from "../../hooks/useWindowDimensions";
+import CreateCharacterModal from "./subcomponents/CreateCharacterModal";
 
 export default function CharsPage(props: {
     onSelect?: (val: Character) => void
@@ -62,16 +63,7 @@ export default function CharsPage(props: {
 
 
         <LoadingBackdrop loading={charactersApi.loading} />
-
-        <Dialog open={newOpen} onClose={() => setNewOpen(false)} maxWidth="md" fullWidth>
-            <div style={{ padding: 20 }}>
-                <CharacterPane create open={newOpen} setOpen={setNewOpen} onOk={() => {
-                    setNewOpen(false);
-                    charactersApi.fetch();
-                }} />
-
-            </div>
-        </Dialog>
+        <CreateCharacterModal open={newOpen} setOpen={setNewOpen} onOk={() => { charactersApi.fetch(); }} />
 
     </>
 }

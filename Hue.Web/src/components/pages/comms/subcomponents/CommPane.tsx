@@ -31,6 +31,7 @@ import CharacterSelector from "../../chars/subcomponents/CharacterSelector"
 import { useUser } from "../../../hooks/useUser"
 import Social from "../../../../model/Social"
 import SocialIcon from "../../../shared/SocialIcon"
+import ArtistSelector from "../../artists/subcomponents/ArtistSelector"
 
 
 export default function CommPane(props: {
@@ -732,18 +733,15 @@ export function ArtistInformation(props: {
             </div>
         </div >
 
-        {artistPicker && <Dialog
-            open={artistPicker} onClose={() => { setArtistPicker(false) }}
-            maxWidth="xl" fullWidth
-        >
-            <DialogContent>
-                <ArtistsPage onSelect={(val) => {
-                    setArtist(val);
-                    setArtistPicker(false);
-                    markDirty();
-                }} />
-            </DialogContent>
-        </Dialog>
+        {artistPicker && <ArtistSelector
+            open={artistPicker}
+            setOpen={setArtistPicker}
+            setArtist={(val) => {
+                setArtist(val);
+                setArtistPicker(false);
+                markDirty();
+            }}
+        />
         }
 
         <Menu
