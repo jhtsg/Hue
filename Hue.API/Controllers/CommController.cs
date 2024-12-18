@@ -53,6 +53,15 @@ namespace Hue.API.Controllers
                 : Ok(await dao.GetAll(session.Username,filter));
         }
 
+        [HttpGet("Alerts")]
+        public async Task<IActionResult> GetAlerts() {
+
+            var session = GetSession(Request, Response);
+            return session == null
+                ? Unauthorized()
+                : Ok(await dao.GetAlerts(session.Username));
+        }
+
         [HttpGet("Export")]
         public async Task<IActionResult> Export(
           [FromQuery] CommissionFilterOptions filter

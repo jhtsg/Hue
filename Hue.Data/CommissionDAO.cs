@@ -172,6 +172,24 @@ namespace Hue.Data
 
         }
 
+        public async Task<List<CommissionAlert>> GetAlerts(string username) {
+
+            var sql = SelectSql(
+                columns:[COMM_ID,COMM_NM,COMM_STATUS_CD,OVERDUE_DAYS_NB],
+                table:OVERDUE_COMMS, 
+                new WhereConditionGroup([new WhereCondition(USER_NM)]));
+
+            return await adoTemplate.Query(sql, (cmd) => {
+                cmd.SetString(USER_NM, username);
+            }, (reader) => new CommissionAlert(){
+                Id = reader.GetInt(COMM_ID),
+                Name = reader.GetString(COMM_NM),
+                Status = (CommissionStatus)reader.GetInt(COMM_STATUS_CD),
+                daysOverdue = reader.GetInt(OVERDUE_DAYS_NB)
+            });
+
+        }
+
         private static List<WhereCondition> CommissionFilterOptionsToWhereConditions(CommissionFilterOptions filter) {
             List<WhereCondition> conditions = [
                 new("c."+USER_NM, WhereConditionOperator.EQUALS,$"@{USER_NM}")

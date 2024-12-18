@@ -102,6 +102,9 @@
         public static readonly string SPENT_NB = "SPENT_NB";
         public static readonly string LAST_PBLSH_DT = "LAST_PBLSH_DT";
 
+        public static readonly string OVERDUE_DAYS_NB = "OVERDUE_DAYS_NB";
+        public static readonly string OVERDUE_COMMS = "OVERDUE_COMMS";
+
         public static readonly string CRE_TS = "cre_ts";
         public static readonly string UPDT_TS = "updt_ts";
         public static readonly string START_DT = "start_dt";

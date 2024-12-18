@@ -269,3 +269,21 @@ select co.USER_NM, cm.comm_tag_id, ct.COMM_TAG_NM, ct.COMM_TAG_COLOR_TX , Count(
 from hue.hue.comm_tag ct , hue.hue.comm co, hue.hue.comm_tag_map cm 
 where ct.comm_tag_id = cm.comm_tag_id  and cm.comm_id = co.comm_id 
 group by CO.USER_NM, cm.comm_tag_id, ct.COMM_TAG_NM, ct.COMM_TAG_COLOR_TX  ;
+
+CREATE VIEW hue.overdue_comms
+AS SELECT co.user_nm,
+    co.comm_id,
+    co.comm_nm,
+    co.comm_status_cd,
+    ceil((now()::date - co.start_dt)::numeric - GREATEST(astats.avg_ttc_nb * 1.25, 2.0))::integer AS overdue_days_nb
+   FROM hue.comm co,
+    hue.artist_statistics astats
+  WHERE co.comm_status_cd = 2 AND co.start_dt IS NOT NULL AND co.artist_id = astats.artist_id AND (now()::date - co.start_dt)::numeric > GREATEST(astats.avg_ttc_nb * 1.25, 2.0)
+UNION
+ SELECT comm.user_nm,
+    comm.comm_id,
+    comm.comm_nm,
+    comm.comm_status_cd,
+    now()::date - comm.done_dt AS overdue_days_nb
+   FROM hue.comm
+  WHERE comm.comm_status_cd = 3 AND comm.done_dt IS NOT NULL AND (now()::date - comm.done_dt) > 7;
