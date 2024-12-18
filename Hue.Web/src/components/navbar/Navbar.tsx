@@ -7,6 +7,7 @@ import { UserButton } from "./subcomponents/UserButton"
 import GlobalSearchBar from "./subcomponents/GlobalSearchBar"
 import { useWindowDimensions } from "../hooks/useWindowDimensions"
 import { useLocation } from "react-router-dom"
+import useDoubleShift from "../hooks/useDoubleShift"
 
 export default function Navbar() {
 
@@ -17,6 +18,10 @@ export default function Navbar() {
 
     const { width } = useWindowDimensions();
     const fullWidthSearchbar = width < 750
+
+    useDoubleShift(() => {
+        setSearchBar(true)
+    });
 
     useEffect(() => {
         setSearchBar(false)
