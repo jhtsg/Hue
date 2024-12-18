@@ -1,12 +1,11 @@
 import { useState } from "react";
 import useApi from "../../hooks/useApi";
 import { getCharacters } from "../../../api/Char";
-import { Button, Dialog, Fab, InputAdornment, TextField, Tooltip } from "@mui/material";
+import { Button, Fab, InputAdornment, TextField, Tooltip } from "@mui/material";
 import { Add, Search } from "@mui/icons-material";
 import ApiAlert from "../../shared/ApiAlert";
 import LoadingBackdrop from "../../shared/LoadingBackdrop";
 import CharacterTile from "./subcomponents/CharacterTile";
-import CharacterPane from "./subcomponents/CharacterPane";
 import Character from "../../../model/character/Character";
 import { useWindowDimensions } from "../../hooks/useWindowDimensions";
 import CreateCharacterModal from "./subcomponents/CreateCharacterModal";

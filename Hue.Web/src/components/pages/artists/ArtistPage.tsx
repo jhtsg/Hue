@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from "react-router-dom";
-import { Card, CardContent, CardHeader, IconButton } from "@mui/material";
+import { Card, CardContent, IconButton } from "@mui/material";
 import { ArrowBack } from "@mui/icons-material";
 import ArtistPane from "./subcomponents/ArtistPane";
 import ArtistStatisticPane from "./subcomponents/ArtistStatisticPane";
