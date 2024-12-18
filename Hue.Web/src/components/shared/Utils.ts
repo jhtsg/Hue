@@ -29,3 +29,45 @@ export function RemoveIndex<T>(arr: T[], i: number) {
 
 export const dateFromBackend = (val: string): string => new Date(val).toISOString().split('T')[0]
 export const dateToBackend = (val?: string): string | undefined => val && val.length > 0 ? new Date(val).toISOString().replace("Z", "") : undefined;
+
+export const months = [
+    "Chp", //Dummy month so this aligns
+    "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+]
+
+export const daysSince = (date: string): number => {
+    // Parse the start date as UTC
+    const startDate = new Date(Date.parse(date + "T00:00:00Z")); // Append 'T00:00:00Z' to ensure UTC
+    // Get the current date in UTC
+    const today = new Date();
+    const todayUTC = new Date(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()));
+
+    // Calculate the difference in days
+    const diffTime = todayUTC.getTime() - startDate.getTime(); // Milliseconds difference
+    const diffDays = diffTime / (1000 * 60 * 60 * 24); // Convert to days
+
+    return diffDays
+}
+
+export const addDays = (date: string, days: number): Date => {
+
+    // Add X days in milliseconds (1 day = 86,400,000 ms)
+    return new Date(new Date(Date.parse(date)).getTime() + (days * 24 * 60 * 60 * 1000));
+}
+
+export const daysUntil = (date: Date): number => {
+
+    // Get today's date in UTC (ignoring the time part)
+    const today: Date = new Date();
+    const todayUTC: Date = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate()));
+
+    // Calculate the difference in milliseconds
+    const diffTime: number = date.getTime() - todayUTC.getTime();
+
+    // Convert to days and round down
+    const diffDays: number = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    return diffDays;
+
+
+}

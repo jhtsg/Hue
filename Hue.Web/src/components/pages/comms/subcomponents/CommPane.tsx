@@ -1,4 +1,4 @@
-import { Alert, Box, Button, CircularProgress, Dialog, DialogContent, FormControl, IconButton, InputAdornment, InputLabel, Menu, MenuItem, Select, TextField, Tooltip, Typography } from "@mui/material"
+import { Alert, AlertTitle, Box, Button, CircularProgress, Dialog, DialogContent, FormControl, IconButton, InputAdornment, InputLabel, Menu, MenuItem, Select, TextField, Tooltip, Typography } from "@mui/material"
 import useApi from "../../../hooks/useApi"
 import useUpload from "../../../hooks/useUpload"
 import { CSSProperties, useEffect, useRef, useState } from "react"
@@ -18,20 +18,22 @@ import BlockerConfirmModal from "../../../shared/modals/BlockerConfirmModal"
 import { CommissionStatus, CommissionTypes } from "../../../../model/commission/CommissionEnums"
 import LoadingBackdrop from "../../../shared/LoadingBackdrop"
 import CharacterTile from "../../chars/subcomponents/CharacterTile"
-import { dateFromBackend, dateToBackend, RemoveIndex as removeIndex } from "../../../shared/Utils"
+import { addDays, dateFromBackend, dateToBackend, daysSince, daysUntil, RemoveIndex as removeIndex } from "../../../shared/Utils"
 import AvatarTile from "../../../shared/AvatarTile"
 import ColorPill from "../../../shared/ColorPill"
 import CommTagEditor from "./CommTagEditor"
 import CommTagSelector from "./CommTagSelector"
 import ArtistTile from "../../artists/subcomponents/ArtistTile"
 import { useNavigate } from "react-router-dom"
-import ArtistsPage from "../../artists/ArtistsPage"
 import AreYouSureModal from "../../../shared/modals/AreYouSureModal"
 import CharacterSelector from "../../chars/subcomponents/CharacterSelector"
 import { useUser } from "../../../hooks/useUser"
 import Social from "../../../../model/Social"
 import SocialIcon from "../../../shared/SocialIcon"
 import ArtistSelector from "../../artists/subcomponents/ArtistSelector"
+import { getStatisticForArtist } from "../../../../api/Statistics"
+import ArtistStatistic from "../../../../model/statistics/ArtistStatistic"
+import { Months } from "../../../../model/Months"
 
 
 export default function CommPane(props: {
@@ -275,6 +277,8 @@ export default function CommPane(props: {
             setSelectedFile={setSelectedFile} setSelectedFileUrl={setSelectedFileUrl}
         />
 
+        <WarningsBanner artist={artist} startTs={startTs} doneTs={doneTs} publishTs={publishTs} status={status} />
+
         <div style={{ padding: "20px" }}>
             <div style={vertical ? {} : { display: "flex" }}>
                 <div style={vertical ? {} : { flex: "1", paddingTop: "0px", paddingRight: "10px" }}>
@@ -291,6 +295,8 @@ export default function CommPane(props: {
                         startTs={startTs} setStartTs={setStartTs}
                         doneTs={doneTs} setDoneTs={setDoneTs}
                     />
+
+
                     <hr style={{ marginBottom: "25px" }} />
 
 
@@ -394,6 +400,81 @@ export default function CommPane(props: {
         <LoadingBackdrop loading={commApi.loading} />
 
     </>
+}
+
+function WarningsBanner(props: {
+    artist?: Artist,
+    status: number,
+    startTs?: string,
+    doneTs?: string,
+    publishTs?: string,
+}) {
+
+    const { artist, doneTs, publishTs, startTs, status } = props;
+
+    const statsApi = useApi(getStatisticForArtist);
+
+    useEffect(() => {
+        if (status < 3 && artist) {
+            //If we're still before done, and we have an artist, and we have a start timestamp:
+            statsApi.fetch(undefined, undefined, artist.id)
+        }
+    }, [artist])
+
+    const trueDoneTs = doneTs && doneTs.length > 0 ? new Date(Date.parse(doneTs)) : undefined
+    const avgDaysToCompelte = statsApi.data ? Math.ceil((statsApi.data as ArtistStatistic).averageDaysToComplete) : undefined
+    const avgDaysToCompleteWithBuffer = avgDaysToCompelte ? Math.max(Math.ceil(avgDaysToCompelte * 1.25), 1) : undefined
+    const avgDaysToCompleteWithMegaBuffer = avgDaysToCompelte ? Math.max(Math.ceil(avgDaysToCompelte * 2), 100) : undefined
+    const eta = trueDoneTs ?? (startTs && startTs.length > 0 && avgDaysToCompleteWithBuffer ? addDays(startTs, avgDaysToCompleteWithBuffer) : undefined)
+    const daysFromNow = eta ? daysUntil(eta) : undefined
+    const daysSinceDone = doneTs ? daysSince(doneTs) : undefined
+
+    if (statsApi.loading) { return <></> }
+
+    if (status < 2 && artist) {
+        //We're still in preplanning
+        return <Alert severity="info">
+            You should expect this commission to {
+                eta ? `be done by ${Months[eta.getUTCMonth()]} ${eta.getUTCDate()} (${avgDaysToCompelte} - ${avgDaysToCompleteWithBuffer} days)` : `take ${avgDaysToCompelte}-${avgDaysToCompleteWithBuffer} days`
+            }
+        </Alert>
+    }
+
+    if (status === 2 && eta) {
+        //We're in progress
+        if (daysFromNow && daysFromNow < 0) {
+            if (daysFromNow < -1 * (avgDaysToCompleteWithMegaBuffer ?? 100)) {
+                return <Alert severity="error">
+                    <AlertTitle>This commission is running very late</AlertTitle>
+                    This commission should've been done by {Months[eta.getUTCMonth()]} {eta.getUTCDate()} ({-1 * daysFromNow} days ago)
+                </Alert>
+            }
+            return <Alert severity="warning">
+                <AlertTitle>This commission is running late</AlertTitle>
+                This commission should've been done by {Months[eta.getUTCMonth()]} {eta.getUTCDate()} ({-1 * daysFromNow} days ago)
+            </Alert>
+        } else {
+            return <Alert severity="info">
+                <AlertTitle>This commission is in progress</AlertTitle>
+                This commission should be done by {Months[eta.getUTCMonth()]} {eta.getUTCDate()} ({daysFromNow} days from now)
+            </Alert>
+        }
+    }
+
+    if (status === 3 && daysSinceDone && daysSinceDone > 7) {
+        return <Alert severity="warning">
+            <AlertTitle>This commission hasn't been posted</AlertTitle>
+            This commission was done {daysSinceDone} days ago and should be posted soon
+        </Alert>
+    }
+
+    if (status === 4) {
+        return <Alert severity="success">
+            Commission has been posted!
+        </Alert>
+    }
+
+    return <></>
 }
 
 function SaveButton(props: {
