@@ -1,10 +1,11 @@
 import { useNavigate, useParams } from "react-router-dom";
-import { Card, CardContent, IconButton } from "@mui/material";
+import { Card, CardContent, CardHeader, IconButton } from "@mui/material";
 import { ArrowBack } from "@mui/icons-material";
 import ArtistPane from "./subcomponents/ArtistPane";
 import ArtistStatisticPane from "./subcomponents/ArtistStatisticPane";
 import CommsDisplay from "../comms/subcomponents/CommsDisplay";
 import { useUser } from "../../hooks/useUser";
+import ArtistTTCGraph from "./subcomponents/ArtistTTCGraph";
 
 export default function ArtistPage() {
 
@@ -25,6 +26,15 @@ export default function ArtistPage() {
             <Card elevation={5}>
                 <CardContent>
                     <ArtistPane editable id={new Number(id) as number} />
+                </CardContent>
+            </Card>
+        </div>
+
+        <div style={{ maxWidth: "800px", margin: "20px auto 0 auto" }}>
+            <Card elevation={5}>
+                <div style={{ padding: "20px", marginBottom: "-60px" }}><b>Turnaround times</b></div>
+                <CardContent>
+                    <ArtistTTCGraph id={Number(id)} />
                 </CardContent>
             </Card>
         </div>

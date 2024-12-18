@@ -1,4 +1,4 @@
-import { Alert, AlertTitle, Box, Button, CircularProgress, Dialog, DialogContent, FormControl, IconButton, InputAdornment, InputLabel, Menu, MenuItem, Select, TextField, Tooltip, Typography } from "@mui/material"
+import { Alert, AlertTitle, Box, Button, CircularProgress, FormControl, IconButton, InputAdornment, InputLabel, Menu, MenuItem, Select, TextField, Tooltip, Typography } from "@mui/material"
 import useApi from "../../../hooks/useApi"
 import useUpload from "../../../hooks/useUpload"
 import { CSSProperties, useEffect, useRef, useState } from "react"
@@ -410,13 +410,13 @@ function WarningsBanner(props: {
     publishTs?: string,
 }) {
 
-    const { artist, doneTs, publishTs, startTs, status } = props;
+    const { artist, doneTs, startTs, status } = props;
 
     const statsApi = useApi(getStatisticForArtist);
 
     useEffect(() => {
         if (status < 3 && artist) {
-            //If we're still before done, and we have an artist, and we have a start timestamp:
+            //If we're still before done, and we have an artist:
             statsApi.fetch(undefined, undefined, artist.id)
         }
     }, [artist])

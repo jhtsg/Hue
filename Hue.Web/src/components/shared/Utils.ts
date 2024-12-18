@@ -31,7 +31,6 @@ export const dateFromBackend = (val: string): string => new Date(val).toISOStrin
 export const dateToBackend = (val?: string): string | undefined => val && val.length > 0 ? new Date(val).toISOString().replace("Z", "") : undefined;
 
 export const months = [
-    "Chp", //Dummy month so this aligns
     "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
 ]
 

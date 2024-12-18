@@ -51,7 +51,6 @@ export default function StatisticDataGrid(props: {
         onCellClick={(cell) => {
 
             if (onClick) {
-                console.log(cell)
                 onClick(cell.row as Statistic);
                 return;
             }
