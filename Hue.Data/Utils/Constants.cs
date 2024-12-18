@@ -111,5 +111,7 @@
         public static readonly string DONE_DT = "done_dt";
         public static readonly string PBLSH_DT = "pblsh_dt";
 
+        public static readonly string RETIRED_IN = "retired_in";
+
     }
 }

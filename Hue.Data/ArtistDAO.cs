@@ -38,13 +38,14 @@ namespace Hue.Data
             Name = reader.GetString(ARTIST_NM),
             SocialUrl = reader.GetString(ARTIST_SOCIAL_TX),
             CommSheetUrl = reader.GetString(ARTIST_COMM_SHEET_TX),
-            HasImage = reader.GetBoolean(ARTIST_IMG_PRESENT_IN)
+            HasImage = reader.GetBoolean(ARTIST_IMG_PRESENT_IN),
+            IsRetired = reader.GetBoolean(RETIRED_IN)
         };
 
         public async Task<List<Artist>> GetAll(string username) {
 
             var sql = SelectSql(
-                columns: [ARTIST_ID, ARTIST_NM, ARTIST_SOCIAL_TX, ARTIST_COMM_SHEET_TX, ARTIST_IMG_PRESENT_IN],
+                columns: [ARTIST_ID, ARTIST_NM, ARTIST_SOCIAL_TX, ARTIST_COMM_SHEET_TX, ARTIST_IMG_PRESENT_IN, RETIRED_IN],
                 table: ARTIST_TABLE,
                 new(WhereConditionUnion.AND, [
                     new(USER_NM)
@@ -59,7 +60,7 @@ namespace Hue.Data
         public async Task<Artist?> Get(string username, int id) {
 
             var sql = SelectSql(
-              columns: [ARTIST_ID, ARTIST_NM, ARTIST_SOCIAL_TX, ARTIST_COMM_SHEET_TX,ARTIST_IMG_PRESENT_IN],
+              columns: [ARTIST_ID, ARTIST_NM, ARTIST_SOCIAL_TX, ARTIST_COMM_SHEET_TX,ARTIST_IMG_PRESENT_IN,RETIRED_IN],
               table: ARTIST_TABLE,
               new WhereConditionGroup(WhereConditionUnion.AND, [
                   new(USER_NM), new(ARTIST_ID)
@@ -99,7 +100,7 @@ namespace Hue.Data
         public async Task Update(string username, Artist artist) {
 
             var sql = UpdateSql(
-                columns: [ARTIST_NM, ARTIST_SOCIAL_TX, ARTIST_COMM_SHEET_TX],
+                columns: [ARTIST_NM, ARTIST_SOCIAL_TX, ARTIST_COMM_SHEET_TX, RETIRED_IN],
                 table: ARTIST_TABLE,
                 new(WhereConditionUnion.AND, [
                     new(USER_NM), new(ARTIST_ID)
@@ -111,6 +112,7 @@ namespace Hue.Data
                 cmd.SetString(ARTIST_COMM_SHEET_TX, artist.CommSheetUrl);
                 cmd.SetString(USER_NM, username);
                 cmd.SetInt(ARTIST_ID, artist.Id);
+                cmd.SetBoolean(RETIRED_IN, artist.IsRetired);
             });
         }
 

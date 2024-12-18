@@ -25,7 +25,7 @@ export default function ArtistSelector(props: {
 
     return <>
         <SelectorModal
-            entries={artistApi.data} loading={artistApi.loading}
+            entries={artistApi.data?.filter(a => !a.isRetired)} loading={artistApi.loading}
             open={open} setOpen={setOpen} onSelect={setArtist}
             onNewClick={() => setNewOpen(true)} type="artist"
             entryFilterDecider={(entry, filter) => entry.name.toLowerCase().includes(filter.toLowerCase())}

@@ -13,5 +13,8 @@
 
         /// <summary>Whether or not this artist has an image</summary>
         public bool HasImage { get; set; } = false;
+
+        /// <summary>Whether or not this artist is retired and should be hidden from selectors</summary>
+        public bool IsRetired { get; set; } = false;
     }
 }

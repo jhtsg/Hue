@@ -20,6 +20,9 @@
         /// <summary>Whether or not this character has an image</summary>
         public bool HasImage { get; set; } = false;
 
+        /// <summary>Whether or not the character is retired and should be hidden from selectors</summary>
+        public bool IsRetired { get; set; } = false;
+
         /// <summary>Category of this character</summary>
         public CharacterCategory? Category { get; set; }
     }

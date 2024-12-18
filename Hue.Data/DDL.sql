@@ -287,3 +287,8 @@ UNION
     now()::date - comm.done_dt AS overdue_days_nb
    FROM hue.comm
   WHERE comm.comm_status_cd = 3 AND comm.done_dt IS NOT NULL AND (now()::date - comm.done_dt) > 7;
+
+
+ALTER TABLE hue.char ADD retired_in boolean DEFAULT false NULL;
+ALTER TABLE hue.artist ADD retired_in bool DEFAULT false NULL;
+

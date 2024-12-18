@@ -28,7 +28,7 @@ export default function ArtistTTCGraph(props: {
         series={[{
             curve: "linear",
             dataKey: "daysToComplete",
-            valueFormatter: (v, context) => `${comms[context.dataIndex].name}: ${v} days `
+            valueFormatter: (v, context) => v === null ? "" : `${comms[context.dataIndex]?.name}: ${v} days `
         }]}
         dataset={comms as any[]}
         width={800}

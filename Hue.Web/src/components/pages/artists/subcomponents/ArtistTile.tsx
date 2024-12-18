@@ -20,8 +20,12 @@ export default function ArtistTile(props: {
         onClick={onClick ? onClick : () => nav(`/artists/${artist.id}`)}
         avatarString={artist.name}
         hasImage={artist.hasImage}
+        retired={artist.isRetired}
     >
-        <div>{artist.name}</div>
+        <div style={{ display: "flex", gap: "5px", alignItems: 'baseline' }}>
+            <div>{artist.name}</div>
+            {artist.isRetired && <div style={{ fontSize: ".65em", color: "#CCC" }}>(retired)</div>}
+        </div>
         <div><SocialDisplay url={artist.socialUrl} /></div>
     </AvatarTile>
 

@@ -91,7 +91,7 @@ export function UserButton() {
         <CharacterSelector open={characterSelector} setOpen={setCharacterSelector} setChar={(val) => {
             setNewChar(val);
             setCharacterSelector(false);
-        }} title="Select a new Primary Character" />
+        }} />
         <AreYouSureModal open={!!newChar} setOpen={() => setNewChar(undefined)}
             loading={updatePrimaryCharacterApi.loading}
             onYes={() => {

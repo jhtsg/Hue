@@ -134,7 +134,7 @@ namespace Hue.Data
                     COMM_POST_TAGS_TX, COMM_POST_DESC_TX, COMM_POST_URL_TX,
                     COMM_STATUS_CD, COMM_TYPE_CD,
                     CRE_TS, UPDT_TS, START_DT, DONE_DT, PBLSH_DT,
-                    "C."+ARTIST_ID, ARTIST_NM, ARTIST_COMM_SHEET_TX, ARTIST_SOCIAL_TX,
+                    "C."+ARTIST_ID, ARTIST_NM, ARTIST_COMM_SHEET_TX, ARTIST_SOCIAL_TX, RETIRED_IN,
                     ARTIST_IMG_PRESENT_IN, COMM_HEADER_IMG_PRESENT_IN
                 ],
                 table: $"{COMM_TABLE} C LEFT JOIN {ARTIST_TABLE} A ON C.{ARTIST_ID} = A.{ARTIST_ID}",
@@ -242,7 +242,7 @@ namespace Hue.Data
                     COMM_POST_TAGS_TX, COMM_POST_DESC_TX, COMM_POST_URL_TX,
                     COMM_STATUS_CD, COMM_TYPE_CD,
                     CRE_TS, UPDT_TS, START_DT, DONE_DT, PBLSH_DT,
-                    "C."+ARTIST_ID, ARTIST_NM, ARTIST_COMM_SHEET_TX, ARTIST_SOCIAL_TX,
+                    "C."+ARTIST_ID, ARTIST_NM, ARTIST_COMM_SHEET_TX, ARTIST_SOCIAL_TX, RETIRED_IN,
                     ARTIST_IMG_PRESENT_IN, COMM_HEADER_IMG_PRESENT_IN
 ],
                 table: $"{COMM_TABLE} C LEFT JOIN {ARTIST_TABLE} A ON C.{ARTIST_ID} = A.{ARTIST_ID}",
@@ -323,7 +323,7 @@ namespace Hue.Data
         private async Task<List<Character>> GetCommCharacters(int id) {
             var sql = SelectSql(
                 columns: [
-                    "C." + CHAR_ID, CHAR_NM, CHAR_COLOR_TX, CHAR_SPECIES_TX, CHAR_DESC_TX, CHAR_IMG_PRESENT_IN,
+                    "C." + CHAR_ID, CHAR_NM, CHAR_COLOR_TX, CHAR_SPECIES_TX, CHAR_DESC_TX, CHAR_IMG_PRESENT_IN, RETIRED_IN,
                     "CCAT." + CHAR_CAT_ID, CHAR_CAT_NM, CHAR_CAT_COLOR_TX, CHAR_CAT_DESC_TX
                     ],
                 table: $"{COMM_CHAR_MAP} CCM, {CHAR_TABLE} C, {CHAR_CAT_TABLE} ccat",

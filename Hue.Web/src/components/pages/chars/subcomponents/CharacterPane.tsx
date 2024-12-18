@@ -13,6 +13,9 @@ import CharacterCategoryPill from "./CharacterCategoryPill"
 import CharacterCategoryEditorModal from "./CharacterCategoryEditorModal"
 import ColorBox from "../../../shared/ColorBox"
 import { useWindowDimensions } from "../../../hooks/useWindowDimensions"
+import AreYouSureModal from "../../../shared/modals/AreYouSureModal"
+import CharacterTile from "./CharacterTile"
+import RetiredAvatar from "../../../shared/RetiredAvatar"
 
 export default function CharacterPane(props: {
     create?: boolean,
@@ -42,6 +45,8 @@ export default function CharacterPane(props: {
 
     const [category, setCategory] = useState(undefined as CharacterCategory | undefined)
     const [newCat, setNewCat] = useState(false)
+
+    const [retireAys, setRetireAys] = useState(false);
 
     const [selectedFile, setSelectedFile] = useState(null as File | null)
     const [selectedFileUrl, setSelectedFileUrl] = useState(undefined as string | undefined)
@@ -142,7 +147,20 @@ export default function CharacterPane(props: {
             color: color,
             description: description,
             species: species,
-            category: catOverride ?? category
+            category: catOverride ?? category,
+            isRetired: characterApi.data?.isRetired
+        } as Character)
+    }
+
+    const retireArtist = () => {
+        updateCharacterApi.fetch(onRetireSuccess(!characterApi.data?.isRetired), undefined, {
+            id: characterApi.data?.id,
+            name: characterApi.data?.name,
+            color: characterApi.data?.color,
+            description: characterApi.data?.description,
+            species: characterApi.data?.species,
+            category: characterApi.data?.category,
+            isRetired: !characterApi.data?.isRetired
         } as Character)
     }
 
@@ -164,6 +182,13 @@ export default function CharacterPane(props: {
             setEditMode(false)
             enqueueSnackbar("Character Updated!", { variant: 'success' })
         }
+    }
+
+    const onRetireSuccess = (retired: boolean) => () => {
+        if (onOk) onOk();
+        refreshCharacters();
+        setRetireAys(false)
+        enqueueSnackbar(`Character ${retired ? "" : "un"}retired!`, { variant: 'success' })
     }
 
     const onUploadCreateSuccess = () => {
@@ -210,9 +235,14 @@ export default function CharacterPane(props: {
 
         <div style={{ width: "100%", display: "flex", flexDirection: ultraVertical ? 'column' : undefined }}>
             <div style={ultraVertical ? { width: "128", margin: "0px auto 20px auto", textAlign: "center" } : { marginRight: "20px", textAlign: 'center' }}>
-                <SafeAvatar size={128} src={
-                    selectedFile ? selectedFileUrl : characterImage(id ?? 0)
-                } text={"?"} hasImage={!create} />
+                {characterApi.data?.isRetired && !editMode
+                    ? <RetiredAvatar size={128} src={
+                        selectedFile ? selectedFileUrl : characterImage(id ?? 0)
+                    } text={"?"} hasImage={!create} />
+
+                    : <SafeAvatar size={128} src={
+                        selectedFile ? selectedFileUrl : characterImage(id ?? 0)
+                    } text={"?"} hasImage={!create} />}
                 {editMode && <Button style={{ marginTop: "10px" }} onClick={() => { (fileInputRef?.current as any)?.click(); }}>Change</Button>}
             </div>
             <div style={{ flex: "1", display: "flex", flexDirection: "column" }}>
@@ -263,8 +293,9 @@ export default function CharacterPane(props: {
                             <div style={{ fontSize: "2em", marginBottom: "2px" }}>
                                 {characterApi.data.name}
                             </div>
-                            <div style={{ display: "flex", alignItems: "center" }}>
-                                {characterApi.data.category && <Box style={{ marginRight: "10px", cursor: "pointer" }} onClick={() => setCatOpen(true)}>
+                            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                                {characterApi.data?.isRetired && <CharacterCategoryPill category={{ name: "Retired", color: "#777" } as CharacterCategory} />}
+                                {characterApi.data.category && <Box style={{ cursor: "pointer" }} onClick={() => setCatOpen(true)}>
                                     <CharacterCategoryPill category={characterApi.data.category} />
                                 </Box>}
                                 <div style={{ fontSize: ".8em", color: "#999999" }}>{characterApi.data.species}</div>
@@ -281,12 +312,17 @@ export default function CharacterPane(props: {
                             </>
                     }
                 </div>
-                {(editable || editMode) && <div style={{ display: "flex", flexDirection: "row-reverse", marginTop: "20px" }}>
+                {(editable || editMode) && <div style={{ display: "flex", flexDirection: "row-reverse", marginTop: "20px", gap: "20px" }}>
                     <Button onClick={handleActionClick} disabled={anyLoading}>
                         {anyLoading ? <CircularProgress size={25} /> : editMode ? "OK" : "Edit"}
                     </Button>
+
+                    {!editMode && !anyLoading && !create && <Button onClick={() => setRetireAys(true)}>
+                        {characterApi.data?.isRetired ? "Un-" : ""}Retire
+                    </Button>
+                    }
+
                     {editMode && !anyLoading && <Button
-                        style={{ marginRight: "20px" }}
                         onClick={() => {
                             if (create && props.setOpen) { props.setOpen(false) }
                             else { setEditMode(false) }
@@ -316,5 +352,16 @@ export default function CharacterPane(props: {
                 setCatOpen(false)
             }, undefined, val)
         }} />
+
+        <AreYouSureModal open={retireAys} setOpen={setRetireAys} onYes={retireArtist} loading={updateCharacterApi.loading} title={`${characterApi.data?.isRetired ? "Un-" : ""}Retire this character?`}>
+            <div style={{ display: "flex", justifyContent: 'center' }}>
+                {characterApi.data && <CharacterTile character={characterApi.data} onClick={() => { }} />}
+            </div>
+            <hr />
+            {characterApi.data?.name} {characterApi.data?.isRetired
+                ? "will now be selectable to appear in commissions. You can retire them later again at any time"
+                : "will no longer be selectable to appear in commissions. This will not delete them, and you can un-retire them later at any time"
+            }
+        </AreYouSureModal>
     </>
 }

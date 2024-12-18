@@ -5,4 +5,5 @@ export default class Artist extends Identifiable {
     public socialUrl: string = "";
     public commSheetUrl: string = "";
     public hasImage: boolean = false;
+    public isRetired: boolean = false;
 }

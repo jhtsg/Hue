@@ -9,4 +9,5 @@ export default class Character extends Identifiable {
     public isPrimary?: boolean;
     public category?: CharacterCategory;
     public hasImage: boolean = false;
+    public isRetired: boolean = false;
 }

@@ -8,13 +8,12 @@ import CreateCharacterModal from "./CreateCharacterModal";
 
 export default function CharacterSelector(props: {
     open: boolean,
-    title?: string,
     setOpen: (val: boolean) => void
     setChar: (val: Character) => void
 }) {
 
     const charApi = useApi(getCharacters)
-    const { open, setOpen, setChar, title } = props
+    const { open, setOpen, setChar } = props
     const [newOpen, setNewOpen] = useState(false)
 
     useEffect(() => {
@@ -26,7 +25,7 @@ export default function CharacterSelector(props: {
 
     return <>
         <SelectorModal
-            entries={charApi.data} loading={charApi.loading}
+            entries={charApi.data?.filter(a => !a.isRetired)} loading={charApi.loading}
             open={open} setOpen={setOpen} onSelect={setChar}
             onNewClick={() => setNewOpen(true)} type="character"
             entryFilterDecider={(entry, filter) => entry.name.toLowerCase().includes(filter.toLowerCase())}
