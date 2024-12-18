@@ -1,24 +1,35 @@
-import { AccessTime, BeachAccess, Notifications, Publish, ScheduleSend } from "@mui/icons-material";
+import { AccessTime, BeachAccess, Notifications, ScheduleSend } from "@mui/icons-material";
 import { Badge, CircularProgress, IconButton, ListItem, Menu, MenuItem } from "@mui/material";
 import useApi from "../../hooks/useApi";
 import { getAlerts } from "../../../api/Comm";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CommissionAlert from "../../../model/commission/CommissionAlert";
 import { useNavigate } from "react-router-dom";
 import ApiAlert from "../../shared/ApiAlert";
+import { useUser } from "../../hooks/useUser";
 
 export default function AlertButton() {
 
     const [anchorEl, setAnchorEl] = useState(null as null | HTMLElement);
-    const alertsApi = useApi(getAlerts, true)
+    const alertsApi = useApi(getAlerts)
     const nav = useNavigate();
+
+    const { user } = useUser();
+
+    useEffect(() => {
+        if (user) {
+            alertsApi.fetch();
+        } else {
+            alertsApi.resetData();
+        }
+    }, [user])
 
     const handleClose = () => {
         setAnchorEl(null);
     };
 
     return <>
-        <IconButton onClick={(e) => {
+        <IconButton disabled={!user} onClick={(e) => {
             setAnchorEl(e.currentTarget)
             alertsApi.fetch()
         }}>
