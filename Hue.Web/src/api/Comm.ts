@@ -1,4 +1,5 @@
 import Commission from "../model/commission/Commission";
+import CommissionAlert from "../model/commission/CommissionAlert";
 import CommissionFilterOptions from "../model/commission/CommissionFilterOptions";
 import { API_PREFIX, Delete, Get, Post, Put, Upload } from "./Common";
 
@@ -25,6 +26,14 @@ export const getCommissions = (
         .join("&") : "";
 
     Get(setLoading, setItem, onError, ENDPOINT + (queryString.length === 0 ? "" : "?" + queryString));
+}
+
+export const getAlerts = (
+    setLoading: (value: boolean) => void,
+    setItem: (value?: CommissionAlert[]) => void,
+    onError: (value: any) => void,
+) => {
+    Get(setLoading, setItem, onError, ENDPOINT + "Alerts");
 }
 
 export const getCommissionsCount = (

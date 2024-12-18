@@ -8,6 +8,7 @@ import GlobalSearchBar from "./subcomponents/GlobalSearchBar"
 import { useWindowDimensions } from "../hooks/useWindowDimensions"
 import { useLocation } from "react-router-dom"
 import useDoubleShift from "../hooks/useDoubleShift"
+import AlertButton from "./subcomponents/AlertButton"
 
 export default function Navbar() {
 
@@ -47,6 +48,7 @@ export default function Navbar() {
                         {/* Right side */}
                         <div style={{ display: 'flex', alignContent: 'center', alignItems: 'center' }}>
                             {!searchBar ? <>
+                                <AlertButton />
                                 <IconButton onClick={() => setSearchBar(true)} disabled={!user}><Search /></IconButton>
                             </> : <div hidden={!user} style={{ width: "400px" }}>
                                 <GlobalSearchBar onExit={() => setSearchBar(false)} />
