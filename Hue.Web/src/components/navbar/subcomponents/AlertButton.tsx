@@ -1,10 +1,11 @@
-import { AccessTime, Notifications, Publish, ScheduleSend } from "@mui/icons-material";
+import { AccessTime, BeachAccess, Notifications, Publish, ScheduleSend } from "@mui/icons-material";
 import { Badge, CircularProgress, IconButton, ListItem, Menu, MenuItem } from "@mui/material";
 import useApi from "../../hooks/useApi";
 import { getAlerts } from "../../../api/Comm";
 import { useState } from "react";
 import CommissionAlert from "../../../model/commission/CommissionAlert";
 import { useNavigate } from "react-router-dom";
+import ApiAlert from "../../shared/ApiAlert";
 
 export default function AlertButton() {
 
@@ -27,14 +28,20 @@ export default function AlertButton() {
         </IconButton>
         <Menu anchorEl={anchorEl} open={!!anchorEl} onClose={handleClose} slotProps={{ paper: { style: { width: "400px" } } }}>
             <ListItem>{alertsApi.data?.length ?? 0} Alert(s)</ListItem>
+            <ApiAlert result={alertsApi.error} />
             {alertsApi.loading ?
                 <ListItem><div style={{ textAlign: "center", width: "100%", padding: "20px" }}><CircularProgress color="secondary" /></div></ListItem>
-                : alertsApi.data?.map(a => <MenuItem onClick={() => {
-                    handleClose();
-                    nav(`/commissions/${a.id}`)
-                }}>
-                    <AlertHandler alert={a} />
-                </MenuItem>)}
+                : (alertsApi.data?.length ?? 0) === 0 ?
+                    <ListItem><div style={{ textAlign: "center", width: "100%", padding: "20px" }}>
+                        <BeachAccess />
+                        <div>No Alerts!</div>
+                    </div></ListItem>
+                    : alertsApi.data?.map(a => <MenuItem onClick={() => {
+                        handleClose();
+                        nav(`/commissions/${a.id}`)
+                    }}>
+                        <AlertHandler alert={a} />
+                    </MenuItem>)}
         </Menu>
     </>
 

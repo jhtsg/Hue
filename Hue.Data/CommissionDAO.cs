@@ -185,7 +185,7 @@ namespace Hue.Data
                 Id = reader.GetInt(COMM_ID),
                 Name = reader.GetString(COMM_NM),
                 Status = (CommissionStatus)reader.GetInt(COMM_STATUS_CD),
-                daysOverdue = reader.GetInt(OVERDUE_DAYS_NB)
+                DaysOverdue = reader.GetInt(OVERDUE_DAYS_NB)
             });
 
         }
