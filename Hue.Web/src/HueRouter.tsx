@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createHashRouter } from "react-router-dom";
 import App from "./App";
 import HomePage from "./components/pages/home/HomePage";
 import CharsPage from "./components/pages/chars/CharsPage";
@@ -9,7 +9,7 @@ import CharPage from "./components/pages/chars/CharPage";
 import CommPage from "./components/pages/comms/CommPage";
 import CommSearchPage from "./components/pages/commSearch/CommSearchPage";
 
-export const HueRouter = createBrowserRouter([{
+export const HueRouter = createHashRouter([{
     path: "/",
     element: <App />,
     //This is where we put the 404
