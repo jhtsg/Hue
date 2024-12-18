@@ -11,6 +11,7 @@ namespace Hue.API.Controllers {
     public class AuthController : ControllerBase {
 
         private static readonly string SESSION_COOKIE = "session";
+        private static readonly bool SECURE = !(new EnvironmentKey("NO_SECURE").ToString().ToLower().Equals("true"));
         
         readonly UserDAO dao;
 
@@ -87,17 +88,17 @@ namespace Hue.API.Controllers {
         private static void AddSession(HttpResponse response, Guid session) {
             response.Cookies.Append(SESSION_COOKIE, session.ToString(), new() {
                 Expires = DateTime.UtcNow.AddDays(7),
-                Secure = true,
+                Secure = SECURE,
                 HttpOnly=true,
-                SameSite = SameSiteMode.None
+                SameSite = SECURE ? SameSiteMode.None :  SameSiteMode.Lax
             });
         }
 
         private static void RemoveSession(HttpResponse response) {
             response.Cookies.Delete(SESSION_COOKIE, new() { 
-                Secure=true,
+                Secure= SECURE,
                 HttpOnly=true,
-                SameSite=SameSiteMode.None
+                SameSite= SECURE ? SameSiteMode.None : SameSiteMode.Lax
             });
         }
     }
