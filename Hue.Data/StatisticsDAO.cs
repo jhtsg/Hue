@@ -1,8 +1,10 @@
-﻿using Hue.Common.Statistics;
+﻿using Hue.Common.Commission;
+using Hue.Common.Statistics;
 using Hue.Data.Utils;
 using static Hue.Data.Utils.AdoTemplate;
 using static Hue.Data.Utils.Constants;
 using static Hue.Data.Utils.SqlBuilder;
+using static Hue.Data.CommissionDAO;
 
 namespace Hue.Data {
     public class StatisticsDAO(string connectionString) {
@@ -191,6 +193,165 @@ namespace Hue.Data {
         public async Task<List<StatisticByYear>> GetYearlyTagStatistics(string username, int year) => await GetYearlyStatistics(username, YEARLY_TAG_STATISTICS, year, YearlyTagStatisticRm);
         public async Task<Statistic?> GetOverallStatisticForTag(string username, int id) => await GetOverallStatisticForItem(username, TAG_STATISTICS, COMM_TAG_ID, id, TagStatisticRm);
         public async Task<StatisticByYear?> GetYearlyStatisticForTag(string username, int id, int year) => await GetYearlyStatisticForItem(username, YEARLY_TAG_STATISTICS, COMM_TAG_ID, id, year, YearlyTagStatisticRm);
+
+        #endregion
+
+        #region COMMISSION STATISTICS
+
+        public async Task<CommissionStatistics> GetCommissionStatistics(string username, CommissionFilterOptions filters) {
+            return new() { 
+                Types = await GetTypeCount(username, filters),
+                CumulativeSpending = await GetCumulativeSpending(username, filters),
+                TimeToCompletion = filters.ArtistId != null ? await GetTTC(username,filters) : null,
+                ArtistCounts = filters.ArtistId==null ? await GetArtistCounts(username, filters) : null,
+                CharacterCounts = filters.CharacterId==null ? await GetCharacterCounts(username, filters) : null,
+                TagCounts = filters.CommissionTagId==null ? await GetTagCounts(username, filters) : null
+            };
+        
+        }
+
+        private async Task<List<CommissionStatistics.TypeCount>> GetTypeCount(string username, CommissionFilterOptions filter) {
+
+            List<WhereCondition> conditions = CommissionFilterOptionsToWhereConditions(filter);
+
+            var sql = SelectSql(
+                columns: [COMM_TYPE_CD, "count(*) as count"],
+                table: COMM_TABLE + " c",
+                new WhereConditionGroup(conditions)
+            ) + $"GROUP BY ${COMM_TYPE_CD}";
+
+            return await adoTemplate.Query(sql, (cmd) => {
+                cmd.SetString(USER_NM, username);
+                CommissionFilterApplier(filter, cmd);
+            }, (reader) => new CommissionStatistics.TypeCount() { 
+                Type = (CommissionType)reader.GetInt(COMM_TYPE_CD),
+                Count = reader.GetInt("count")
+            });
+
+        }
+
+        private async Task<List<CommissionStatistics.DateValuePair>> GetTTC(string username, CommissionFilterOptions filter) {
+            List<WhereCondition> conditions = CommissionFilterOptionsToWhereConditions(filter);
+            conditions.Add(new(COMM_TTC_NB, WhereConditionOperator.IS_NOT_NULL));
+
+            var sql = SelectSql(
+                columns: [COMM_ID, START_DT, COMM_NM, COMM_TTC_NB],
+                table: COMM_TABLE + " c",
+                new WhereConditionGroup(conditions),
+                order: [new(START_DT)]
+            );
+
+            return await adoTemplate.Query(sql, (cmd) => {
+                cmd.SetString(USER_NM, username);
+                CommissionFilterApplier(filter, cmd);
+            }, (reader) => new CommissionStatistics.DateValuePair() {
+                Id = reader.GetInt(COMM_ID),
+                Date = reader.GetString(START_DT),
+                Name = reader.GetString(COMM_NM),
+                Value = reader.GetDouble(COMM_TTC_NB)
+            });
+
+        }
+
+        private async Task<List<CommissionStatistics.CumulativeSpendingData>> GetCumulativeSpending(string username, CommissionFilterOptions filter) {
+            List<WhereCondition> conditions = CommissionFilterOptionsToWhereConditions(filter);
+            
+            var sql = SelectSql(
+                columns: [COMM_ID, START_DT, COMM_NM, COMM_PRICE_NB,COMM_STARTED_IN,
+                    "sum(comm_price_nb) over (order by start_dt) as running_total_price_nb"
+                ], table: COMM_TABLE + " c",
+                new WhereConditionGroup(conditions),
+                order: [new(START_DT)]
+            );
+
+            return await adoTemplate.Query(sql, (cmd) => {
+                cmd.SetString(USER_NM, username);
+                CommissionFilterApplier(filter, cmd);
+            }, (reader) => new CommissionStatistics.CumulativeSpendingData() {
+                Id = reader.GetInt(COMM_ID),
+                Date = reader.GetString(START_DT),
+                Name = reader.GetString(COMM_NM),
+                Value = reader.GetDouble(COMM_PRICE_NB),
+                RunningTotal = reader.GetDouble("running_total_price_nb"),
+                Started = reader.GetBoolean(COMM_STARTED_IN)
+            });
+        }
+
+        private async Task<List<CommissionStatistics.ArtistCount>> GetArtistCounts(string username, CommissionFilterOptions filter) {
+            List<WhereCondition> conditions = CommissionFilterOptionsToWhereConditions(filter);
+            
+            var sql = SelectSql(
+                columns: ["c." + ARTIST_ID, "c.count",
+                    ARTIST_ID,ARTIST_NM,ARTIST_SOCIAL_TX,ARTIST_COMM_SHEET_TX,ARTIST_IMG_PRESENT_IN,RETIRED_IN
+                ], table: $"({
+                    SelectSql(
+                        columns: [ARTIST_ID,"count(*) as count"],
+                        table:COMM_TABLE,
+                        new WhereConditionGroup(conditions)
+                    )    
+                } GROUP BY ${ARTIST_ID}) c, {ARTIST_TABLE} a",
+                new WhereConditionGroup([new JoinCondition("c","a",ARTIST_ID)]),
+                order: [new("c.count",SortOrder.DESC)]
+            );
+
+            return await adoTemplate.Query(sql, (cmd) => {
+                cmd.SetString(USER_NM, username);
+                CommissionFilterApplier(filter, cmd);
+            }, (reader) => new CommissionStatistics.ArtistCount() {
+                Artist = ArtistDAO.artistRm(reader),
+                Count = reader.GetInt("count")
+            });
+        }
+
+        private async Task<List<CommissionStatistics.CharacterCount>> GetCharacterCounts(string username, CommissionFilterOptions filter) {
+            List<WhereCondition> conditions = CommissionFilterOptionsToWhereConditions(filter);
+            conditions.Add(new JoinCondition("c", "ccm", COMM_ID));
+
+            var sql = SelectSql(
+                columns: ["c." + CHAR_ID, "c.count",
+                    CHAR_NM, CHAR_COLOR_TX, CHAR_SPECIES_TX, CHAR_DESC_TX, CHAR_IMG_PRESENT_IN, RETIRED_IN,
+                    "cat." + CHAR_CAT_ID, CHAR_CAT_NM, CHAR_CAT_COLOR_TX, CHAR_CAT_DESC_TX, PRIMARY_CHAR_IN
+                ], table: $"({SelectSql(
+                        columns: [CHAR_ID, "count(*) as count"],
+                        table: $"{COMM_CHAR_MAP} ccm, {COMM_TABLE} c",
+                        new WhereConditionGroup(conditions)
+                    )} GROUP BY ${CHAR_ID}) c, {CHAR_TABLE} ch, {CHAR_CAT_TABLE} cat",
+                new WhereConditionGroup([new JoinCondition("c", "ch", CHAR_ID), new JoinCondition("ch","cat",CHAR_CAT_ID)]),
+                order: [new("c.count", SortOrder.DESC)]
+            );
+
+            return await adoTemplate.Query(sql, (cmd) => {
+                cmd.SetString(USER_NM, username);
+                CommissionFilterApplier(filter, cmd);
+            }, (reader) => new CommissionStatistics.CharacterCount() {
+                Character = CharacterDAO.characterRm(reader),
+                Count = reader.GetInt("count")
+            });
+        }
+
+        private async Task<List<CommissionStatistics.TagCount>> GetTagCounts(string username, CommissionFilterOptions filter) {
+            List<WhereCondition> conditions = CommissionFilterOptionsToWhereConditions(filter);
+            conditions.Add(new JoinCondition("ct", "ccm", COMM_ID));
+
+            var sql = SelectSql(
+                columns: ["c.count","ct.*"], 
+                table: $"({SelectSql(
+                        columns: [COMM_TAG_ID, "count(*) as count"],
+                        table: $"{COMM_TAG_MAP} ct, {COMM_TABLE} c",
+                        new WhereConditionGroup(conditions)
+                    )} GROUP BY ${COMM_TAG_ID}) c, {COMM_TAG_TABLE} ct,",
+                new WhereConditionGroup([new JoinCondition("c", "ct", COMM_TAG_ID)]),
+                order: [new("c.count", SortOrder.DESC)]
+            );
+
+            return await adoTemplate.Query(sql, (cmd) => {
+                cmd.SetString(USER_NM, username);
+                CommissionFilterApplier(filter, cmd);
+            }, (reader) => new CommissionStatistics.TagCount() {
+                Tag = commTagRm(reader),
+                Count = reader.GetInt("count")
+            });
+        }
 
         #endregion
 
