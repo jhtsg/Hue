@@ -203,12 +203,12 @@ namespace Hue.Data
             if (filter.Year != null) { conditions.Add(new(COMM_YEAR_NB)); }
             if (filter.CharacterId != null) {
                 conditions.Add(new(
-                    COMM_ID, WhereConditionOperator.IN, "(" + SelectSql([COMM_ID], COMM_CHAR_MAP, new WhereConditionGroup([new(CHAR_ID)])) + ")"
+                    "C."+ COMM_ID, WhereConditionOperator.IN, "(" + SelectSql([COMM_ID], COMM_CHAR_MAP, new WhereConditionGroup([new(CHAR_ID)])) + ")"
                 ));
             }
             if (filter.CommissionTagId != null) {
                 conditions.Add(new(
-                    COMM_ID, WhereConditionOperator.IN, "(" + SelectSql([COMM_ID], COMM_TAG_MAP, new WhereConditionGroup([new(COMM_TAG_ID)])) + ")"
+                    "C." + COMM_ID, WhereConditionOperator.IN, "(" + SelectSql([COMM_ID], COMM_TAG_MAP, new WhereConditionGroup([new(COMM_TAG_ID)])) + ")"
                 ));
             }
 
