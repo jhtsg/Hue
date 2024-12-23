@@ -1,6 +1,7 @@
 import { LineChart } from "@mui/x-charts"
 import DateValuePair from "../../../../model/statistics/commissions/DateValuePair"
 import { months } from "../../Utils"
+import { commHeaderImage } from "../../../../api/Comm"
 
 export default function TtcLienChart(props: {
     data?: DateValuePair[]
@@ -25,10 +26,11 @@ export default function TtcLienChart(props: {
         series={[{
             curve: "linear",
             dataKey: "value",
-            valueFormatter: (v, context) => v === null ? "" : <>
+            valueFormatter: (v, context) => v === null ? "" : <div style={{ width: "250px" }}>
+                {data?.[context.dataIndex].hasImage ? <img src={commHeaderImage(data?.[context.dataIndex].id ?? 0)} width={"250px"} /> : <></>}
                 <div>{data?.[context.dataIndex].name}</div>
                 <div>{data?.[context.dataIndex].value.toLocaleString()} day{data?.[context.dataIndex].value === 1 ? "" : "s"}</div>
-            </> as unknown as string
+            </div> as unknown as string
         }]}
         dataset={data as any[]}
         width={width}

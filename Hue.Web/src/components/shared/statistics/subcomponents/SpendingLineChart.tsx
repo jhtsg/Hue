@@ -1,6 +1,7 @@
 import { LineChart } from "@mui/x-charts"
 import CumulativeSpendingData from "../../../../model/statistics/commissions/CumulativeSpendingData"
 import { months } from "../../Utils"
+import { commHeaderImage } from "../../../../api/Comm"
 
 export default function SpendingLineChart(props: {
     data?: CumulativeSpendingData[]
@@ -15,11 +16,12 @@ export default function SpendingLineChart(props: {
         series={[
             {
                 dataKey: "runningTotal",
-                valueFormatter: (value, context) => <>
-                    <div>{data?.[context.dataIndex].name}</div>
-                    <div>${data?.[context.dataIndex].value.toLocaleString()}{data?.[context.dataIndex].started ? "" : " (Estimated)"}</div>
+                valueFormatter: (value, context) => <div style={{ width: "250px" }}>
+                    {data?.[context.dataIndex].hasImage ? <img src={commHeaderImage(data?.[context.dataIndex].id ?? 0)} width={"250px"} /> : <></>}
+                    <div style={{ fontWeight: "bold" }}>{data?.[context.dataIndex].name}</div>
+                    <div style={{ color: "#CCC" }}>${data?.[context.dataIndex].value.toLocaleString()}{data?.[context.dataIndex].started ? "" : " (Estimated)"}</div>
                     <div style={{ marginTop: "20px" }}>Total {data?.[context.dataIndex].started ? "to Date" : "estimated"}: ${value?.toLocaleString()}</div>
-                </> as unknown as string,
+                </div> as unknown as string,
             }
         ]}
         xAxis={[{

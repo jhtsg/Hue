@@ -23,6 +23,7 @@
 
         public class DateValuePair {
             public int Id { get; set; } = 0;
+            public bool HasImage { get; set; } =  false;
             public string Name { get; set; } = "";
             public DateTime Date { get; set; } = DateTime.Now;
             public double Value { get; set; } = 0;

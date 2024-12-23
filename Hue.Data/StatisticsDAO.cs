@@ -236,7 +236,7 @@ namespace Hue.Data {
             conditions.Add(new(COMM_TTC_NB, WhereConditionOperator.IS_NOT_NULL));
 
             var sql = SelectSql(
-                columns: [COMM_ID, START_DT, COMM_NM, COMM_TTC_NB],
+                columns: [COMM_ID, START_DT, COMM_NM, COMM_TTC_NB, COMM_HEADER_IMG_PRESENT_IN],
                 table: COMM_TABLE + " c",
                 new WhereConditionGroup(conditions),
                 order: [new(START_DT)]
@@ -249,7 +249,8 @@ namespace Hue.Data {
                 Id = reader.GetInt(COMM_ID),
                 Date = reader.GetDateTime(START_DT),
                 Name = reader.GetString(COMM_NM),
-                Value = reader.GetDouble(COMM_TTC_NB)
+                Value = reader.GetDouble(COMM_TTC_NB),
+                HasImage = reader.GetBoolean(COMM_HEADER_IMG_PRESENT_IN)
             });
 
         }
@@ -259,7 +260,7 @@ namespace Hue.Data {
             conditions.Add(new(START_DT, WhereConditionOperator.IS_NOT_NULL));
 
             var sql = SelectSql(
-                columns: [COMM_ID, START_DT, COMM_NM, COMM_PRICE_NB,COMM_STARTED_IN,
+                columns: [COMM_ID, START_DT, COMM_NM, COMM_PRICE_NB,COMM_STARTED_IN,COMM_HEADER_IMG_PRESENT_IN,
                     "sum(comm_price_nb) over (order by start_dt) as running_total_price_nb"
                 ], table: COMM_TABLE + " c",
                 new WhereConditionGroup(conditions),
@@ -275,7 +276,8 @@ namespace Hue.Data {
                 Name = reader.GetString(COMM_NM),
                 Value = reader.GetDouble(COMM_PRICE_NB),
                 RunningTotal = reader.GetDouble("running_total_price_nb"),
-                Started = reader.GetBoolean(COMM_STARTED_IN)
+                Started = reader.GetBoolean(COMM_STARTED_IN),
+                HasImage = reader.GetBoolean(COMM_HEADER_IMG_PRESENT_IN)
             });
         }
 
