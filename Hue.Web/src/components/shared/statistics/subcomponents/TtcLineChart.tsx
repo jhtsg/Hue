@@ -2,6 +2,7 @@ import { LineChart } from "@mui/x-charts"
 import DateValuePair from "../../../../model/statistics/commissions/DateValuePair"
 import { months } from "../../Utils"
 import { commHeaderImage } from "../../../../api/Comm"
+import { useNavigate } from "react-router-dom"
 
 export default function TtcLienChart(props: {
     data?: DateValuePair[]
@@ -11,6 +12,7 @@ export default function TtcLienChart(props: {
 
     const { height, width } = props
     const data = props.data?.map(a => { return { ...a, date: Date.parse(a.date) } })
+    const nav = useNavigate();
 
 
     return <LineChart loading={!data}
@@ -35,5 +37,6 @@ export default function TtcLienChart(props: {
         dataset={data as any[]}
         width={width}
         height={height}
+        onAxisClick={(_, d) => { if (d) { nav(`/commissions/${data?.[d?.dataIndex].id}`) } }}
     />
 }

@@ -8,7 +8,7 @@ import { Card, List, ListItemButton, ListItemIcon, ListItemText, Tooltip } from 
 import { BarChart, ColorLens, Groups, Payments, PhotoLibrary, Style, Timelapse } from "@mui/icons-material"
 import TagBarChart from "./subcomponents/TagBarChart"
 import CharacterBarChart from "./subcomponents/CharacterBarChart"
-import ArtistBarChart from "./subcomponents/ArtistPieChart"
+import ArtistBarChart from "./subcomponents/ArtistBarChart"
 import TtcLienChart from "./subcomponents/TtcLineChart"
 import SpendingLineChart from "./subcomponents/SpendingLineChart"
 import TypesBarChart from "./subcomponents/TypesPieChart"

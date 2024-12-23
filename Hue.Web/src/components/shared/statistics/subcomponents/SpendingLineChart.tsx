@@ -2,6 +2,7 @@ import { LineChart } from "@mui/x-charts"
 import CumulativeSpendingData from "../../../../model/statistics/commissions/CumulativeSpendingData"
 import { months } from "../../Utils"
 import { commHeaderImage } from "../../../../api/Comm"
+import { useNavigate } from "react-router-dom"
 
 export default function SpendingLineChart(props: {
     data?: CumulativeSpendingData[]
@@ -11,6 +12,7 @@ export default function SpendingLineChart(props: {
 
     const { width, height } = props
     const data = props.data?.map(a => { return { ...a, date: Date.parse(a.date) } })
+    const nav = useNavigate();
 
     return <LineChart
         series={[
@@ -34,6 +36,7 @@ export default function SpendingLineChart(props: {
         height={height}
         width={width}
         dataset={data as any[]}
+        onAxisClick={(_, d) => { if (d) { nav(`/commissions/${data?.[d?.dataIndex].id}`) } }}
     />
 
 }

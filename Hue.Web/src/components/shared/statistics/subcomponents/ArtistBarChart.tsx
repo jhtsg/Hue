@@ -2,6 +2,7 @@ import { BarChart } from "@mui/x-charts"
 import ArtistCount from "../../../../model/statistics/commissions/ArtistCount"
 import Artist from "../../../../model/artist/Artist"
 import ArtistTile from "../../../pages/artists/subcomponents/ArtistTile"
+import { useNavigate } from "react-router-dom"
 
 export default function ArtistBarChart(props: {
     data?: ArtistCount[]
@@ -10,6 +11,7 @@ export default function ArtistBarChart(props: {
 }) {
 
     const { data, width, height } = props
+    const nav = useNavigate();
 
     return <BarChart loading={!data}
         dataset={data as any[]}
@@ -22,6 +24,9 @@ export default function ArtistBarChart(props: {
         series={[
             { dataKey: "count", valueFormatter: (value) => `${value} Commission${value === 1 ? "" : "s"}` },
         ]}
+
+        onItemClick={(_, d) => nav(`/artists/${data?.[d.dataIndex].artist?.id}`)}
+
         xAxis={[{
             dataKey: "artist", scaleType: 'band',
             valueFormatter: (value, context) => context.location === "tick"
