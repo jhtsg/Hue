@@ -70,3 +70,7 @@ export const daysUntil = (date: Date): number => {
 
 
 }
+
+export const objectToQueryString = (obj: any) => obj ? "?" + Object.keys(obj)
+    .map((k) => `${k}=${obj[k]}`)
+    .join("&") : "";
