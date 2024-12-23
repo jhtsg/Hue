@@ -26,36 +26,18 @@ const modes = [
 
 export default function CommissionStatisticsPane(props: {
     filter: CommissionFilterOptions
-    yearSelect?: boolean,
     maxWidth?: number
 }) {
 
-    const { filter, yearSelect, maxWidth } = props
+    const { filter, maxWidth } = props
     const { width } = useWindowDimensions();
 
     const statsApi = useApi(getCommissionStatistics)
-    const yearsApi = useApi(getCommissionYears)
 
-    const [year, setYear] = useState(filter.Year)
     const [mode, setMode] = useState("");
 
-
-
-    //Get the years if we need to
-    useEffect(() => {
-        if (yearSelect) { yearsApi.fetch() }
-    }, [yearSelect])
-
-    //
     useEffect(() => {
         setMode("")
-        const completeFilter = { ...filter } as CommissionFilterOptions;
-
-        //if we're allowed to select the filter, we override the year
-        if (yearSelect) {
-            completeFilter.Year = year;
-        }
-
         statsApi.fetch(undefined, undefined, filter)
     }, [filter])
 
