@@ -47,13 +47,14 @@ export default function CommColumn(props: {
                 <b>{title} ({comms.count ?? '...'})</b>
             </div>
             <div style={{ height: fullHeight ? height - 60 : height - 245, overflowY: "auto" }}>
-                {comms.loading && comms.comms.length === 0 ? <div style={{
-                    height: "100%",
-                    width: "32px", margin: "0 auto",
-                    display: "flex", alignItems: "center"
-                }}>
-                    <CircularProgress size={32} />
-                </div> :
+                {comms.loading && comms.comms.length === 0 ?
+                    <div style={{
+                        height: "100%",
+                        width: "32px", margin: "0 auto",
+                        display: "flex", alignItems: "center", justifyContent: 'center'
+                    }}>
+                        <CircularProgress size={32} />
+                    </div> :
                     comms.comms?.map(c => <CommCard commission={c} />)
                 }
                 {comms.hasMore && <div style={{ textAlign: "center", margin: "20px" }}>

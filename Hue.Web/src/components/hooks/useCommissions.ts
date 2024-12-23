@@ -21,7 +21,7 @@ export const useCommissions = (filter: CommissionFilterOptions | undefined) => {
         showMore(0, []);
     }
 
-    const hasMore = (countApi.data?.count ?? 0) !== comms.length
+    const hasMore = (countApi.data?.count ?? 0) !== (comms?.length ?? 0)
 
     const showMore = (pageOverride?: number, commsOverride?: Commission[]) => {
 
