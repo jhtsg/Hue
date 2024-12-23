@@ -24,7 +24,7 @@
         public class DateValuePair {
             public int Id { get; set; } = 0;
             public string Name { get; set; } = "";
-            public string Date { get; set; } = "";
+            public DateTime Date { get; set; } = DateTime.Now;
             public double Value { get; set; } = 0;
         }
 

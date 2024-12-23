@@ -218,7 +218,7 @@ namespace Hue.Data {
                 columns: [COMM_TYPE_CD, "count(*) as count"],
                 table: COMM_TABLE + " c",
                 new WhereConditionGroup(conditions)
-            ) + $"GROUP BY ${COMM_TYPE_CD}";
+            ) + $"GROUP BY {COMM_TYPE_CD}";
 
             return await adoTemplate.Query(sql, (cmd) => {
                 cmd.SetString(USER_NM, username);
@@ -232,6 +232,7 @@ namespace Hue.Data {
 
         private async Task<List<CommissionStatistics.DateValuePair>> GetTTC(string username, CommissionFilterOptions filter) {
             List<WhereCondition> conditions = CommissionFilterOptionsToWhereConditions(filter);
+            conditions.Add(new(START_DT, WhereConditionOperator.IS_NOT_NULL));
             conditions.Add(new(COMM_TTC_NB, WhereConditionOperator.IS_NOT_NULL));
 
             var sql = SelectSql(
@@ -246,7 +247,7 @@ namespace Hue.Data {
                 CommissionFilterApplier(filter, cmd);
             }, (reader) => new CommissionStatistics.DateValuePair() {
                 Id = reader.GetInt(COMM_ID),
-                Date = reader.GetString(START_DT),
+                Date = reader.GetDateTime(START_DT),
                 Name = reader.GetString(COMM_NM),
                 Value = reader.GetDouble(COMM_TTC_NB)
             });
@@ -255,7 +256,8 @@ namespace Hue.Data {
 
         private async Task<List<CommissionStatistics.CumulativeSpendingData>> GetCumulativeSpending(string username, CommissionFilterOptions filter) {
             List<WhereCondition> conditions = CommissionFilterOptionsToWhereConditions(filter);
-            
+            conditions.Add(new(START_DT, WhereConditionOperator.IS_NOT_NULL));
+
             var sql = SelectSql(
                 columns: [COMM_ID, START_DT, COMM_NM, COMM_PRICE_NB,COMM_STARTED_IN,
                     "sum(comm_price_nb) over (order by start_dt) as running_total_price_nb"
@@ -269,7 +271,7 @@ namespace Hue.Data {
                 CommissionFilterApplier(filter, cmd);
             }, (reader) => new CommissionStatistics.CumulativeSpendingData() {
                 Id = reader.GetInt(COMM_ID),
-                Date = reader.GetString(START_DT),
+                Date = reader.GetDateTime(START_DT),
                 Name = reader.GetString(COMM_NM),
                 Value = reader.GetDouble(COMM_PRICE_NB),
                 RunningTotal = reader.GetDouble("running_total_price_nb"),
@@ -282,14 +284,14 @@ namespace Hue.Data {
             
             var sql = SelectSql(
                 columns: ["c." + ARTIST_ID, "c.count",
-                    ARTIST_ID,ARTIST_NM,ARTIST_SOCIAL_TX,ARTIST_COMM_SHEET_TX,ARTIST_IMG_PRESENT_IN,RETIRED_IN
+                    ARTIST_NM,ARTIST_SOCIAL_TX,ARTIST_COMM_SHEET_TX,ARTIST_IMG_PRESENT_IN,RETIRED_IN
                 ], table: $"({
                     SelectSql(
                         columns: [ARTIST_ID,"count(*) as count"],
-                        table:COMM_TABLE,
+                        table:COMM_TABLE + " C",
                         new WhereConditionGroup(conditions)
                     )    
-                } GROUP BY ${ARTIST_ID}) c, {ARTIST_TABLE} a",
+                } GROUP BY {ARTIST_ID}) c, {ARTIST_TABLE} a",
                 new WhereConditionGroup([new JoinCondition("c","a",ARTIST_ID)]),
                 order: [new("c.count",SortOrder.DESC)]
             );
@@ -315,7 +317,7 @@ namespace Hue.Data {
                         columns: [CHAR_ID, "count(*) as count"],
                         table: $"{COMM_CHAR_MAP} ccm, {COMM_TABLE} c",
                         new WhereConditionGroup(conditions)
-                    )} GROUP BY ${CHAR_ID}) c, {CHAR_TABLE} ch, {CHAR_CAT_TABLE} cat",
+                    )} GROUP BY {CHAR_ID}) c, {CHAR_TABLE} ch, {CHAR_CAT_TABLE} cat ",
                 new WhereConditionGroup([new JoinCondition("c", "ch", CHAR_ID), new JoinCondition("ch","cat",CHAR_CAT_ID)]),
                 order: [new("c.count", SortOrder.DESC)]
             );
@@ -331,7 +333,7 @@ namespace Hue.Data {
 
         private async Task<List<CommissionStatistics.TagCount>> GetTagCounts(string username, CommissionFilterOptions filter) {
             List<WhereCondition> conditions = CommissionFilterOptionsToWhereConditions(filter);
-            conditions.Add(new JoinCondition("ct", "ccm", COMM_ID));
+            conditions.Add(new JoinCondition("ct", "c", COMM_ID));
 
             var sql = SelectSql(
                 columns: ["c.count","ct.*"], 
@@ -339,7 +341,7 @@ namespace Hue.Data {
                         columns: [COMM_TAG_ID, "count(*) as count"],
                         table: $"{COMM_TAG_MAP} ct, {COMM_TABLE} c",
                         new WhereConditionGroup(conditions)
-                    )} GROUP BY ${COMM_TAG_ID}) c, {COMM_TAG_TABLE} ct,",
+                    )} GROUP BY {COMM_TAG_ID}) c, {COMM_TAG_TABLE} ct ",
                 new WhereConditionGroup([new JoinCondition("c", "ct", COMM_TAG_ID)]),
                 order: [new("c.count", SortOrder.DESC)]
             );
