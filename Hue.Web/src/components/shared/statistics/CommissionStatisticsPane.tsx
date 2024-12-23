@@ -26,10 +26,11 @@ const modes = [
 
 export default function CommissionStatisticsPane(props: {
     filter: CommissionFilterOptions
-    yearSelect?: boolean
+    yearSelect?: boolean,
+    maxWidth?: number
 }) {
 
-    const { filter, yearSelect } = props
+    const { filter, yearSelect, maxWidth } = props
     const { width } = useWindowDimensions();
 
     const statsApi = useApi(getCommissionStatistics)
@@ -72,7 +73,7 @@ export default function CommissionStatisticsPane(props: {
 
     return <Card elevation={3} style={{ padding: "20px" }}>
         <ApiAlert result={statsApi.error} />
-        <div style={{ display: "flex", gap: "10px", flexDirection: superVertical ? "column" : undefined, maxHeight: allDisabled ? "100px" : "900px", transition: "max-height 500ms ease-out" }}>
+        <div style={{ display: "flex", gap: "10px", flexDirection: superVertical ? "column" : undefined }}>
 
             {allDisabled ? <></> : <>
                 <div style={{ width: superVertical ? undefined : "220px", height: superVertical ? undefined : "310px" }}>
@@ -112,18 +113,18 @@ export default function CommissionStatisticsPane(props: {
                 {!superVertical && <hr />}
             </>}
             <div style={{ flex: "1" }}>
-                <DisplayDecider mode={mode} data={statsApi.data} superVertical={superVertical} allDisabled={allDisabled} />
+                <DisplayDecider mode={mode} data={statsApi.data} superVertical={superVertical} allDisabled={allDisabled} maxWidth={maxWidth} />
             </div>
         </div>
     </Card>
 }
 
-const DisplayDecider = (props: { mode: string, data: CommissionStatistics, superVertical: boolean, allDisabled: boolean }) => {
-    const { mode, data, superVertical, allDisabled } = props;
+const DisplayDecider = (props: { mode: string, data: CommissionStatistics, superVertical: boolean, allDisabled: boolean, maxWidth?: number }) => {
+    const { mode, data, superVertical, allDisabled, maxWidth } = props;
 
     const { width, vertical } = useWindowDimensions()
 
-    const chartWidth = superVertical ? width - 70 : vertical ? width - 150 : width - 700
+    const chartWidth = Math.min(superVertical ? width - 70 : vertical ? width - 150 : width - 700, maxWidth ?? 99999)
     const chartHeight = superVertical ? 500 : 310
 
 
@@ -143,7 +144,7 @@ const DisplayDecider = (props: { mode: string, data: CommissionStatistics, super
         default:
             return <div style={{
                 display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-                color: "#999", height: allDisabled ? "100px" : `${chartHeight}px`, transition: "height 250ms ease-out"
+                color: "#999", height: `${chartHeight}px`, transition: "height 250ms ease-out"
             }}
             >
                 <div><BarChart fontSize="large" /></div>
