@@ -132,9 +132,10 @@ export default function GlobalSearchBar(props: {
 
 
 
+    const selectOptions = options();
     return <Autocomplete
         freeSolo loading={loading || query.length === 0} loadingText={loading ? "Loading..." : "Type to begin"}
-        options={options()}
+        options={selectOptions}
         groupBy={(option) => option.type}
         getOptionLabel={(option) => (option as SearchResult)?.name ?? option}
         filterOptions={(options) => options} //Disable the filtering, we do all the filtering ourselves
@@ -142,6 +143,20 @@ export default function GlobalSearchBar(props: {
         onChange={(_, value) => { onSelect(value as SearchResult) }}
         inputValue={query}
         onInputChange={(_, value) => { onInputChange(value) }}
+        onKeyDown={(e) => {
+            switch (e.key) {
+                case "Enter":
+                    if (selectOptions.length === 1) {
+                        onSelect(selectOptions[0]);
+                    }
+                    break;
+                case "Escape":
+                    onExit?.();
+                    break;
+                default:
+                    break;
+            }
+        }}
         renderOption={(props, option) => {
             const { key, ...optionProps } = props;
             return (
