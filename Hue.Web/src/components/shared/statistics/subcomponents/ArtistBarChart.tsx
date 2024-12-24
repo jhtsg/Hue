@@ -25,7 +25,7 @@ export default function ArtistBarChart(props: {
             { dataKey: "count", valueFormatter: (value) => `${value} Commission${value === 1 ? "" : "s"}` },
         ]}
 
-        onItemClick={(_, d) => nav(`/artists/${data?.[d.dataIndex].artist?.id}`)}
+        onAxisClick={(_, d) => d ? nav(`/artists/${data?.[d.dataIndex].artist?.id}`) : console.warn("nope!")}
 
         xAxis={[{
             dataKey: "artist", scaleType: 'band',

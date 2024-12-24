@@ -45,7 +45,7 @@ export default function TagsStatisticsPane(props: {
 
         <div style={vertical ? {} : { display: "flex" }}>
             <div style={vertical ? { marginBottom: "20px" } : { flex: "1", marginRight: "10px" }}>
-                <CommSpentBarChartPane title={artist ? "Earned from Tags" : "Spent on Tags"} statistics={statsApi.data} loading={statsApi.loading} />
+                <CommSpentBarChartPane title={artist ? "Earned from Tags" : "Spent on Tags"} statistics={statsApi.data} loading={statsApi.loading} statisticType="TAG" />
             </div>
             <div style={vertical ? { marginBottom: "20px" } : { flex: "1", marginLeft: "10px", marginRight: "10px" }}>
                 <CommCountBarChart title="Commissions with Tags" statistics={statsApi.data} loading={statsApi.loading} />

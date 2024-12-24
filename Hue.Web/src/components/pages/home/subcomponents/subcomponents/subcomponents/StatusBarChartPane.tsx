@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, Skeleton } from "@mui/material";
 import { BarChart } from '@mui/x-charts/BarChart';
 import MonthlyStatus from "../../../../../../model/statistics/MonthlyStatus";
-import { Months } from '../../../../../../model/Months'
+import { months } from "../../../../../shared/Utils";
 
 export default function StatusBarChartPane(props: {
     statuses?: MonthlyStatus[],
@@ -21,6 +21,8 @@ export default function StatusBarChartPane(props: {
     const doneAxis = priceCats?.map(a => a.done / getTotal(a))
     const publishedAxis = priceCats?.map(a => a.published / getTotal(a))
 
+    const valueFormatter = (v: number | null) => `${((v ?? 0) * 100).toFixed(0)}%`
+
     return <Card>
         <CardHeader title={title} />
         <CardContent>
@@ -33,14 +35,14 @@ export default function StatusBarChartPane(props: {
                     id: "percentageAxis", valueFormatter: (val) => `${val * 100}%`
                 }]}
                 series={[
-                    { data: brainstormAxis, label: 'Brainstorming', color: '#999', stack: "SpendingStack" },
-                    { data: scheduledAxis, label: 'Scheduled', color: '#279', stack: "SpendingStack" },
-                    { data: inProgressAxis, label: 'In Progress', color: '#B72', stack: "SpendingStack" },
-                    { data: doneAxis, label: 'Done', color: '#992', stack: "SpendingStack" },
-                    { data: publishedAxis, label: 'Published', color: '#292', stack: "SpendingStack" }
+                    { data: brainstormAxis, label: 'Brainstorming', color: '#999', stack: "SpendingStack", valueFormatter: valueFormatter },
+                    { data: scheduledAxis, label: 'Scheduled', color: '#279', stack: "SpendingStack", valueFormatter: valueFormatter },
+                    { data: inProgressAxis, label: 'In Progress', color: '#B72', stack: "SpendingStack", valueFormatter: valueFormatter },
+                    { data: doneAxis, label: 'Done', color: '#992', stack: "SpendingStack", valueFormatter: valueFormatter },
+                    { data: publishedAxis, label: 'Published', color: '#292', stack: "SpendingStack", valueFormatter: valueFormatter }
                 ]}
                 xAxis={[{
-                    data: xAxis, scaleType: 'band', valueFormatter: (val) => Months[val - 1],
+                    data: xAxis, scaleType: 'band', valueFormatter: (val) => months[val - 1],
                     tickLabelStyle: {
                         angle: -25,
                         textAnchor: 'end',

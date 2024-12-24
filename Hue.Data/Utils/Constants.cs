@@ -112,6 +112,7 @@
         public static readonly string PBLSH_DT = "pblsh_dt";
 
         public static readonly string RETIRED_IN = "retired_in";
+        public static readonly string IMAGE_IN = "image_in";
 
     }
 }

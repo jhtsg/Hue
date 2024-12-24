@@ -19,7 +19,7 @@ export default function CharacterBarChart(props: {
         width={width}
         height={height}
 
-        onItemClick={(_, d) => nav(`/characters/${data?.[d.dataIndex].character?.id}`)}
+        onAxisClick={(_, d) => d ? nav(`/characters/${data?.[d.dataIndex].character?.id}`) : console.warn("nope!")}
 
         slotProps={{
             legend: { hidden: true },

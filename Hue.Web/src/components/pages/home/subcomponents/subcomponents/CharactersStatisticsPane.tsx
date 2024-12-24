@@ -26,7 +26,7 @@ export default function CharactersStatisticsPane(props: {
             <CommCountPieChartPane statistics={statsApi.data} title="Commissions with Character" statisticType="CHARACTER" loading={statsApi.loading} />
         </div>
         <div>
-            <CommSpentBarChartPane statistics={statsApi.data} title={artist ? "Earned from Characters" : "Spent on Characters"} loading={statsApi.loading} />
+            <CommSpentBarChartPane statistics={statsApi.data} title={artist ? "Earned from Characters" : "Spent on Characters"} loading={statsApi.loading} statisticType="CHARACTER" />
         </div>
         <div>
             <Card style={{ marginTop: "20px" }} >

@@ -116,7 +116,8 @@ namespace Hue.Data {
                 Color = colorColumn == null ? "" : reader.GetString(colorColumn),
                 Count = reader.GetInt(COMM_CNT),
                 Spent = reader.GetInt(SPENT_NB),
-                LastSeen = reader.GetOptionalDateTime(LAST_PBLSH_DT)
+                LastSeen = reader.GetOptionalDateTime(LAST_PBLSH_DT),
+                HasImage = reader.GetBoolean(IMAGE_IN)
             };
         }
 
@@ -128,7 +129,8 @@ namespace Hue.Data {
                 Color = colorColumn == null ? "" : reader.GetString(colorColumn),
                 Count = reader.GetInt(COMM_CNT),
                 Spent = reader.GetInt(SPENT_NB),
-                LastSeen = reader.GetOptionalDateTime(LAST_PBLSH_DT)
+                LastSeen = reader.GetOptionalDateTime(LAST_PBLSH_DT),
+                HasImage = reader.GetBoolean(IMAGE_IN)
             };
         }
 

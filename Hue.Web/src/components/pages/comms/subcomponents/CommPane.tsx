@@ -18,7 +18,7 @@ import BlockerConfirmModal from "../../../shared/modals/BlockerConfirmModal"
 import { CommissionStatus, CommissionTypes } from "../../../../model/commission/CommissionEnums"
 import LoadingBackdrop from "../../../shared/LoadingBackdrop"
 import CharacterTile from "../../chars/subcomponents/CharacterTile"
-import { addDays, dateFromBackend, dateToBackend, daysSince, daysUntil, RemoveIndex as removeIndex } from "../../../shared/Utils"
+import { addDays, dateFromBackend, dateToBackend, daysSince, daysUntil, months, RemoveIndex as removeIndex } from "../../../shared/Utils"
 import AvatarTile from "../../../shared/AvatarTile"
 import ColorPill from "../../../shared/ColorPill"
 import CommTagEditor from "./CommTagEditor"
@@ -33,7 +33,6 @@ import SocialIcon from "../../../shared/SocialIcon"
 import ArtistSelector from "../../artists/subcomponents/ArtistSelector"
 import { getStatisticForArtist } from "../../../../api/Statistics"
 import ArtistStatistic from "../../../../model/statistics/ArtistStatistic"
-import { Months } from "../../../../model/Months"
 
 
 export default function CommPane(props: {
@@ -435,7 +434,7 @@ function WarningsBanner(props: {
         //We're still in preplanning
         return <Alert severity="info">
             You should expect this commission to {
-                eta ? `be done by ${Months[eta.getUTCMonth()]} ${eta.getUTCDate()} (${avgDaysToCompelte} - ${avgDaysToCompleteWithBuffer} days)` : `take ${avgDaysToCompelte}-${avgDaysToCompleteWithBuffer} days`
+                eta ? `be done by ${months[eta.getUTCMonth()]} ${eta.getUTCDate()} (${avgDaysToCompelte} - ${avgDaysToCompleteWithBuffer} days)` : `take ${avgDaysToCompelte}-${avgDaysToCompleteWithBuffer} days`
             }
         </Alert>
     }
@@ -446,17 +445,17 @@ function WarningsBanner(props: {
             if (daysFromNow < -1 * (avgDaysToCompleteWithMegaBuffer ?? 100)) {
                 return <Alert severity="error">
                     <AlertTitle>This commission is running very late</AlertTitle>
-                    This commission should've been done by {Months[eta.getUTCMonth()]} {eta.getUTCDate()} ({-1 * daysFromNow} days ago)
+                    This commission should've been done by {months[eta.getUTCMonth()]} {eta.getUTCDate()} ({-1 * daysFromNow} days ago)
                 </Alert>
             }
             return <Alert severity="warning">
                 <AlertTitle>This commission is running late</AlertTitle>
-                This commission should've been done by {Months[eta.getUTCMonth()]} {eta.getUTCDate()} ({-1 * daysFromNow} days ago)
+                This commission should've been done by {months[eta.getUTCMonth()]} {eta.getUTCDate()} ({-1 * daysFromNow} days ago)
             </Alert>
         } else {
             return <Alert severity="info">
                 <AlertTitle>This commission is in progress</AlertTitle>
-                This commission should be done by {Months[eta.getUTCMonth()]} {eta.getUTCDate()} ({daysFromNow} days from now)
+                This commission should be done by {months[eta.getUTCMonth()]} {eta.getUTCDate()} ({daysFromNow} days from now)
             </Alert>
         }
     }
