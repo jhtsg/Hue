@@ -1,4 +1,4 @@
-import { Button, Card, Checkbox, CircularProgress, FormControlLabel, FormGroup, Tab, Tabs, TextField } from "@mui/material";
+import { Button, Card, CardContent, CardHeader, Checkbox, CircularProgress, FormControlLabel, FormGroup, Tab, Tabs, TextField } from "@mui/material";
 import { useWindowDimensions } from "../../hooks/useWindowDimensions"
 import { useUser } from "../../hooks/useUser";
 import { useState } from "react";
@@ -11,6 +11,7 @@ import LoginRequest from "../../../model/requests/auth/LoginRequest";
 import LoadingBackdrop from "../../shared/LoadingBackdrop";
 import { usePingPong } from "../../hooks/usePingPong";
 import WelcomePane from "./subcomponents/WelcomePane";
+import { Warning } from "@mui/icons-material";
 
 
 export default function LoginPage() {
@@ -53,15 +54,19 @@ function Footer() {
         </div>
 
         <hr />
-        <div style={{ display: "flex", marginTop: "10px" }}>
+        <div style={{ display: "flex", marginTop: "10px", flexWrap: "wrap" }}>
             <div style={{ width: "50%" }}>
                 <div>Server running since</div>
                 <div>{new Date(pong?.startupTime ?? 0).toLocaleString()}</div>
             </div>
             <div style={{ width: "50%" }}>
                 <div>Last ping pong game took</div>
-                <div>{(new Date(pong?.pongTime ?? 0).getTime() - new Date(pong?.pingTime ?? 0).getTime()) / 1000} seconds</div>
+                <div>{(new Date(pong?.dbPingPong?.pingTime ?? 0).getTime() - new Date(pong?.dbPingPong?.pongTime ?? 0).getTime()) / 1000} seconds</div>
             </div>
+            {pong?.dbPingPong?.up && <div style={{ width: "100%", marginTop: "10px" }}>
+                <div>Last DB ping pong game took</div>
+                <div>{(new Date(pong?.dbPingPong?.pingTime ?? 0).getTime() - new Date(pong?.dbPingPong?.pongTime ?? 0).getTime()) / 1000} seconds</div>
+            </div>}
 
         </div>
     </div>
@@ -70,6 +75,8 @@ function Footer() {
 function LoginPanel() {
     const [value, setValue] = useState(0);
     const { enqueueSnackbar } = useSnackbar();
+    const { pong, refreshPing, loading: pingPongLoading } = usePingPong();
+
 
     const { refreshAuth } = useUser();
     const loginApi = useApi(login);
@@ -112,7 +119,25 @@ function LoginPanel() {
 
     const anyLoading = loginApi.loading || registerApi.loading;
 
-    return <Card>
+    if (!pong?.dbPingPong?.up && !pingPongLoading) {
+        return <Card style={{ height: "300px" }}>
+            <div style={{
+                height: "100%",
+                display: "flex", flexDirection: "column",
+                alignItems: "center", justifyContent: "center"
+            }}>
+                <div style={{ color: "yellow" }}><Warning fontSize="large" /></div>
+                <div><b>There's been a database issue</b></div>
+                <div style={{ marginTop: "0px", fontSize: ".8em", color: "#CCC", maxWidth: "300px", textAlign: "center" }}>
+                    The backend was unable to contact the DB. Contact this instance's administrator
+                </div>
+                <Button style={{ marginTop: "15px" }} variant="contained" onClick={() => refreshPing()}>Retry</Button>
+            </div>
+        </Card>
+
+    }
+
+    return <Card style={{ height: "300px" }}>
         <div style={{ padding: "10px" }}><Tabs value={value} onChange={handleChange}
             variant="scrollable"
         >

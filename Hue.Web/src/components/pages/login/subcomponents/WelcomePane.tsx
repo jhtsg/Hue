@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader } from "@mui/material";
 import { useWindowDimensions } from "../../../hooks/useWindowDimensions";
+import SafeAvatar from "../../../shared/SafeAvatar";
 
 export default function WelcomePane() {
 
@@ -31,21 +32,22 @@ export default function WelcomePane() {
 
             <div style={{ display: "flex", flexWrap: "wrap", marginTop: "20px" }}>
                 <WelcomeCard imageSrc="/screenshots/commission.png" title="Commission Tracking">
-                    See your commissions as they progress through their Lifecycle. Take down
+                    See your commissions as they progress through their lifecycle. Take down
                     notes and brainstorm what your next big project is. Assign an artist and
-                    schedule it. Once they're finished, publish them, and keep track of your
-                    dates, tags, and descriptions.
+                    schedule it. While they're in progress, Once they're finished,
+                    publish them, and keep track of your dates, tags, descriptions, and where it's
+                    posted to.
                 </WelcomeCard>
                 <WelcomeCard title="Artist and Character Tracking" imageSrc="/screenshots/characters.png">
                     Who's the character you've commissioned the most? When was the last time
                     you commissioned your OC? How much have you commissioned this artist for?
                     All questions answerable by Hue's robust associations and tracking of
-                    everything involved in your commissions
+                    everything involved in your commissions.
                 </WelcomeCard>
                 <WelcomeCard title="Powerful Statistics" imageSrc="/screenshots/statistics.png">
                     Beyond just individual artists, characters, and commissions, Hue gives you
-                    broad statistics on a yearly  and overall time-frames. Track your spending
-                    on a monthly basis. Find out your artists' average completion times. Or if
+                    broad statistics on yearly and overall time-frames. Track your spending
+                    on a monthly basis, find out your artists' average completion times, or if
                     hue's statistics aren't enough, export your data to go even deeper.
                 </WelcomeCard>
             </div>
@@ -54,7 +56,7 @@ export default function WelcomePane() {
                 <div style={superVertical ? { marginBottom: "20px" } : { flex: "1", marginRight: "10px" }}>
                     <Card elevation={5}>
                         <CardHeader title="Works for Artists Too!" />
-                        <CardContent>
+                        <CardContent style={{ marginTop: "-20px", textAlign: "justify" }}>
                             Want to track your own work? Who your most frequent clients are? What
                             your monthly earnings are? Hue isn't just for commissioners; it works
                             for artists too! Just tick the box when you're registering.
@@ -66,13 +68,12 @@ export default function WelcomePane() {
                         <CardHeader title="More to come!" />
                         <CardContent>
                             <div style={{
-                                display: "flex"
+                                display: "flex", gap: "20px", marginTop: "-20px"
                             }}>
-                                <img src="/ian.png" height={64} style={{ marginRight: "20px" }} />
-                                <div>
+                                <SafeAvatar hasImage src={"/ian.png"} size={64} />
+                                <div style={{ textAlign: "justify" }}>
                                     Want to see new features? I value your feedback! We'll see how far I can
-                                    take this XD. Thanks for stopping by and checking this out!<br /><br />
-                                    -TSG
+                                    take this XD. Thanks for stopping by and checking this out!
                                 </div>
                             </div>
                         </CardContent>
@@ -105,7 +106,7 @@ function WelcomeCard(props: {
             }}>
                     {title}
                 </div></div>
-            <div style={{ padding: "20px" }}>
+            <div style={{ padding: "20px", textAlign: "justify" }}>
                 {children}
             </div>
         </Card>
