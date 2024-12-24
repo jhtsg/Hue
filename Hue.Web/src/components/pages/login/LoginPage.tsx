@@ -1,4 +1,4 @@
-import { Button, Card, CardContent, CardHeader, Checkbox, CircularProgress, FormControlLabel, FormGroup, Tab, Tabs, TextField } from "@mui/material";
+import { Button, Card, Checkbox, CircularProgress, FormControlLabel, FormGroup, Tab, Tabs, TextField } from "@mui/material";
 import { useWindowDimensions } from "../../hooks/useWindowDimensions"
 import { useUser } from "../../hooks/useUser";
 import { useState } from "react";
