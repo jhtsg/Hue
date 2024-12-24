@@ -7,5 +7,7 @@
         public int Spent { get; set; } = 0;
         public DateTime? LastSeen { get; set; }
 
+        public bool HasImage { get; set; } = false;
+
     }
 }

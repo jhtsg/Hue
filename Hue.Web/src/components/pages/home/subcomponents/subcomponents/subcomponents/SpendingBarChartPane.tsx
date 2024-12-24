@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, Skeleton } from "@mui/material";
 import { BarChart } from '@mui/x-charts/BarChart';
 import MonthlySpend from "../../../../../../model/statistics/MonthlySpend";
-import { Months } from "../../../../../../model/Months";
+import { months } from "../../../../../shared/Utils";
 
 export default function SpendingBarChartPane(props: {
     spending?: MonthlySpend[],
@@ -25,11 +25,11 @@ export default function SpendingBarChartPane(props: {
                     legend: { hidden: true },
                 }}
                 series={[
-                    { data: committedAxis, label: 'Committed', color: '#292', stack: "SpendingStack" },
-                    { data: potentialAxis, label: 'Potential', color: '#992', stack: "SpendingStack" },
+                    { data: committedAxis, label: 'Committed', color: '#292', stack: "SpendingStack", valueFormatter: (v) => `$${v?.toLocaleString()}` },
+                    { data: potentialAxis, label: 'Potential', color: '#992', stack: "SpendingStack", valueFormatter: (v) => `$${v?.toLocaleString()}` },
                 ]}
                 xAxis={[{
-                    data: xAxis, scaleType: 'band', valueFormatter: (val) => Months[val - 1],
+                    data: xAxis, scaleType: 'band', valueFormatter: (val) => months[val - 1],
                     tickLabelStyle: {
                         angle: -25,
                         textAnchor: 'end',

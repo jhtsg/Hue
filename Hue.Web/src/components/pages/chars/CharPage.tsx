@@ -4,11 +4,23 @@ import { ArrowBack } from "@mui/icons-material";
 import CharacterPane from "./subcomponents/CharacterPane";
 import CommsDisplay from "../comms/subcomponents/CommsDisplay";
 import CharsStatisticPane from "./subcomponents/CharsStatisticPane";
+import CommissionStatisticsPane from "../../shared/statistics/CommissionStatisticsPane";
+import { useEffect, useState } from "react";
+import CommissionFilterOptions from "../../../model/commission/CommissionFilterOptions";
 
 export default function CharPage() {
     const { id } = useParams();
     const nav = useNavigate();
 
+    const [filter, setFilter] = useState({
+        CharacterId: id
+    } as CommissionFilterOptions)
+
+    useEffect(() => {
+        setFilter({
+            CharacterId: id
+        } as CommissionFilterOptions)
+    }, [id])
 
     return <>
         <div style={{ display: "flex", alignItems: "end" }}>
@@ -24,6 +36,10 @@ export default function CharPage() {
                 </CardContent>
             </Card>
 
+        </div>
+
+        <div style={{ maxWidth: "800px", margin: "20px auto 20px auto" }}>
+            <CommissionStatisticsPane filter={filter} maxWidth={519} />
         </div>
 
         <CharsStatisticPane id={Number(id)} />

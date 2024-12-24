@@ -4,6 +4,7 @@ import CommFilterBuilder from "./subcomponents/CommFilterBuilder";
 import CommissionFilterOptions from "../../../model/commission/CommissionFilterOptions";
 import CommsDisplay from "../comms/subcomponents/CommsDisplay";
 import { useSearchParams } from "react-router-dom";
+import CommissionStatisticsPane from "../../shared/statistics/CommissionStatisticsPane";
 
 export default function CommSearchPage() {
 
@@ -28,7 +29,10 @@ export default function CommSearchPage() {
         </div>
         <div style={vertical ? undefined : { flex: '1', height: maxComponentHeight + 20, overflowY: 'auto' }}>
             {filter
-                ? <CommsDisplay filter={filter} style={{ justifyContent: 'flex-start', maxWidth: undefined, marginTop: '0px', marginBottom: '0px' }} />
+                ? <>
+                    <div style={{ marginBottom: "20px" }}><CommissionStatisticsPane filter={filter} /></div>
+                    <CommsDisplay filter={filter} style={{ justifyContent: 'flex-start', maxWidth: undefined, marginTop: '0px', marginBottom: '0px' }} />
+                </>
                 : <div style={{ textAlign: 'center', marginTop: '40px' }}>
                     Specify a filter to get started!
                 </div>}

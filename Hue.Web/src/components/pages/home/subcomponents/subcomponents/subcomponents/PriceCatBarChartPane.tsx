@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, Skeleton } from "@mui/material";
 import { BarChart } from '@mui/x-charts/BarChart';
 import MonthlyPriceCat from "../../../../../../model/statistics/MonthlyPriceCat";
-import { Months } from "../../../../../../model/Months";
+import { months } from "../../../../../shared/Utils";
 
 export default function PriceCatBarChartPane(props: {
     priceCats?: MonthlyPriceCat[],
@@ -30,7 +30,7 @@ export default function PriceCatBarChartPane(props: {
                     { data: lgAxis, label: 'Large (>80)', color: '#922', stack: "PriceStack" },
                 ]}
                 xAxis={[{
-                    data: xAxis, scaleType: 'band', valueFormatter: (val) => Months[val - 1],
+                    data: xAxis, scaleType: 'band', valueFormatter: (val) => months[val - 1],
                     tickLabelStyle: {
                         angle: -25,
                         textAnchor: 'end',

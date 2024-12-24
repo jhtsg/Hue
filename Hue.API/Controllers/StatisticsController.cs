@@ -2,6 +2,7 @@
 using Hue.Data;
 using Microsoft.AspNetCore.Mvc;
 using static Hue.API.Controllers.AuthController;
+using Hue.Common.Commission;
 
 namespace Hue.API.Controllers {
 
@@ -101,6 +102,15 @@ namespace Hue.API.Controllers {
                 ? Unauthorized()
                 : Ok(year == null ? await dao.GetOverallStatisticForTag(session.Username, id)
                                 : await dao.GetYearlyStatisticForTag(session.Username, id, year.Value));
+        }
+
+        [HttpGet("comm")]
+        public async Task<IActionResult> CommissionStatistics([FromQuery] CommissionFilterOptions filter) {
+
+            var session = GetSession(Request, Response);
+            return session == null
+                ? Unauthorized()
+                : Ok(await dao.GetCommissionStatistics(session.Username,filter));
         }
 
 

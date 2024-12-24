@@ -1,3 +1,4 @@
+import { objectToQueryString } from "../components/shared/Utils";
 import Commission from "../model/commission/Commission";
 import CommissionAlert from "../model/commission/CommissionAlert";
 import CommissionFilterOptions from "../model/commission/CommissionFilterOptions";
@@ -19,14 +20,7 @@ export const getCommissions = (
     setItem: (value?: Commission[]) => void,
     onError: (value: any) => void,
     filter?: CommissionFilterOptions
-) => {
-    //We need to convert the Filter to a Query String
-    const queryString = filter ? Object.keys(filter)
-        .map((k) => `${k}=${filter[k]}`)
-        .join("&") : "";
-
-    Get(setLoading, setItem, onError, ENDPOINT + (queryString.length === 0 ? "" : "?" + queryString));
-}
+) => Get(setLoading, setItem, onError, ENDPOINT + objectToQueryString(filter));
 
 export const getAlerts = (
     setLoading: (value: boolean) => void,
@@ -41,14 +35,8 @@ export const getCommissionsCount = (
     setItem: (value?: { count: number }) => void,
     onError: (value: any) => void,
     filter?: CommissionFilterOptions
-) => {
-    //We need to convert the Filter to a Query String
-    const queryString = filter ? Object.keys(filter)
-        .map((k) => `${k}=${filter[k]}`)
-        .join("&") : "";
+) => Get(setLoading, setItem, onError, ENDPOINT + "count" + objectToQueryString(filter));
 
-    Get(setLoading, setItem, onError, ENDPOINT + "count" + (queryString.length === 0 ? "" : "?" + queryString));
-}
 
 export const getCommissionYears = (
     setLoading: (value: boolean) => void,

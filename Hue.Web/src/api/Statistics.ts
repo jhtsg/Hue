@@ -1,4 +1,7 @@
+import { objectToQueryString } from "../components/shared/Utils";
+import CommissionFilterOptions from "../model/commission/CommissionFilterOptions";
 import AtAGlance from "../model/statistics/AtAGlance";
+import CommissionStatistics from "../model/statistics/commissions/CommissionStatistics";
 import MonthlyPriceCat from "../model/statistics/MonthlyPriceCat";
 import MonthlySpend from "../model/statistics/MonthlySpend";
 import MonthlyStatus from "../model/statistics/MonthlyStatus";
@@ -61,3 +64,10 @@ export const getTagStatistics = getStatistics('tag');
 export const getStatisticForArtist = getStatisticForItem('artist');
 export const getStatisticForCharacter = getStatisticForItem('characters');
 export const getStatisticForTag = getStatisticForItem('tag');
+
+export const getCommissionStatistics = (
+    setLoading: (value: boolean) => void,
+    setItem: (value?: CommissionStatistics) => void,
+    onError: (value: any) => void,
+    filter?: CommissionFilterOptions
+) => Get(setLoading, setItem, onError, ENDPOINT + "comm" + objectToQueryString(filter))

@@ -1,3 +1,5 @@
+import DbPongResponse from "./DbPongResponse";
+
 export default class PongResponse {
     /**Time this ping request was initiated*/
     public pingTime: string = "";
@@ -5,6 +7,7 @@ export default class PongResponse {
     public startupTime: string = "";
     /**Time this ping request was replied to by the server*/
     public pongTime: string = "";
+    public dbPingPong?: DbPongResponse
     public pong: string = "";
 
 }

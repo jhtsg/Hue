@@ -5,7 +5,9 @@ import ArtistPane from "./subcomponents/ArtistPane";
 import ArtistStatisticPane from "./subcomponents/ArtistStatisticPane";
 import CommsDisplay from "../comms/subcomponents/CommsDisplay";
 import { useUser } from "../../hooks/useUser";
-import ArtistTTCGraph from "./subcomponents/ArtistTTCGraph";
+import CommissionStatisticsPane from "../../shared/statistics/CommissionStatisticsPane";
+import { useEffect, useState } from "react";
+import CommissionFilterOptions from "../../../model/commission/CommissionFilterOptions";
 
 export default function ArtistPage() {
 
@@ -14,6 +16,15 @@ export default function ArtistPage() {
     const { user } = useUser();
     const artist = user?.isArtist
 
+    const [filter, setFilter] = useState({
+        ArtistId: id
+    } as CommissionFilterOptions)
+
+    useEffect(() => {
+        setFilter({
+            ArtistId: id
+        } as CommissionFilterOptions)
+    }, [id])
 
     return <>
         <div style={{ display: "flex", alignItems: "end" }}>
@@ -30,13 +41,8 @@ export default function ArtistPage() {
             </Card>
         </div>
 
-        <div style={{ maxWidth: "800px", margin: "20px auto 0 auto" }}>
-            <Card elevation={5}>
-                <div style={{ padding: "20px", marginBottom: "-60px" }}><b>Turnaround times</b></div>
-                <CardContent>
-                    <ArtistTTCGraph id={Number(id)} />
-                </CardContent>
-            </Card>
+        <div style={{ maxWidth: "800px", margin: "20px auto 20px auto" }}>
+            <CommissionStatisticsPane filter={filter} maxWidth={519} />
         </div>
 
         <ArtistStatisticPane id={Number(id)} />

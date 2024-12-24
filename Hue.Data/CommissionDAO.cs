@@ -190,7 +190,7 @@ namespace Hue.Data
 
         }
 
-        private static List<WhereCondition> CommissionFilterOptionsToWhereConditions(CommissionFilterOptions filter) {
+        public static List<WhereCondition> CommissionFilterOptionsToWhereConditions(CommissionFilterOptions filter) {
             List<WhereCondition> conditions = [
                 new("c."+USER_NM, WhereConditionOperator.EQUALS,$"@{USER_NM}")
             ];
@@ -203,12 +203,12 @@ namespace Hue.Data
             if (filter.Year != null) { conditions.Add(new(COMM_YEAR_NB)); }
             if (filter.CharacterId != null) {
                 conditions.Add(new(
-                    COMM_ID, WhereConditionOperator.IN, "(" + SelectSql([COMM_ID], COMM_CHAR_MAP, new WhereConditionGroup([new(CHAR_ID)])) + ")"
+                    "C."+ COMM_ID, WhereConditionOperator.IN, "(" + SelectSql([COMM_ID], COMM_CHAR_MAP, new WhereConditionGroup([new(CHAR_ID)])) + ")"
                 ));
             }
             if (filter.CommissionTagId != null) {
                 conditions.Add(new(
-                    COMM_ID, WhereConditionOperator.IN, "(" + SelectSql([COMM_ID], COMM_TAG_MAP, new WhereConditionGroup([new(COMM_TAG_ID)])) + ")"
+                    "C." + COMM_ID, WhereConditionOperator.IN, "(" + SelectSql([COMM_ID], COMM_TAG_MAP, new WhereConditionGroup([new(COMM_TAG_ID)])) + ")"
                 ));
             }
 
@@ -224,7 +224,7 @@ namespace Hue.Data
             return conditions;
         }
 
-        private static void CommissionFilterApplier(CommissionFilterOptions filter, Setter cmd) {
+        public static void CommissionFilterApplier(CommissionFilterOptions filter, Setter cmd) {
             if (filter.ArtistId != null) { cmd.SetInt(ARTIST_ID, filter.ArtistId); }
             if (filter.CommissionStatus != null) { cmd.SetInt(COMM_STATUS_CD, (int)filter.CommissionStatus); }
             if (filter.Year != null) { cmd.SetInt(COMM_YEAR_NB, filter.Year); }
