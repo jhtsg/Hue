@@ -432,6 +432,11 @@ function WarningsBanner(props: {
 
     if (status < 2 && artist) {
         //We're still in preplanning
+        if (!avgDaysToCompelte && !statsApi.loading) {
+            return <Alert severity="info">
+                This is your first commission with this artist!
+            </Alert>
+        }
         return <Alert severity="info">
             You should expect this commission to {
                 eta ? `be done by ${months[eta.getUTCMonth()]} ${eta.getUTCDate()} (${avgDaysToCompelte} - ${avgDaysToCompleteWithBuffer} days)` : `take ${avgDaysToCompelte}-${avgDaysToCompleteWithBuffer} days`

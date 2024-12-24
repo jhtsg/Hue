@@ -136,7 +136,7 @@ namespace Hue.Data {
 
         private static Func<Getter, ArtistStatistic> ArtistStatisticRm => (reader) => {
                 var statistic = StatisticRm<ArtistStatistic>(ARTIST_ID, ARTIST_NM).Invoke(reader);
-                statistic.AverageDaysToComplete = reader.GetDouble(AVG_TTC_NB);
+                statistic.AverageDaysToComplete = reader.GetOptionalDouble(AVG_TTC_NB);
                 return statistic;
             };
         
