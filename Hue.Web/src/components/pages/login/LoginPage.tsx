@@ -137,7 +137,7 @@ function LoginPanel() {
 
     }
 
-    return <Card style={{ height: "300px" }}>
+    return <Card style={{ minHeight: "300px" }}>
         <div style={{ padding: "10px" }}><Tabs value={value} onChange={handleChange}
             variant="scrollable"
         >
