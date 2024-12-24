@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, Skeleton, Tooltip } from "@mui/material";
+import { Card, CardContent, CardHeader, Skeleton } from "@mui/material";
 import Statistic from "../../../../../../model/statistics/Statistic"
 import { BarChart } from '@mui/x-charts/BarChart';
 import { useTheme } from "@emotion/react";

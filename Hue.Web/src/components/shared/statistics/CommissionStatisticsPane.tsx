@@ -3,7 +3,7 @@ import { getCommissionStatistics } from "../../../api/Statistics"
 import CommissionFilterOptions from "../../../model/commission/CommissionFilterOptions"
 import useApi from "../../hooks/useApi"
 import ApiAlert from "../ApiAlert"
-import { Card, List, ListItemButton, ListItemIcon, ListItemText, Tooltip } from "@mui/material"
+import { Card, List, ListItemButton, ListItemIcon, ListItemText } from "@mui/material"
 import { BarChart, ColorLens, Groups, Payments, PhotoLibrary, Style, Timelapse } from "@mui/icons-material"
 import TagBarChart from "./subcomponents/TagBarChart"
 import CharacterBarChart from "./subcomponents/CharacterBarChart"
@@ -13,6 +13,7 @@ import SpendingLineChart from "./subcomponents/SpendingLineChart"
 import TypesBarChart from "./subcomponents/TypesPieChart"
 import CommissionStatistics from "../../../model/statistics/commissions/CommissionStatistics"
 import { useWindowDimensions } from "../../hooks/useWindowDimensions"
+import { useUser } from "../../hooks/useUser"
 
 const modes = [
     "types",
@@ -30,6 +31,7 @@ export default function CommissionStatisticsPane(props: {
 
     const { filter, maxWidth } = props
     const { width } = useWindowDimensions();
+    const { user } = useUser();
 
     const statsApi = useApi(getCommissionStatistics)
 
@@ -62,32 +64,26 @@ export default function CommissionStatisticsPane(props: {
                         <SelectableListitem defaultItem disabled={typesDisabled}
                             icon={<PhotoLibrary />} text="Types" value={modes[0]}
                             selectedValue={mode} setSelectedValue={setMode}
-                            desc="Types of Commissions"
                         />
                         <SelectableListitem disabled={spendingDisabled}
-                            icon={<Payments />} text="Spending" value={modes[1]}
+                            icon={<Payments />} text={user?.isArtist ? "Earnings" : "Spending"} value={modes[1]}
                             selectedValue={mode} setSelectedValue={setMode}
-                            desc="Total spending"
                         />
                         <SelectableListitem disabled={ttcDisabled}
                             icon={<Timelapse />} text="Completion Time" value={modes[2]}
                             selectedValue={mode} setSelectedValue={setMode}
-                            desc="Time it's taken to complete commissions"
                         />
                         <SelectableListitem disabled={artistDisabled}
                             icon={<ColorLens />} text="Artists" value={modes[3]}
                             selectedValue={mode} setSelectedValue={setMode}
-                            desc="Artists involved in these commissions"
                         />
                         <SelectableListitem disabled={characterDisabled}
                             icon={<Groups />} text="Characters" value={modes[4]}
                             selectedValue={mode} setSelectedValue={setMode}
-                            desc="Characters in these commissions"
                         />
                         <SelectableListitem disabled={tagsDisabled}
                             icon={<Style />} text="Tags" value={modes[5]}
                             selectedValue={mode} setSelectedValue={setMode}
-                            desc="Tags in these commissions"
                         />
                     </List>
                 </div>
@@ -139,7 +135,6 @@ const DisplayDecider = (props: { mode: string, data: CommissionStatistics, super
 function SelectableListitem(props: {
     icon: ReactNode,
     text: string,
-    desc: string,
     value: string,
     selectedValue: string,
     setSelectedValue: (val: string) => void,
@@ -147,16 +142,15 @@ function SelectableListitem(props: {
     disabled?: boolean
 }) {
 
-    const { icon, text, value, selectedValue, setSelectedValue, defaultItem, disabled, desc } = props
+    const { icon, text, value, selectedValue, setSelectedValue, defaultItem, disabled } = props
 
     const selected = value === selectedValue || (value === "" && defaultItem);
 
     if (disabled) { return <></> }
 
-    return <Tooltip title={desc}><ListItemButton onClick={() => setSelectedValue(value)} selected={selected} >
+    return <ListItemButton onClick={() => setSelectedValue(value)} selected={selected} >
         <ListItemIcon>{icon}</ListItemIcon>
         <ListItemText primary={text} />
     </ListItemButton>
-    </Tooltip>
 
 }
