@@ -20,8 +20,8 @@ namespace Hue.Data {
             TotalYetToSpend = reader.GetInt(TOTAL_NOT_SPENT_NB),
             AverageCommsPerMonth = reader.GetInt(AVG_COMM_BY_MONTH_NB),
             AveragePrice = reader.GetDouble(AVG_PRICE_NB),
-            AverageSpentPerMonth = reader.GetInt(AVG_SPENT_NB),
-            AverageTTC = reader.GetDouble(AVG_TTC_NB)
+            AverageSpentPerMonth = reader.GetOptionalInt(AVG_SPENT_NB) ?? 0,
+            AverageTTC = reader.GetOptionalDouble(AVG_TTC_NB) ?? 0
         };
 
         public async Task<AtAGlance?> GetOverallAtAGlance(string username) {

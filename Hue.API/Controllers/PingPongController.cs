@@ -16,7 +16,7 @@ namespace Hue.API.Controllers {
     public class PingPongController : ControllerBase {
 
         public static DateTime StartupTime { get; set; } = DateTime.UtcNow;
-        PingPongDao dao;
+        readonly PingPongDao dao;
 
         public PingPongController() {
             dao = new(new EnvironmentKey("DB_URL", () => throw new InvalidOperationException("")).ToString());
