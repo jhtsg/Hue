@@ -1,4 +1,4 @@
-import { Add, Archive, Download } from "@mui/icons-material";
+import { Add, Archive, Download, PhotoLibrary } from "@mui/icons-material";
 import { Button, Dialog, Drawer, Fab, Tab, Tabs, Tooltip } from "@mui/material"
 import { useState } from "react"
 import CommBoard from "./subcomponents/CommBoard/Board";
@@ -18,7 +18,7 @@ export default function CommsPage() {
 
     const yearFromParams = Number(searchParams.get("year"))
     const { refresh } = useRefresh(REFRESH_SPECIFIC_COLUMN_PREFIX + "0")
-    const { width, vertical } = useWindowDimensions()
+    const { width, vertical, maxComponentHeight } = useWindowDimensions()
 
     //We will not support commissions from before the 80s and after the 31st century
     const year = yearFromParams > 1980 && yearFromParams < 3000 ? yearFromParams : new Date().getFullYear();
@@ -54,9 +54,20 @@ export default function CommsPage() {
             <CommColumn code={-1} title="Archived Commissions" fullHeight />
         </Drawer>
 
-        <div>
-            <CommBoard year={year} />
-        </div>
+        {yearsApi.data?.length === 0
+            ? <div style={{
+                width: "100%", height: `${maxComponentHeight - 50}px`,
+                display: "flex", flexDirection: "column",
+                justifyContent: 'center', alignItems: 'center',
+                color: "#AAA"
+            }}>
+                <PhotoLibrary fontSize="large" />
+                <div>There are no commissions</div>
+                <div>(yet)</div>
+            </div >
+            : <CommBoard year={year} />
+        }
+
 
         <Tooltip title="Create a new commission">
             <Fab color="primary" style={{ position: "fixed", bottom: "20px", right: "20px" }}

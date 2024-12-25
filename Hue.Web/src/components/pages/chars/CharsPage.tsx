@@ -1,64 +1,48 @@
 import { useState } from "react";
 import useApi from "../../hooks/useApi";
 import { getCharacters } from "../../../api/Char";
-import { Button, Fab, InputAdornment, TextField, Tooltip } from "@mui/material";
-import { Add, Search } from "@mui/icons-material";
+import { Fab, Tooltip } from "@mui/material";
+import { Add, Groups } from "@mui/icons-material";
 import ApiAlert from "../../shared/ApiAlert";
 import LoadingBackdrop from "../../shared/LoadingBackdrop";
 import CharacterTile from "./subcomponents/CharacterTile";
-import Character from "../../../model/character/Character";
 import { useWindowDimensions } from "../../hooks/useWindowDimensions";
 import CreateCharacterModal from "./subcomponents/CreateCharacterModal";
 
-export default function CharsPage(props: {
-    onSelect?: (val: Character) => void
-}) {
-
-    const { onSelect } = props
+export default function CharsPage() {
 
     const [newOpen, setNewOpen] = useState(false)
-    const [search, setSearch] = useState('')
     const charactersApi = useApi(getCharacters, true)
     const { vertical, maxComponentHeight } = useWindowDimensions();
 
     return <>
         <div style={{ display: "flex", alignItems: "end" }}>
-            {onSelect ? <div style={{ display: "flex", justifyContent: "space-between", width: "100%", alignItems: "center" }}>
-                <div style={{ flex: "1", marginRight: "40px" }}>
-                    <TextField variant="standard" placeholder="Search Characters" style={{ maxWidth: "400px" }} fullWidth value={search} onChange={(e) => setSearch(e.target.value)} slotProps={{
-                        input: {
-                            startAdornment: <InputAdornment position="start">
-                                <Search />
-                            </InputAdornment>
-                        }
-                    }} />
-                </div>
-                <div>
-                    <Button variant="contained" onClick={() => setNewOpen(true)} startIcon={vertical ? undefined : <Add />}>
-                        {vertical ? <Add /> : 'New Character'}
-                    </Button>
-                </div>
-            </div> : <div style={{ fontSize: "1.7em", flex: "1" }}>Characters</div>}
+            <div style={{ fontSize: "1.7em", flex: "1" }}>Characters</div>
         </div>
         <hr />
         <ApiAlert result={charactersApi.error} style={{ marginBottom: "20px" }} />
-        <div style={{ overflowY: 'auto', height: maxComponentHeight - (onSelect ? 200 : 30), }}>
-            <div style={{ display: 'flex', flexWrap: 'wrap', width: '100%', marginTop: "20px", justifyContent: props.onSelect || vertical ? "center" : undefined }} >
-                {charactersApi.data?.filter((a) => search.trim().length === 0
-                    ? true
-                    : a.name.toLowerCase().includes(search.toLowerCase())
-                ).map(a => <CharacterTile character={a} onClick={props.onSelect ? () => {
-                    props.onSelect?.(a)
-                } : undefined} />)}
-            </div>
+        <div style={{ overflowY: 'auto', height: maxComponentHeight - 30 }}>
+            {charactersApi.data?.length === 0
+                ? <div style={{
+                    height: "100%", width: "100%", color: "#AAA",
+                    display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center"
+                }}>
+                    <Groups fontSize="large" />
+                    <div>There are no characters</div>
+                    <div>(yet)</div>
+                </div>
+                : <div style={{ display: 'flex', flexWrap: 'wrap', width: '100%', marginTop: "20px", justifyContent: vertical ? "center" : undefined }} >
+                    {charactersApi.data?.map(a => <CharacterTile character={a} />)}
+                </div>
+            }
         </div>
 
-        {!onSelect && <Tooltip title="Create a new Character">
+        <Tooltip title="Create a new Character">
             <Fab color="primary" style={{ position: "fixed", bottom: "20px", right: "20px" }}
                 onClick={() => setNewOpen(true)} >
                 <Add />
             </Fab>
-        </Tooltip>}
+        </Tooltip>
 
 
         <LoadingBackdrop loading={charactersApi.loading} />
