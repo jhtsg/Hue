@@ -46,6 +46,7 @@ export default function AlertButton() {
                     <ListItem><div style={{ textAlign: "center", width: "100%", padding: "20px" }}>
                         <BeachAccess />
                         <div>No Alerts!</div>
+                        <div style={{ fontSize: ".7em", width: "230px", margin: "5px auto" }}>Commissions that are running late or should've been posted will appear here</div>
                     </div></ListItem>
                     : alertsApi.data?.map(a => <MenuItem onClick={() => {
                         handleClose();
