@@ -85,7 +85,7 @@ namespace Hue.Data
                     new ("c." + USER_NM, WhereConditionOperator.EQUALS, "@" + USER_NM ),
                     new JoinCondition("c","cat",CHAR_CAT_ID)
                 ]),
-                order:[new(CHAR_CAT_NM), new(CHAR_NM)]
+                order:[new(RETIRED_IN),new(CHAR_CAT_NM), new(CHAR_NM)]
             );
 
             return await adoTemplate.Query(sql, (cmd) => cmd.SetString(USER_NM, username), characterRm);

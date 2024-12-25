@@ -50,7 +50,7 @@ namespace Hue.Data
                 new(WhereConditionUnion.AND, [
                     new(USER_NM)
                 ]),
-                order: [new(ARTIST_NM)]
+                order: [new(RETIRED_IN), new(ARTIST_NM)]
             );
 
             return await adoTemplate.Query(sql, (cmd) => cmd.SetString(USER_NM, username), artistRm);
