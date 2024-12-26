@@ -6,7 +6,7 @@ import ColorPill from "../../../shared/ColorPill";
 import CommissionTag from "../../../../model/commission/CommissionTag";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { commHeaderImage, deleteCommission, updateCommission } from "../../../../api/Comm";
+import { commHeaderImage, createCommission, deleteCommission, updateCommission } from "../../../../api/Comm";
 import { CommissionStatus } from "../../../../model/commission/CommissionEnums";
 import SafeAvatar from "../../../shared/SafeAvatar";
 import { characterImage } from "../../../../api/Char";
@@ -16,8 +16,9 @@ import { useSnackbar } from "notistack";
 import { useRefresh } from "../../../hooks/useRefresh";
 import { REFRESH_ALL_COLUMNS } from "../../../contexts/RefreshContext";
 import TransitionModal from "./TransitionModal/TransitionModal";
-import { Archive, ArrowBack, ArrowForward, Delete, Edit, Public } from "@mui/icons-material";
+import { Archive, ArrowBack, ArrowForward, ContentCopy, Delete, Edit, Public } from "@mui/icons-material";
 import AreYouSureModal from "../../../shared/modals/AreYouSureModal";
+import CloneModal from "./CloneModal/CloneModal";
 
 //An individual commission card
 export default function CommCard(props: {
@@ -30,7 +31,8 @@ export default function CommCard(props: {
     const { enqueueSnackbar } = useSnackbar();
     const [imageError, setImageError] = useState(!commission.hasImage)
 
-    const updateCommApi = useApi(updateCommission)
+    const updateCommApi = useApi(updateCommission);
+    const cloneCommApi = useApi(createCommission);
     const deleteCommApi = useApi(deleteCommission);
 
     const { refresh } = useRefresh(REFRESH_ALL_COLUMNS);
@@ -39,6 +41,7 @@ export default function CommCard(props: {
 
     const [transitionComm, setTransitionComm] = useState(false)
     const [deleteOpen, setDeleteOpen] = useState(false);
+    const [cloneOpen, setCloneOpen] = useState(false);
 
     const [contextMenu, setContextMenu] = useState(undefined as {
         mouseX: number;
@@ -157,6 +160,19 @@ export default function CommCard(props: {
         }, val);
     }
 
+    const handleClone = () => {
+        handleClose();
+        setCloneOpen(true);
+    }
+
+    const handleRealClone = (val: Commission) => {
+        cloneCommApi.fetch(() => {
+            enqueueSnackbar("Commission cloned!", { variant: 'success' })
+            setCloneOpen(false)
+            refresh();
+        }, undefined, val)
+    }
+
     const anyMetadata = commission.artist || commission.charCount > 0 || commission.price > 0 || commission.characters.length > 0
 
 
@@ -208,6 +224,7 @@ export default function CommCard(props: {
         </Card>
 
         <TransitionModal comm={commission} open={transitionComm} setOpen={setTransitionComm} />
+        <CloneModal commission={commission} open={cloneOpen} setOpen={setCloneOpen} onOk={handleRealClone} loading={cloneCommApi.loading} />
 
         <Menu
             open={!!contextMenu}
@@ -241,6 +258,10 @@ export default function CommCard(props: {
                     <ListItemText primary={`Move to ${CommissionStatus[commission.status - 1]}`} />
                 </MenuItem>}
                 <Divider />
+                <MenuItem onClick={handleClone}>
+                    <ListItemIcon><ContentCopy /></ListItemIcon>
+                    <ListItemText primary='Clone' />
+                </MenuItem>
                 {commission.status == -1 ? <MenuItem onClick={handleDelete}>
                     <ListItemIcon><Delete /></ListItemIcon>
                     <ListItemText primary='Delete' />
