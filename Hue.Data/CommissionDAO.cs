@@ -35,7 +35,7 @@ namespace Hue.Data
                 ],
                 setValues: new Dictionary<string, string> { 
                     { CRE_TS,"CURRENT_TIMESTAMP" },
-                    { COMM_STATUS_CD, "0"} //Commissions are always created to Brainstorm
+                    //{ COMM_STATUS_CD, "0"} //Commissions are always created to Brainstorm //No longer
                 },
                 table : COMM_TABLE,
                 returning : COMM_ID
