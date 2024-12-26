@@ -21,6 +21,7 @@ export default function Navbar() {
     const fullWidthSearchbar = width < 750
 
     useDoubleShift(() => {
+        if (!user || searchBar) return; //Disable double shift if not authed or if the searchbar is already opened
         setSearchBar(true)
     });
 

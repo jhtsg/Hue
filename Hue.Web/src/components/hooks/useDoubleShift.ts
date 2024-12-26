@@ -7,7 +7,10 @@ const useDoubleShift = (callback: () => void, threshold: number = 300) => {
         const handleKeyDown = (e: KeyboardEvent) => {
             if (e.key === 'Shift') {
                 const now = Date.now();
-                if (lastShiftTime && now - lastShiftTime < threshold) {
+                if (lastShiftTime &&
+                    now - lastShiftTime < threshold &&
+                    now - lastShiftTime > 50
+                ) {
                     callback(); // Trigger the callback on double Shift
                 }
                 setLastShiftTime(now);
