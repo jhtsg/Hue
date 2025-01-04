@@ -7,6 +7,4 @@ services:
     environment:
       - NO_SECURE=true
       - DB_URL=Host=host.docker.internal:5432;Database=hue;Username=hue;Password=aa7db17b-f9a0-420f-bec0-4fee3c2d8624;
-      - FRONTEND_HOST_NAME=nesoi
-      - HASHBROWN_SALT=cMC+2VKdTHeY+RmLZlC66Q==
       - REGISTER_KEY=fd9a7f8f-c492-42d8-a2e9-dad25c7f7395
