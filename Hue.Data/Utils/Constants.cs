@@ -5,9 +5,13 @@
 
         public static readonly string SCHEMA = "hue";
 
+        public static readonly string SESSION_TABLE = $"{SCHEMA}.session";
+        public static readonly string SESSION_ID = "session_id";
+
         public static readonly string USER_TABLE = $"{SCHEMA}.user ";
         public static readonly string USER_NM = "user_nm";
         public static readonly string PASS_TX = "pass_tx";
+        public static readonly string SALT_TX = "salt_tx";
         public static readonly string ARTIST_IN = "artist_in";
 
         public static readonly string ARTIST_TABLE = $"{SCHEMA}.artist";

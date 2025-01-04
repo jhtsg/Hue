@@ -1,10 +1,22 @@
-﻿-- Drop table
+﻿--Drop Table
+
+-- DROP TABLE hue.session
+
+create table hue.session(
+	session_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_nm varchar(32) NOT NULL,
+    cre_ts TIMESTAMP(6) DEFAULT NOW()
+);
+
+
+-- Drop table
 
 -- DROP TABLE hue."user";
 
 CREATE TABLE hue."user" (
 	user_nm varchar(32) NOT NULL,
-	pass_tx varchar(64) NOT NULL,
+	pass_tx bytea NOT NULL,
+	salt_tx bytea NOT NULL,
 	artist_in bool DEFAULT false NULL,
 	CONSTRAINT pk_user PRIMARY KEY (user_nm)
 );
