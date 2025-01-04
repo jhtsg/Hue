@@ -7,7 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Igtampe.Redistributables" Version="1.0.0" />
     <PackageReference Include="Npgsql" Version="8.0.4" />
   </ItemGroup>
 
