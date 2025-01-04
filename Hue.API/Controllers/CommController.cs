@@ -24,7 +24,7 @@ namespace Hue.API.Controllers
         #region CREATE
         [HttpPost]
         public async Task<IActionResult> Create(Commission comm) {
-            var session = GetSession(Request, Response);
+            var session = await GetSession(Request, Response);
             if (session == null) { return Unauthorized(); }
             var id = await dao.Create(session.Username, comm);
             return Created("api/comm/" + id, await dao.Get(session.Username, id));
@@ -32,7 +32,7 @@ namespace Hue.API.Controllers
 
         [HttpPost("tag")]
         public async Task<IActionResult> CreateTag(CommissionTag commTag) {
-            var session = GetSession(Request, Response);
+            var session = await GetSession(Request, Response);
             if (session == null) { return Unauthorized(); }
             var id = await dao.CreateTag(session.Username, commTag);
             return Created("api/comm/tag/" + id, await dao.GetTag(session.Username, id));
@@ -47,7 +47,7 @@ namespace Hue.API.Controllers
             [FromQuery] CommissionFilterOptions filter
             ) {
 
-            var session = GetSession(Request, Response);
+            var session = await GetSession(Request, Response);
             return session == null
                 ? Unauthorized()
                 : Ok(await dao.GetAll(session.Username,filter));
@@ -56,7 +56,7 @@ namespace Hue.API.Controllers
         [HttpGet("Alerts")]
         public async Task<IActionResult> GetAlerts() {
 
-            var session = GetSession(Request, Response);
+            var session = await GetSession(Request, Response);
             return session == null
                 ? Unauthorized()
                 : Ok(await dao.GetAlerts(session.Username));
@@ -67,7 +67,7 @@ namespace Hue.API.Controllers
           [FromQuery] CommissionFilterOptions filter
           ) {
 
-            var session = GetSession(Request, Response);
+            var session = await GetSession(Request, Response);
             if (session == null) return Unauthorized();
             filter.Page = null; //Clear this out
 
@@ -96,7 +96,7 @@ namespace Hue.API.Controllers
             [FromQuery] CommissionFilterOptions filter
             ) {
 
-            var session = GetSession(Request, Response);
+            var session = await GetSession(Request, Response);
             return session == null
                 ? Unauthorized()
                 : Ok(new Dictionary<string, int>() { { "count", await dao.GetCount(session.Username, filter) } });
@@ -104,7 +104,7 @@ namespace Hue.API.Controllers
 
         [HttpGet("{ID}")]
         public async Task<IActionResult> Get(int ID) {
-            var session = GetSession(Request, Response);
+            var session = await GetSession(Request, Response);
             return session == null
                 ? Unauthorized()
                 : Ok(await dao.Get(session.Username,ID));
@@ -112,7 +112,7 @@ namespace Hue.API.Controllers
 
         [HttpGet("years")]
         public async Task<IActionResult> GetYears() {
-            var session = GetSession(Request, Response);
+            var session = await GetSession(Request, Response);
             return session == null
                 ? Unauthorized()
                 : Ok(await dao.GetYears(session.Username));
@@ -120,7 +120,7 @@ namespace Hue.API.Controllers
 
         [HttpGet("tag")]
         public async Task<IActionResult> GetAllTags() {
-            var session = GetSession(Request, Response);
+            var session = await GetSession(Request, Response);
             return session == null
                 ? Unauthorized()
                 : Ok(await dao.GetAllTags(session.Username));
@@ -128,7 +128,7 @@ namespace Hue.API.Controllers
 
         [HttpGet("tag/{ID}")]
         public async Task<IActionResult> GetTag(int ID) {
-            var session = GetSession(Request, Response);
+            var session = await GetSession(Request, Response);
             return session == null
                 ? Unauthorized()
                 : Ok(await dao.GetTag(session.Username, ID));
@@ -137,7 +137,7 @@ namespace Hue.API.Controllers
 
         [HttpGet("{ID}/image")]
         public async Task<IActionResult> GetImage(int ID, [FromQuery] bool NoCache = false) {
-            var session = GetSession(Request, Response);
+            var session = await GetSession(Request, Response);
             if (session == null) return Unauthorized();
 
             var key = $"{session.Username}-{ID}-COMMISSION";
@@ -161,7 +161,7 @@ namespace Hue.API.Controllers
 
         [HttpPut]
         public async Task<IActionResult> Update(Commission comm) {
-            var session = GetSession(Request, Response);
+            var session = await GetSession(Request, Response);
             if (session == null) { return Unauthorized(); }
             await dao.Update(session.Username, comm);
             return Ok();
@@ -169,7 +169,7 @@ namespace Hue.API.Controllers
 
         [HttpPut("tag")]
         public async Task<IActionResult> UpdateCategory(CommissionTag tag) {
-            var session = GetSession(Request, Response);
+            var session = await GetSession(Request, Response);
             if (session == null) { return Unauthorized(); }
             await dao.UpdateTag(session.Username, tag);
             return Ok();
@@ -177,7 +177,7 @@ namespace Hue.API.Controllers
 
         [HttpPut("{ID}/image")]
         public async Task<IActionResult> UpdateImage(int ID, [FromForm] IFormFile file) {
-            var session = GetSession(Request, Response);
+            var session = await GetSession(Request, Response);
             if (session == null) { return Unauthorized(); }
 
             if (file == null || file.Length == 0) { return BadRequest("No data!"); }
@@ -206,7 +206,7 @@ namespace Hue.API.Controllers
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCommission(int id) {
-            var session = GetSession(Request, Response);
+            var session = await GetSession(Request, Response);
             if (session == null) { return Unauthorized(); }
             await dao.DeleteCommission(session.Username, id);
             return Ok();
@@ -214,7 +214,7 @@ namespace Hue.API.Controllers
 
         [HttpDelete("tag/{id}")]
         public async Task<IActionResult> DeleteTag(int id) {
-            var session = GetSession(Request, Response);
+            var session = await GetSession(Request, Response);
             if (session == null) { return Unauthorized(); }
             await dao.DeleteTag(session.Username, id);
             return Ok();

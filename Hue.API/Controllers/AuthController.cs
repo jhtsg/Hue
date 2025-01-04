@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 using Hue.Data;
 using Hue.Data.Utils;
-using Igtampe.ChopoSessionManager;
 using Hue.API.Requests.Auth;
+using Hue.API.utils;
+using Hue.Common;
+using System;
 
 namespace Hue.API.Controllers {
 
@@ -11,17 +13,19 @@ namespace Hue.API.Controllers {
     public class AuthController : ControllerBase {
 
         private static readonly string SESSION_COOKIE = "session";
-        private static readonly bool SECURE = !(new EnvironmentKey("NO_SECURE").ToString().ToLower().Equals("true"));
+        private static readonly bool SECURE = !(new OptionalEnvironmentKey("NO_SECURE").ToString()?.ToLower().Equals("true") ?? false);
         
+        static readonly string DbUrl = new EnvironmentKey("DB_URL", () => throw new InvalidOperationException("")).ToString();
         readonly UserDAO dao;
+        static readonly SessionManager manager = new(DbUrl);
 
         public AuthController() {
-            dao = new(new EnvironmentKey("DB_URL", () => throw new InvalidOperationException("")).ToString());
+            dao = new(DbUrl);
         }
 
         [HttpGet("me")]
         public async Task<IActionResult> Me() {
-            var session = GetSession(Request,Response);
+            var session = await GetSession(Request,Response);
             return session == null ? Unauthorized() : Ok(await dao.GetUser(session.Username));
         }
 
@@ -34,14 +38,16 @@ namespace Hue.API.Controllers {
                 });
             };
 
-            AddSession(Response, SessionManager.Manager.LogIn(req.Username));
+            AddSession(Response, (await manager.LogIn(req.Username)).Id);
 
             return Ok();
         }
 
         [HttpGet("logout")]
         
-        public IActionResult Logout() {
+        public async Task<IActionResult> Logout() {
+            var s = await GetSession(Request, Response);
+            if (s != null) {await manager.LogOut(s.Id);}
             RemoveSession(Response);
             return Ok();
         }
@@ -59,7 +65,7 @@ namespace Hue.API.Controllers {
 
         [HttpPut("password")]
         public async Task<IActionResult> ChangePassword([FromBody] ChangePassRequest request) {
-            var session = GetSession(Request, Response);
+            var session = await GetSession(Request, Response);
             if (session == null) { return Unauthorized(); }
             try { await dao.UpdatePassword(session.Username, request.OldPassword, request.NewPassword); }
             catch (ArgumentException e) {
@@ -72,11 +78,11 @@ namespace Hue.API.Controllers {
             return Ok();
         }
 
-        public static Session? GetSession(HttpRequest request, HttpResponse response) {
+        public static async Task<Session?> GetSession(HttpRequest request, HttpResponse response) {
             var sessionId = request.Cookies[SESSION_COOKIE];
             if (sessionId == null) { return null; }
 
-            var session = SessionManager.Manager.FindSession(new Guid(sessionId));
+            var session = await manager.FindSession(new Guid(sessionId));
             if (session == null) {
                 RemoveSession(response);
                 return null; 

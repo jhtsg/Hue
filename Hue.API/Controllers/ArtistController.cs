@@ -24,7 +24,7 @@ namespace Hue.API.Controllers
         #region CREATE
         [HttpPost]
         public async Task<IActionResult> Create(Artist artist) {
-            var session = GetSession(Request, Response);
+            var session = await GetSession(Request, Response);
             if (session == null) { return Unauthorized(); }
             var id = await dao.Create(session.Username, artist);
             return Created("api/artist/" + id,await dao.Get(session.Username,id));
@@ -36,7 +36,7 @@ namespace Hue.API.Controllers
 
         [HttpGet]
         public async Task<IActionResult> GetAll() {
-            var session = GetSession(Request, Response);
+            var session = await GetSession(Request, Response);
             return session == null
                 ? Unauthorized()
                 : Ok(await dao.GetAll(session.Username));
@@ -44,7 +44,7 @@ namespace Hue.API.Controllers
 
         [HttpGet("{ID}")]
         public async Task<IActionResult> Get(int ID) {
-            var session = GetSession(Request, Response);
+            var session = await GetSession(Request, Response);
             return session == null
                 ? Unauthorized()
                 : Ok(await dao.Get(session.Username,ID));
@@ -52,7 +52,7 @@ namespace Hue.API.Controllers
 
         [HttpGet("{ID}/image")]
         public async Task<IActionResult> GetImage(int ID, [FromQuery] bool NoCache = false) {
-            var session = GetSession(Request, Response);
+            var session = await GetSession(Request, Response);
             if (session == null) return Unauthorized();
 
 
@@ -78,7 +78,7 @@ namespace Hue.API.Controllers
 
         [HttpPut]
         public async Task<IActionResult> Update(Artist artist) {
-            var session = GetSession(Request, Response);
+            var session = await GetSession(Request, Response);
             if (session == null) { return Unauthorized(); }
             await dao.Update(session.Username, artist);
             return Ok();
@@ -86,7 +86,7 @@ namespace Hue.API.Controllers
 
         [HttpPut("{ID}/image")]
         public async Task<IActionResult> UpdateImage(int ID, [FromForm] IFormFile file) {
-            var session = GetSession(Request, Response);
+            var session = await GetSession(Request, Response);
             if (session == null) { return Unauthorized(); }
 
             if (file == null || file.Length == 0) { return BadRequest("No data!"); }

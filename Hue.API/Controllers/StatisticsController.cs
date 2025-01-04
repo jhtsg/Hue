@@ -18,7 +18,7 @@ namespace Hue.API.Controllers {
 
         [HttpGet("glance")]
         public async Task<IActionResult> GetAllCount([FromQuery] int? year) {
-            var session = GetSession(Request, Response);
+            var session = await GetSession(Request, Response);
             return session == null
                 ? Unauthorized()
                 : Ok(year == null ? await dao.GetOverallAtAGlance(session.Username) 
@@ -27,7 +27,7 @@ namespace Hue.API.Controllers {
 
         [HttpGet("priceCat/{year}")]
         public async Task<IActionResult> PriceCat(int year) {
-            var session = GetSession(Request, Response);
+            var session = await GetSession(Request, Response);
             return session == null
                 ? Unauthorized()
                 : Ok(await dao.GetMonthlyPriceCat(session.Username, year));
@@ -35,7 +35,7 @@ namespace Hue.API.Controllers {
         
         [HttpGet("spending/{year}")]
         public async Task<IActionResult> Spending(int year) {
-            var session = GetSession(Request, Response);
+            var session = await GetSession(Request, Response);
             return session == null
                 ? Unauthorized()
                 : Ok(await dao.GetMonthlySpend(session.Username, year));
@@ -43,7 +43,7 @@ namespace Hue.API.Controllers {
 
         [HttpGet("status/{year}")]
         public async Task<IActionResult> Status(int year) {
-            var session = GetSession(Request, Response);
+            var session = await GetSession(Request, Response);
             return session == null
                 ? Unauthorized()
                 : Ok(await dao.GetMonthlyStatus(session.Username, year));
@@ -51,7 +51,7 @@ namespace Hue.API.Controllers {
 
         [HttpGet("artist")]
         public async Task<IActionResult> ArtistStatistics([FromQuery] int? year) {
-            var session = GetSession(Request, Response);
+            var session = await GetSession(Request, Response);
             return session == null
                 ? Unauthorized()
                 : Ok(year == null ? await dao.GetOverallArtistStatistics(session.Username)
@@ -60,7 +60,7 @@ namespace Hue.API.Controllers {
 
         [HttpGet("artist/{id}")]
         public async Task<IActionResult> StatisticsForArtist(int id, [FromQuery] int? year) {
-            var session = GetSession(Request, Response);
+            var session = await GetSession(Request, Response);
             return session == null
                 ? Unauthorized()
                 : Ok(year == null ? await dao.GetOverallStatisticForArtist(session.Username, id)
@@ -69,7 +69,7 @@ namespace Hue.API.Controllers {
 
         [HttpGet("characters")]
         public async Task<IActionResult> CharacterStatistics([FromQuery] int? year) {
-            var session = GetSession(Request, Response);
+            var session = await GetSession(Request, Response);
             return session == null
                 ? Unauthorized()
                 : Ok(year == null ? await dao.GetOverallCharacterStatistics(session.Username)
@@ -78,7 +78,7 @@ namespace Hue.API.Controllers {
 
         [HttpGet("characters/{id}")]
         public async Task<IActionResult> StatisticsForCharacter(int id, [FromQuery] int? year) {
-            var session = GetSession(Request, Response);
+            var session = await GetSession(Request, Response);
             return session == null
                 ? Unauthorized()
                 : Ok(year == null ? await dao.GetOverallStatisticForCharacter(session.Username, id)
@@ -87,7 +87,7 @@ namespace Hue.API.Controllers {
 
         [HttpGet("tag")]
         public async Task<IActionResult> TagStatistics([FromQuery] int? year) {
-            var session = GetSession(Request, Response);
+            var session = await GetSession(Request, Response);
             return session == null
                 ? Unauthorized()
                 : Ok(year == null ? await dao.GetOverallTagStatistics(session.Username)
@@ -97,7 +97,7 @@ namespace Hue.API.Controllers {
         [HttpGet("tag/{id}")]
         public async Task<IActionResult> StatisticsForTag(int id, [FromQuery] int? year) {
 
-            var session = GetSession(Request, Response);
+            var session = await GetSession(Request, Response);
             return session == null
                 ? Unauthorized()
                 : Ok(year == null ? await dao.GetOverallStatisticForTag(session.Username, id)
@@ -107,7 +107,7 @@ namespace Hue.API.Controllers {
         [HttpGet("comm")]
         public async Task<IActionResult> CommissionStatistics([FromQuery] CommissionFilterOptions filter) {
 
-            var session = GetSession(Request, Response);
+            var session = await GetSession(Request, Response);
             return session == null
                 ? Unauthorized()
                 : Ok(await dao.GetCommissionStatistics(session.Username,filter));

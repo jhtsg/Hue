@@ -23,7 +23,7 @@ namespace Hue.API.Controllers
         #region CREATE
         [HttpPost]
         public async Task<IActionResult> Create(Character character) {
-            var session = GetSession(Request, Response);
+            var session = await GetSession(Request, Response);
             if (session == null) { return Unauthorized(); }
             var id = await dao.Create(session.Username, character);
             return Created("api/char/" + id, await dao.Get(session.Username, id));
@@ -31,7 +31,7 @@ namespace Hue.API.Controllers
 
         [HttpPost("category")]
         public async Task<IActionResult> CreateCategory(CharacterCategory category) {
-            var session = GetSession(Request, Response);
+            var session = await GetSession(Request, Response);
             if (session == null) { return Unauthorized(); }
             var id = await dao.CreateCategory(session.Username, category);
             return Created("api/char/category/" + id, await dao.GetCategory(session.Username, id));
@@ -43,7 +43,7 @@ namespace Hue.API.Controllers
 
         [HttpGet]
         public async Task<IActionResult> GetAll() {
-            var session = GetSession(Request, Response);
+            var session = await GetSession(Request, Response);
             return session == null
                 ? Unauthorized()
                 : Ok(await dao.GetAll(session.Username));
@@ -51,7 +51,7 @@ namespace Hue.API.Controllers
 
         [HttpGet("{ID}")]
         public async Task<IActionResult> Get(int ID) {
-            var session = GetSession(Request, Response);
+            var session = await GetSession(Request, Response);
             return session == null
                 ? Unauthorized()
                 : Ok(await dao.Get(session.Username,ID));
@@ -59,7 +59,7 @@ namespace Hue.API.Controllers
         
         [HttpGet("category")]
         public async Task<IActionResult> GetAllCategories() {
-            var session = GetSession(Request, Response);
+            var session = await GetSession(Request, Response);
             return session == null
                 ? Unauthorized()
                 : Ok(await dao.GetAllCategories(session.Username));
@@ -67,7 +67,7 @@ namespace Hue.API.Controllers
 
         [HttpGet("category/{ID}")]
         public async Task<IActionResult> GetCategory(int ID) {
-            var session = GetSession(Request, Response);
+            var session = await GetSession(Request, Response);
             return session == null
                 ? Unauthorized()
                 : Ok(await dao.GetCategory(session.Username, ID));
@@ -76,7 +76,7 @@ namespace Hue.API.Controllers
 
         [HttpGet("{ID}/image")]
         public async Task<IActionResult> GetImage(int ID, [FromQuery] bool NoCache = false) {
-            var session = GetSession(Request, Response);
+            var session = await GetSession(Request, Response);
             if (session == null) return Unauthorized();
 
             var key = $"{session.Username}-{ID}-CHARACTER";
@@ -101,7 +101,7 @@ namespace Hue.API.Controllers
 
         [HttpPut]
         public async Task<IActionResult> Update(Character character) {
-            var session = GetSession(Request, Response);
+            var session = await GetSession(Request, Response);
             if (session == null) { return Unauthorized(); }
             await dao.Update(session.Username, character);
             return Ok();
@@ -109,7 +109,7 @@ namespace Hue.API.Controllers
 
         [HttpPut("primary")]
         public async Task<IActionResult> SetPrimary(Character character) {
-            var session = GetSession(Request, Response);
+            var session = await GetSession(Request, Response);
             if (session == null) { return Unauthorized(); }
             await dao.UpdatePrimary(session.Username, character);
             return Ok();
@@ -118,7 +118,7 @@ namespace Hue.API.Controllers
 
         [HttpPut("category")]
         public async Task<IActionResult> UpdateCategory(CharacterCategory category) {
-            var session = GetSession(Request, Response);
+            var session = await GetSession(Request, Response);
             if (session == null) { return Unauthorized(); }
             await dao.UpdateCategory(session.Username, category);
             return Ok();
@@ -126,7 +126,7 @@ namespace Hue.API.Controllers
 
         [HttpPut("{ID}/image")]
         public async Task<IActionResult> UpdateImage(int ID, [FromForm] IFormFile file) {
-            var session = GetSession(Request, Response);
+            var session = await GetSession(Request, Response);
             if (session == null) { return Unauthorized(); }
 
             if (file == null || file.Length == 0) { return BadRequest("No data!"); }

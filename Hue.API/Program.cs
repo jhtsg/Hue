@@ -22,6 +22,8 @@ builder.Services.AddSwaggerGen(o => {
 });
 
 
+var frontendHostName = new OptionalEnvironmentKey("FRONTEND_HOST_NAME").ToString();
+
 builder.Services.AddCors(o => {
     o.AddPolicy(name: CORS,
     builder => {
@@ -31,7 +33,7 @@ builder.Services.AddCors(o => {
         builder.SetIsOriginAllowed(origin =>
             !string.IsNullOrEmpty(origin) && (
                 origin.Contains("localhost") ||
-                new Uri(origin).Host.EndsWith(new EnvironmentKey("FRONTEND_HOST_NAME").ToString())
+                (frontendHostName != null && new Uri(origin).Host.EndsWith(frontendHostName))
             )
         );
 
