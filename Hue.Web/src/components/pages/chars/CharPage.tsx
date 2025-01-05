@@ -7,10 +7,14 @@ import CharsStatisticPane from "./subcomponents/CharsStatisticPane";
 import CommissionStatisticsPane from "../../shared/statistics/CommissionStatisticsPane";
 import { useEffect, useState } from "react";
 import CommissionFilterOptions from "../../../model/commission/CommissionFilterOptions";
+import NoCommsDeletePane from "../../shared/NoCommsDeletePane";
+import useApi from "../../hooks/useApi";
+import { deleteCharacter } from "../../../api/Char";
 
 export default function CharPage() {
     const { id } = useParams();
     const nav = useNavigate();
+    const deleteApi = useApi(deleteCharacter)
 
     const [filter, setFilter] = useState({
         CharacterId: id
@@ -51,7 +55,11 @@ export default function CharPage() {
         <CommsDisplay filter={{
             Page: 0,
             CharacterId: Number(id)
-        }} />
+        }} noCommsPane={<NoCommsDeletePane
+            api={deleteApi}
+            id={Number(id)}
+            type="character"
+        />} />
 
     </>
 }

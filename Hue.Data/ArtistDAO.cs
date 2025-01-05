@@ -138,7 +138,22 @@ namespace Hue.Data
         #endregion
 
         #region DELETE
-        //We won't support deleting artists
+
+        public async Task DeleteArtist(string username, int id) {
+
+            if (!(await UserOwnsArtist(adoTemplate, username, id))){
+                throw new InvalidOperationException("User does not own artist");
+            }
+
+            var checkSql = SelectSql(["Count(*)"], COMM_TABLE, new WhereConditionGroup([new(ARTIST_ID)]));
+            if (await adoTemplate.QuerySingle(checkSql, (cmd) => cmd.SetInt(ARTIST_ID, id), (reader) => reader.GetInt(0) > 0)) {
+                throw new InvalidOperationException("Artist is assigned to commissions");
+            }
+
+            var sql = DeleteSql(ARTIST_TABLE, new([new(ARTIST_ID)]));
+            await adoTemplate.Execute(sql, (cmd) => cmd.SetInt(ARTIST_ID,id));
+        }
+
         #endregion
 
         #region CHECK

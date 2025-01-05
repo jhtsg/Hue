@@ -8,10 +8,14 @@ import { useUser } from "../../hooks/useUser";
 import CommissionStatisticsPane from "../../shared/statistics/CommissionStatisticsPane";
 import { useEffect, useState } from "react";
 import CommissionFilterOptions from "../../../model/commission/CommissionFilterOptions";
+import { deleteArtist } from "../../../api/Artist";
+import NoCommsDeletePane from "../../shared/NoCommsDeletePane";
+import useApi from "../../hooks/useApi";
 
 export default function ArtistPage() {
 
     const { id } = useParams();
+    const deleteApi = useApi(deleteArtist);
     const nav = useNavigate();
     const { user } = useUser();
     const artist = user?.isArtist
@@ -55,6 +59,10 @@ export default function ArtistPage() {
         <CommsDisplay filter={{
             Page: 0,
             ArtistId: Number(id)
-        }} />
+        }} noCommsPane={<NoCommsDeletePane
+            api={deleteApi}
+            id={Number(id)}
+            type="artist"
+        />} />
     </>
 }

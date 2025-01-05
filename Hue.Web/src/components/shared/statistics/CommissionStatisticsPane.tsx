@@ -3,7 +3,7 @@ import { getCommissionStatistics } from "../../../api/Statistics"
 import CommissionFilterOptions from "../../../model/commission/CommissionFilterOptions"
 import useApi from "../../hooks/useApi"
 import ApiAlert from "../ApiAlert"
-import { Card, List, ListItemButton, ListItemIcon, ListItemText } from "@mui/material"
+import { Card, CircularProgress, List, ListItemButton, ListItemIcon, ListItemText } from "@mui/material"
 import { BarChart, ColorLens, Groups, Payments, PhotoLibrary, Style, Timelapse } from "@mui/icons-material"
 import TagBarChart from "./subcomponents/TagBarChart"
 import CharacterBarChart from "./subcomponents/CharacterBarChart"
@@ -90,14 +90,14 @@ export default function CommissionStatisticsPane(props: {
                 {!superVertical && <hr />}
             </>}
             <div style={{ flex: "1" }}>
-                <DisplayDecider mode={mode} data={statsApi.data} superVertical={superVertical} allDisabled={allDisabled} maxWidth={maxWidth} />
+                <DisplayDecider mode={mode} data={statsApi.data} superVertical={superVertical} allDisabled={allDisabled} maxWidth={maxWidth} loading={statsApi.loading} />
             </div>
         </div>
     </Card>
 }
 
-const DisplayDecider = (props: { mode: string, data: CommissionStatistics, superVertical: boolean, allDisabled: boolean, maxWidth?: number }) => {
-    const { mode, data, superVertical, allDisabled, maxWidth } = props;
+const DisplayDecider = (props: { mode: string, data: CommissionStatistics, superVertical: boolean, allDisabled: boolean, maxWidth?: number, loading: boolean }) => {
+    const { mode, data, superVertical, allDisabled, maxWidth, loading } = props;
 
     const { width, vertical } = useWindowDimensions()
 
@@ -121,11 +121,16 @@ const DisplayDecider = (props: { mode: string, data: CommissionStatistics, super
         default:
             return <div style={{
                 display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-                color: "#999", height: `${chartHeight}px`, transition: "height 250ms ease-out"
-            }}
-            >
-                <div><BarChart fontSize="large" /></div>
-                <div>{allDisabled ? "No statistics available" : "Select a Statistic"}</div>
+                color: "#999", height: `${!loading && allDisabled ? 100 : chartHeight}px`
+            }}>
+                {loading ? <>
+                    <div style={{ marginBottom: "10px" }}><CircularProgress /></div>
+                    <div>Loading statistics</div>
+                </> : <>
+                    <div><BarChart fontSize="large" /></div>
+                    <div>{allDisabled ? "No statistics available" : "Select a Statistic"}</div>
+                </>}
+
 
             </div>
     }

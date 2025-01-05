@@ -1,5 +1,5 @@
 import Artist from "../model/artist/Artist";
-import { API_PREFIX, Get, Post, Put, Upload } from "./Common";
+import { API_PREFIX, Delete, Get, Post, Put, Upload } from "./Common";
 
 const ENDPOINT = API_PREFIX + "artist/"
 
@@ -42,4 +42,9 @@ export const updateArtistProfile = (
 ) => Upload(setLoading, setProgress, onSuccess, onError, "PUT", ENDPOINT + `${id}/image`, file)
 
 
-
+export const deleteArtist = (
+    setLoading: (value: boolean) => void,
+    onSuccess: () => void,
+    onError: (value: any) => void,
+    id: number,
+) => Delete(setLoading, onSuccess, onError, ENDPOINT + id)

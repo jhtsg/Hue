@@ -247,8 +247,22 @@ namespace Hue.Data
         #endregion
 
         #region DELETE
-        //We won't support deleting characters
-        //We could support deleting character categories though
+
+        public async Task DeleteCharacter(string username, int id) {
+
+            if (!(await UserOwnsCharacter(adoTemplate, username, id))) {
+                throw new InvalidOperationException("User does not own Character");
+            }
+
+            var checkSql = SelectSql(["Count(*)"], COMM_CHAR_MAP, new WhereConditionGroup([new(CHAR_ID)]));
+            if (await adoTemplate.QuerySingle(checkSql, (cmd) => cmd.SetInt(CHAR_ID, id), (reader) => reader.GetInt(0) > 0)) {
+                throw new InvalidOperationException("Character is assigned to commissions");
+            }
+
+            var sql = DeleteSql(CHAR_TABLE, new([new(CHAR_ID)]));
+            await adoTemplate.Execute(sql, (cmd) => cmd.SetInt(CHAR_ID, id));
+        }
+
         #endregion
 
         #region CHECK

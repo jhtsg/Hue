@@ -151,6 +151,18 @@ namespace Hue.API.Controllers
 
         #endregion
 
+        #region DELETE
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteCharacter(int id) {
+            var session = await GetSession(Request, Response);
+            if (session == null) { return Unauthorized(); }
+            try { await dao.DeleteCharacter(session.Username, id); }
+            catch (InvalidOperationException e) {
+                return BadRequest(e.Message);
+            }
+            return Ok();
+        }
+        #endregion
 
 
     }
