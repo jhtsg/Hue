@@ -111,11 +111,12 @@ There's a couple of environment variables Hue expects:
 |-|-|-|-|
 |`DB_URL`|Y|```Host=localhost:5432; Database=hue; Username=hue; Password=1234;```|Connection string to your DB|
 |`FRONTEND_HOST_NAME`|N|`slimeguy.net`|The host of Hue's frontend. Only needed if Hue's frontend is on a separate hostname so we can CORS |
-|`HASHBROWN_SALT`|Y|`MjEwMjAxMDAzsASWwoxPMQ==`|A Base64 string used to hash passwords and attempts¹|
+|`IMAGE_CACHE_TIMESPAN`|N|`60`|Sliding timespan in minutes for images cached in memory|
+|`SESSION_MEMORY_TIMESTAMP_MINUTES`|N|`10`|Sliding timespan in minutes for sessions kept cached in memory|
+|`SESSION_DB_TIMESTAMP_DAYS`|N|`7`|Sliding timespan in days for sessions kept in database|
 |`NO_SECURE`|N|`true`|Hue can disable sending the session cookie as Secure in case you're hosting locally and using HTTP²|
 |`REGISTER_KEY`|N³|Anything| A passkey to allow users to register to this instance|
 
-<div style="margin-bottom:20px">¹ I know it's not secure to just hash passwords. Someday maybe we'll make this better but oh well.</div>
 <div style="margin-bottom:20px">² Using NO_SECURE disables a secure cookie, meaning authentication breaks if CORS is required. If you disable this, make sure you're hosting the frontend and backend on the same hostname!</div>
 <div style="margin-bottom:20px">³ An unset REGISTER_KEY will make registration unavailable. If you want this un-set, you should register yourself first, then un-set it.</div>
 
