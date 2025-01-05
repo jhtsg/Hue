@@ -6,7 +6,7 @@
         public string Name { get; set; } = "";
 
         ///<summary>Payment Information</summary>
-        public string PaymnetUrl { get; set; } = "";
+        public string PaymentUrl { get; set; } = "";
 
         /// <summary>Primary Social Media URL of this artist (Like a Twitter or FurAffinity profile</summary>
         public string SocialUrl { get; set; } = "";

@@ -24,7 +24,7 @@ namespace Hue.Data
                 cmd.SetString(ARTIST_NM, artist.Name);
                 cmd.SetString(ARTIST_SOCIAL_TX, artist.SocialUrl);
                 cmd.SetString(ARTIST_COMM_SHEET_TX, artist.CommSheetUrl);
-                cmd.SetString(PAYMENT_URL_TX, artist.PaymnetUrl);
+                cmd.SetString(PAYMENT_URL_TX, artist.PaymentUrl);
                 cmd.SetString(USER_NM, username);
             }, (reader) => reader.GetInt(0));
 
@@ -40,7 +40,7 @@ namespace Hue.Data
             SocialUrl = reader.GetString(ARTIST_SOCIAL_TX),
             CommSheetUrl = reader.GetString(ARTIST_COMM_SHEET_TX),
             HasImage = reader.GetBoolean(ARTIST_IMG_PRESENT_IN),
-            PaymnetUrl = reader.GetOptionalString(PAYMENT_URL_TX) ?? "",
+            PaymentUrl = reader.GetOptionalString(PAYMENT_URL_TX) ?? "",
             IsRetired = reader.GetBoolean(RETIRED_IN)
         };
 
@@ -115,7 +115,7 @@ namespace Hue.Data
                 cmd.SetString(USER_NM, username);
                 cmd.SetInt(ARTIST_ID, artist.Id);
                 cmd.SetBoolean(RETIRED_IN, artist.IsRetired);
-                cmd.SetString(PAYMENT_URL_TX, artist.PaymnetUrl);
+                cmd.SetString(PAYMENT_URL_TX, artist.PaymentUrl);
             });
         }
 

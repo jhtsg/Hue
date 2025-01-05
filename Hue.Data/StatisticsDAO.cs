@@ -288,7 +288,7 @@ namespace Hue.Data {
             
             var sql = SelectSql(
                 columns: ["c." + ARTIST_ID, "c.count",
-                    ARTIST_NM,ARTIST_SOCIAL_TX,ARTIST_COMM_SHEET_TX,ARTIST_IMG_PRESENT_IN,RETIRED_IN
+                    ARTIST_NM,ARTIST_SOCIAL_TX,ARTIST_COMM_SHEET_TX,ARTIST_IMG_PRESENT_IN,RETIRED_IN,PAYMENT_URL_TX
                 ], table: $"({
                     SelectSql(
                         columns: [ARTIST_ID,"count(*) as count"],
