@@ -1,4 +1,4 @@
-import { Button, CircularProgress, Skeleton, Link, TextField, InputAdornment, Card, Typography, FormControl, FormLabel, RadioGroup, FormControlLabel, Radio } from "@mui/material"
+import { Button, CircularProgress, Skeleton, Link, TextField, InputAdornment, FormControl, FormLabel, RadioGroup, FormControlLabel, Radio } from "@mui/material"
 import { artistImage, createArtist, getArtist, updateArtist, updateArtistProfile } from "../../../../api/Artist"
 import SafeAvatar from "../../../shared/SafeAvatar"
 import SocialDisplay from "../../../shared/SocialDisplay"
@@ -37,6 +37,7 @@ export default function ArtistPane(props: {
     const ultraVertical = width < 500
 
     const PAYPAL_MODE = "PayPal"
+    const INVOICE_MODE = "Invoice"
     const OTHER_MODE = "Other"
 
     const [editMode, setEditMode] = useState(create)
@@ -84,7 +85,7 @@ export default function ArtistPane(props: {
             setSocial(artistApi.data?.socialUrl)
             setCommSheet(artistApi.data?.commSheetUrl);
             setPayment(artistApi.data?.paymentUrl)
-            setPaymentMode(isPaypal() ? PAYPAL_MODE : OTHER_MODE)
+            setPaymentMode(artistApi.data?.paymentUrl === "INVOICE" ? INVOICE_MODE : isPaypal() ? PAYPAL_MODE : OTHER_MODE)
             setSelectedFile(null)
             setEditMode(true)
             artistApi.resetError()
@@ -98,7 +99,7 @@ export default function ArtistPane(props: {
             createArtistApi.fetch(onCreateSuccess, undefined, {
                 name: name,
                 commSheetUrl: commSheet,
-                paymentUrl: payment,
+                paymentUrl: paymentMode === INVOICE_MODE ? "INVOICE" : payment,
                 socialUrl: social
             } as Artist)
         } else {
@@ -107,7 +108,7 @@ export default function ArtistPane(props: {
                 name: name,
                 commSheetUrl: commSheet,
                 socialUrl: social,
-                paymentUrl: payment,
+                paymentUrl: paymentMode === INVOICE_MODE ? "INVOICE" : payment,
                 isRetired: artistApi.data?.isRetired
             } as Artist)
         }
@@ -256,6 +257,9 @@ export default function ArtistPane(props: {
                                             } : undefined}
                                         />
                                     </div>
+                                    <div style={{ display: "flex", alignItems: "center", marginBottom: "20px" }}>
+                                        <div style={{ width: "150px" }}><FormControlLabel value={INVOICE_MODE} control={<Radio />} label="Invoice" /></div>
+                                    </div>
                                     <div style={{ display: "flex", alignItems: "center" }}>
                                         <div style={{ width: "150px" }}><FormControlLabel value={OTHER_MODE} control={<Radio />} label="Other" /></div>
                                         <TextField
@@ -275,7 +279,10 @@ export default function ArtistPane(props: {
                         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                             {artistApi.data?.isRetired && <CharacterCategoryPill category={{ name: "Retired", color: "#777" } as CharacterCategory} />}
                             <SocialDisplay url={artistApi.data.socialUrl} link />
-                            {artistApi.data?.paymentUrl?.length > 0 && <SocialDisplay url={artistApi.data?.paymentUrl} link />}
+                            {artistApi.data?.paymentUrl?.length > 0 && (
+                                artistApi.data?.paymentUrl === "INVOICE" ? <SocialDisplay url="https://paypal.me/Invoice" prefixOverride=" " /> :
+                                    <SocialDisplay url={artistApi.data?.paymentUrl} link />
+                            )}
                         </div>
                         {artistApi.data.commSheetUrl && artistApi.data.commSheetUrl.trim().length > 0 &&
                             <div style={{ marginTop: "5px", fontSize: ".7em" }}><Link href={artistApi.data.commSheetUrl}>Commission Sheet</Link></div>

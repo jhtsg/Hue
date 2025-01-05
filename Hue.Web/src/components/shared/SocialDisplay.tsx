@@ -8,12 +8,15 @@ export default function SocialDisplay(props: {
     link?: boolean
     iconSize?: number,
     style?: CSSProperties
+    prefixOverride?: string
 }) {
 
-    const { url, iconSize, style, link } = props;
+    const { url, iconSize, style, link, prefixOverride } = props;
     const social = Social.fromUrl(url);
 
     const usernamePrefix = (host: string) => {
+        if (!!prefixOverride) return prefixOverride
+
         switch (true) {
             case host.toLowerCase().includes('twitter'):
             case host.toLowerCase().includes('paypal'):
@@ -31,7 +34,7 @@ export default function SocialDisplay(props: {
     }
 
     const openLink = () => {
-        window.open(url)
+        window.open(social.url)
     }
 
     return <>

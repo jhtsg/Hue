@@ -9,11 +9,10 @@ export default class Social {
         try {
             const u = new URL(url);
             const segments = u.pathname.split('/').filter(Boolean);
-
             return {
                 site: u.host,
                 username: segments[segments.length - 1],
-                url: url,
+                url: u.host.toLowerCase().includes("paypal") && url.includes("@") ? "https://www.paypal.com/myaccount/transfer/homepage" : url,
             } as Social;
         } catch {
             return {
