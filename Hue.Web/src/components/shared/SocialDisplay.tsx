@@ -16,6 +16,7 @@ export default function SocialDisplay(props: {
     const usernamePrefix = (host: string) => {
         switch (true) {
             case host.toLowerCase().includes('twitter'):
+            case host.toLowerCase().includes('paypal'):
             case host.toLowerCase().includes('x.com'):
             case host.toLowerCase().includes('bsky'):
             case host.toLowerCase().includes('itaku'):

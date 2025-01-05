@@ -1,4 +1,4 @@
-import { Button, CircularProgress, Skeleton, Link, TextField, InputAdornment } from "@mui/material"
+import { Button, CircularProgress, Skeleton, Link, TextField, InputAdornment, Card, Typography, FormControl, FormLabel, RadioGroup, FormControlLabel, Radio } from "@mui/material"
 import { artistImage, createArtist, getArtist, updateArtist, updateArtistProfile } from "../../../../api/Artist"
 import SafeAvatar from "../../../shared/SafeAvatar"
 import SocialDisplay from "../../../shared/SocialDisplay"
@@ -36,9 +36,14 @@ export default function ArtistPane(props: {
     const { width } = useWindowDimensions();
     const ultraVertical = width < 500
 
+    const PAYPAL_MODE = "PayPal"
+    const OTHER_MODE = "Other"
+
     const [editMode, setEditMode] = useState(create)
     const [name, setName] = useState("")
     const [social, setSocial] = useState("")
+    const [payment, setPayment] = useState("")
+    const [paymentMode, setPaymentMode] = useState(PAYPAL_MODE)
     const [commSheet, setCommSheet] = useState("")
     const [selectedFile, setSelectedFile] = useState(null as File | null)
     const [selectedFileUrl, setSelectedFileUrl] = useState(undefined as string | undefined)
@@ -64,6 +69,8 @@ export default function ArtistPane(props: {
         setName("")
         setSocial("")
         setCommSheet("");
+        setPayment("")
+        setPaymentMode(PAYPAL_MODE)
         setSelectedFile(null)
         artistApi.resetError()
         updateArtistApi.resetError();
@@ -76,6 +83,8 @@ export default function ArtistPane(props: {
             setName(artistApi.data?.name)
             setSocial(artistApi.data?.socialUrl)
             setCommSheet(artistApi.data?.commSheetUrl);
+            setPayment(artistApi.data?.paymentUrl)
+            setPaymentMode(isPaypal() ? PAYPAL_MODE : OTHER_MODE)
             setSelectedFile(null)
             setEditMode(true)
             artistApi.resetError()
@@ -89,6 +98,7 @@ export default function ArtistPane(props: {
             createArtistApi.fetch(onCreateSuccess, undefined, {
                 name: name,
                 commSheetUrl: commSheet,
+                paymentUrl: payment,
                 socialUrl: social
             } as Artist)
         } else {
@@ -97,6 +107,7 @@ export default function ArtistPane(props: {
                 name: name,
                 commSheetUrl: commSheet,
                 socialUrl: social,
+                paymentUrl: payment,
                 isRetired: artistApi.data?.isRetired
             } as Artist)
         }
@@ -109,6 +120,7 @@ export default function ArtistPane(props: {
             name: artistApi.data?.name,
             commSheetUrl: artistApi.data?.commSheetUrl,
             socialUrl: artistApi.data?.socialUrl,
+            paymentUrl: artistApi.data?.paymentUrl,
             isRetired: !artistApi.data?.isRetired
         } as Artist)
     }
@@ -157,6 +169,15 @@ export default function ArtistPane(props: {
 
     const anyLoading = artistApi.loading || updateArtistApi.loading || createArtistApi.loading || updateArtistProfileApi.loading
 
+    const payPalPrefix = "https://paypal.me/"
+
+    const getPaypalUsername = (): string =>
+        payment?.startsWith(payPalPrefix) ? payment.substring(payPalPrefix.length) : ""
+
+    const setPaypalUsername = (val: string) => setPayment(payPalPrefix + val);
+
+    const isPaypal = () => artistApi.data?.paymentUrl?.startsWith(payPalPrefix) || (artistApi.data?.paymentUrl?.length ?? 0) === 0;
+
     return <>
 
         <input
@@ -177,7 +198,11 @@ export default function ArtistPane(props: {
         <ApiAlert result={createArtistApi.error} style={{ marginBottom: "20px" }} />
         <ApiAlert result={updateArtistProfileApi.error} style={{ marginBottom: "20px" }} />
         <div style={{ width: "100%", display: "flex", flexDirection: ultraVertical ? 'column' : undefined }}>
+
+            {/* Avatar */}
             <div style={ultraVertical ? { textAlign: 'center', margin: "0px auto 20px auto" } : { marginRight: "20px", textAlign: 'center' }}>
+
+                {/* Avatar */}
                 {artistApi.data?.isRetired && !editMode
                     ? <RetiredAvatar size={128} src={
                         selectedFile ? selectedFileUrl : artistImage(id ?? 0)
@@ -186,46 +211,84 @@ export default function ArtistPane(props: {
                         selectedFile ? selectedFileUrl : artistImage(id ?? 0)
                     } text={"?"} hasImage={!create} />
                 } {/* Assume we have an image if we're not creating since it'd be faster to error out than to wait for the artist */}
+
+                {/* Change button */}
                 {editMode && <Button style={{ marginTop: "10px" }} onClick={() => { (fileInputRef?.current as any)?.click(); }}>Change</Button>}
             </div>
+
             <div style={{ flex: "1", display: "flex", flexDirection: "column", margin: ultraVertical && !editMode ? "0 auto" : undefined }}>
                 <div style={{ flex: "1" }}>
-                    {editMode ? <>
-                        <div style={{ marginBottom: "20px" }}>
-                            <TextField label="Name" value={name} onChange={(e) => setName(e.target.value)} fullWidth />
-                        </div>
-                        <div style={{ marginBottom: "20px" }}>
-                            <TextField label="Social URL" value={social}
-                                onChange={(e) => setSocial(e.target.value)} fullWidth
-                                slotProps={{
-                                    input: {
-                                        startAdornment: <InputAdornment position="start">
-                                            <SocialIcon social={Social.fromUrl(social)} size={25} />
-                                        </InputAdornment>
-                                    }
-                                }}
-                            />
-                        </div>
-                        <div hidden={artist} style={{}}>
+                    {editMode ? <div style={{ display: 'flex', flexDirection: "column", gap: "20px" }}>
+                        {/* Editor mode */}
+                        <TextField label="Name" value={name} onChange={(e) => setName(e.target.value)} fullWidth />
+                        <TextField label="Social URL" value={social}
+                            onChange={(e) => setSocial(e.target.value)} fullWidth
+                            slotProps={{
+                                input: {
+                                    startAdornment: <InputAdornment position="start">
+                                        <SocialIcon social={Social.fromUrl(social)} size={25} />
+                                    </InputAdornment>
+                                }
+                            }}
+                        />
+
+                        {/* Options hidden to artists */}
+                        <div hidden={artist}>
                             <TextField label="Commission Sheet URL" value={commSheet} onChange={(e) => setCommSheet(e.target.value)} fullWidth />
                         </div>
+
+                        <div hidden={artist}>
+                            <FormControl style={{ width: "100%" }}>
+                                <FormLabel>Payment</FormLabel>
+                                <RadioGroup value={paymentMode} onChange={(e) => setPaymentMode(e.target.value)}>
+                                    <div style={{ display: "flex", alignItems: "center", marginBottom: "20px" }}>
+                                        <div style={{ width: "150px" }}><FormControlLabel value={PAYPAL_MODE} control={<Radio />} label="PayPal™" /></div>
+                                        <TextField
+                                            label="Username" fullWidth disabled={paymentMode !== PAYPAL_MODE}
+                                            value={paymentMode === PAYPAL_MODE ? getPaypalUsername() : ""}
+                                            onChange={(e) => setPaypalUsername(e.target.value)}
+                                            slotProps={paymentMode === PAYPAL_MODE ? {
+                                                input: {
+                                                    startAdornment: <InputAdornment position="start">
+                                                        @
+                                                    </InputAdornment>
+                                                }
+                                            } : undefined}
+                                        />
+                                    </div>
+                                    <div style={{ display: "flex", alignItems: "center" }}>
+                                        <div style={{ width: "150px" }}><FormControlLabel value={OTHER_MODE} control={<Radio />} label="Other" /></div>
+                                        <TextField
+                                            label="URL" fullWidth disabled={paymentMode !== OTHER_MODE}
+                                            value={paymentMode === OTHER_MODE ? payment : ""}
+                                            onChange={(e) => setPayment(e.target.value)}
+                                        />
+                                    </div>
+                                </RadioGroup>
+                            </FormControl>
+
+                        </div>
+
+                    </div> : artistApi.data ? <>
+                        {/* Tile mode */}
+                        <div style={{ fontSize: "2em" }}>{artistApi.data.name}</div>
+                        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                            {artistApi.data?.isRetired && <CharacterCategoryPill category={{ name: "Retired", color: "#777" } as CharacterCategory} />}
+                            <SocialDisplay url={artistApi.data.socialUrl} link />
+                            {artistApi.data?.paymentUrl?.length > 0 && <SocialDisplay url={artistApi.data?.paymentUrl} link />}
+                        </div>
+                        {artistApi.data.commSheetUrl && artistApi.data.commSheetUrl.trim().length > 0 &&
+                            <div style={{ marginTop: "5px", fontSize: ".7em" }}><Link href={artistApi.data.commSheetUrl}>Commission Sheet</Link></div>
+                        }
                     </> :
-                        artistApi.data ? <>
-                            <div style={{ fontSize: "2em" }}>{artistApi.data.name}</div>
-                            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                                {artistApi.data?.isRetired && <CharacterCategoryPill category={{ name: "Retired", color: "#777" } as CharacterCategory} />}
-                                <SocialDisplay url={artistApi.data.socialUrl} link />
-                            </div>
-                            {artistApi.data.commSheetUrl && artistApi.data.commSheetUrl.trim().length > 0 &&
-                                <div style={{ marginTop: "5px", fontSize: ".7em" }}><Link href={artistApi.data.commSheetUrl}>Commission Sheet</Link></div>
-                            }
-                        </> :
-                            <>
-                                <Skeleton variant="text" sx={{ fontSize: '2em' }} animation='wave' />
-                                <Skeleton variant="text" sx={{ fontSize: '.8em' }} animation='wave' />
-                            </>
+                        <>
+                            <Skeleton variant="text" sx={{ fontSize: '2em' }} animation='wave' />
+                            <Skeleton variant="text" sx={{ fontSize: '.8em' }} animation='wave' />
+                        </>
                     }
                 </div>
+
+                {/* Buttons */}
                 {(editable || editMode) &&
                     <div style={{ display: "flex", flexDirection: "row-reverse", marginTop: "20px", gap: "10px" }}>
                         <Button onClick={handleActionClick} disabled={anyLoading}>

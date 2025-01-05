@@ -21,6 +21,8 @@ export default function SocialIcon(props: {
                 return "fa"
             case host.includes('instagram'):
                 return "instagram"
+            case host.includes('paypal'):
+                return "paypal"
             default:
                 return "globe"
         }
