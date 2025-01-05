@@ -5,6 +5,8 @@ create table hue.session(
     cre_ts TIMESTAMP(6) DEFAULT NOW()
 );
 
+ALTER TABLE hue.artist ADD payment_url_tx varchar NULL;
+
 --WARNING: Any existing passwords will cease to work. This was done to drastically
 --         Improve security in Hue, In order to work around this for each user you 
 --         have in your instance:
