@@ -18,6 +18,7 @@
         public static readonly string ARTIST_ID = "artist_id";
         public static readonly string ARTIST_NM = "artist_nm";
         public static readonly string ARTIST_SOCIAL_TX = "artist_social_tx";
+        public static readonly string PAYMENT_URL_TX = "payment_url_tx";
         public static readonly string ARTIST_COMM_SHEET_TX = "artist_comm_sheet_tx";
         public static readonly string ARTIST_IMG_BYTES = "artist_img_bytes";
         public static readonly string ARTIST_IMG_MIME_TX = "artist_img_mime_tx";

@@ -15,7 +15,7 @@ namespace Hue.Data
         public async Task<int> Create(string username, Artist artist) {
 
             var sql = InsertSql(
-                columns : [ARTIST_NM, ARTIST_SOCIAL_TX, ARTIST_COMM_SHEET_TX, USER_NM],
+                columns : [ARTIST_NM, ARTIST_SOCIAL_TX, ARTIST_COMM_SHEET_TX, USER_NM, PAYMENT_URL_TX],
                 table : ARTIST_TABLE,
                 returning : ARTIST_ID
             );
@@ -24,6 +24,7 @@ namespace Hue.Data
                 cmd.SetString(ARTIST_NM, artist.Name);
                 cmd.SetString(ARTIST_SOCIAL_TX, artist.SocialUrl);
                 cmd.SetString(ARTIST_COMM_SHEET_TX, artist.CommSheetUrl);
+                cmd.SetString(PAYMENT_URL_TX, artist.PaymnetUrl);
                 cmd.SetString(USER_NM, username);
             }, (reader) => reader.GetInt(0));
 
@@ -39,13 +40,14 @@ namespace Hue.Data
             SocialUrl = reader.GetString(ARTIST_SOCIAL_TX),
             CommSheetUrl = reader.GetString(ARTIST_COMM_SHEET_TX),
             HasImage = reader.GetBoolean(ARTIST_IMG_PRESENT_IN),
+            PaymnetUrl = reader.GetOptionalString(PAYMENT_URL_TX) ?? "",
             IsRetired = reader.GetBoolean(RETIRED_IN)
         };
 
         public async Task<List<Artist>> GetAll(string username) {
 
             var sql = SelectSql(
-                columns: [ARTIST_ID, ARTIST_NM, ARTIST_SOCIAL_TX, ARTIST_COMM_SHEET_TX, ARTIST_IMG_PRESENT_IN, RETIRED_IN],
+                columns: [ARTIST_ID, ARTIST_NM, ARTIST_SOCIAL_TX, ARTIST_COMM_SHEET_TX, ARTIST_IMG_PRESENT_IN, RETIRED_IN,PAYMENT_URL_TX],
                 table: ARTIST_TABLE,
                 new(WhereConditionUnion.AND, [
                     new(USER_NM)
@@ -60,7 +62,7 @@ namespace Hue.Data
         public async Task<Artist?> Get(string username, int id) {
 
             var sql = SelectSql(
-              columns: [ARTIST_ID, ARTIST_NM, ARTIST_SOCIAL_TX, ARTIST_COMM_SHEET_TX,ARTIST_IMG_PRESENT_IN,RETIRED_IN],
+              columns: [ARTIST_ID, ARTIST_NM, ARTIST_SOCIAL_TX, ARTIST_COMM_SHEET_TX,ARTIST_IMG_PRESENT_IN,RETIRED_IN,PAYMENT_URL_TX],
               table: ARTIST_TABLE,
               new WhereConditionGroup(WhereConditionUnion.AND, [
                   new(USER_NM), new(ARTIST_ID)
@@ -100,7 +102,7 @@ namespace Hue.Data
         public async Task Update(string username, Artist artist) {
 
             var sql = UpdateSql(
-                columns: [ARTIST_NM, ARTIST_SOCIAL_TX, ARTIST_COMM_SHEET_TX, RETIRED_IN],
+                columns: [ARTIST_NM, ARTIST_SOCIAL_TX, ARTIST_COMM_SHEET_TX, RETIRED_IN,PAYMENT_URL_TX],
                 table: ARTIST_TABLE,
                 new(WhereConditionUnion.AND, [
                     new(USER_NM), new(ARTIST_ID)
@@ -113,6 +115,7 @@ namespace Hue.Data
                 cmd.SetString(USER_NM, username);
                 cmd.SetInt(ARTIST_ID, artist.Id);
                 cmd.SetBoolean(RETIRED_IN, artist.IsRetired);
+                cmd.SetString(PAYMENT_URL_TX, artist.PaymnetUrl);
             });
         }
 
