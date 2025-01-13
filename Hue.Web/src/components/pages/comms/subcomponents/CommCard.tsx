@@ -7,7 +7,7 @@ import CommissionTag from "../../../../model/commission/CommissionTag";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { commHeaderImage, createCommission, deleteCommission, updateCommission } from "../../../../api/Comm";
-import { CommissionStatus } from "../../../../model/commission/CommissionEnums";
+import { CommissionStatus, CommissionTypes } from "../../../../model/commission/CommissionEnums";
 import SafeAvatar from "../../../shared/SafeAvatar";
 import { characterImage } from "../../../../api/Char";
 import { artistImage } from "../../../../api/Artist";
@@ -343,6 +343,7 @@ function MetadataRow(props: {
         {commission.charCount > 0 && <ColorPill color={
             commission.charCount >= 3 ? '#995555' : commission.charCount === 2 ? '#999955' : '#559955'
         }>👥 Chars: {commission.charCount}</ColorPill>}
+        {commission.type > 0 && <ColorPill color={"#155"}>{CommissionTypes[commission.type].emoji} {CommissionTypes[commission.type].shortType ?? CommissionTypes[commission.type].type}</ColorPill>}
     </div>
 }
 
