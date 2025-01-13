@@ -238,11 +238,11 @@ export default function CharacterPane(props: {
                 {characterApi.data?.isRetired && !editMode
                     ? <RetiredAvatar size={128} src={
                         selectedFile ? selectedFileUrl : characterImage(id ?? 0)
-                    } text={"?"} hasImage={!create} />
+                    } text={characterApi.data?.name ?? "?"} hasImage={characterApi.data?.hasImage} />
 
                     : <SafeAvatar size={128} src={
-                        selectedFile ? selectedFileUrl : characterImage(id ?? 0)
-                    } text={"?"} hasImage={!create} />}
+                        selectedFile && editMode ? selectedFileUrl : characterImage(id ?? 0)
+                    } text={characterApi.data?.name ?? "?"} hasImage />}
                 {editMode && <Button style={{ marginTop: "10px" }} onClick={() => { (fileInputRef?.current as any)?.click(); }}>Change</Button>}
             </div>
             <div style={{ flex: "1", display: "flex", flexDirection: "column" }}>

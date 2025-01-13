@@ -207,10 +207,10 @@ export default function ArtistPane(props: {
                 {artistApi.data?.isRetired && !editMode
                     ? <RetiredAvatar size={128} src={
                         selectedFile ? selectedFileUrl : artistImage(id ?? 0)
-                    } text={"?"} hasImage={!create} />
+                    } text={artistApi.data?.name ?? "?"} hasImage={artistApi.data?.hasImage} />
                     : <SafeAvatar size={128} src={
-                        selectedFile ? selectedFileUrl : artistImage(id ?? 0)
-                    } text={"?"} hasImage={!create} />
+                        selectedFile && editMode ? selectedFileUrl : artistImage(id ?? 0)
+                    } text={artistApi.data?.name ?? "?"} hasImage />
                 } {/* Assume we have an image if we're not creating since it'd be faster to error out than to wait for the artist */}
 
                 {/* Change button */}
