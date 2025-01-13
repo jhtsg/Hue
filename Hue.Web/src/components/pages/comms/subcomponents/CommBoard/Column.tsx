@@ -41,27 +41,33 @@ export default function CommColumn(props: {
         comms.refresh()
     }, [AllColumnsFlag, StatusColumnsFlag])
 
+
+
     return <div style={{ minWidth: "300px", maxWidth: "300px", marginRight: fullHeight ? undefined : "20px", paddingBottom: fullHeight ? undefined : "20px" }}>
         <Card >
-            <div style={{ padding: "20px 20px 10px 20px", fontSize: "1.1em", background: "gray" }}>
-                <b>{title} ({comms.count ?? '...'})</b>
+            <div style={{ padding: "10px 15px 10px 15px", fontSize: "1em", background: "gray", display: "flex", justifyContent: 'space-between' }}>
+                <div style={{ fontWeight: "500" }}>{title}</div>
+                <div>{comms.count ?? "..."}</div>
             </div>
-            <div style={{ height: fullHeight ? height - 60 : height - 245, overflowY: "auto" }}>
-                {comms.loading && comms.comms.length === 0 ?
-                    <div style={{
-                        height: "100%",
+            <div style={{ height: fullHeight ? height - 45 : height - 230, display: "flex", flexDirection: "column" }}>
+                {comms.loading && comms.comms.length === 0
+                    ? <div style={{
+                        flex: "1",
                         width: "32px", margin: "0 auto",
                         display: "flex", alignItems: "center", justifyContent: 'center'
                     }}>
                         <CircularProgress size={32} />
-                    </div> :
-                    comms.comms?.map(c => <CommCard commission={c} />)
+                    </div>
+                    :
+                    <div style={{ flex: "1", overflowY: "auto" }}>
+                        {comms.comms?.map(c => <CommCard commission={c} />)}
+                        {comms.hasMore && <div style={{ textAlign: "center", margin: "20px" }}>
+                            <Button color="secondary" onClick={comms.showMore}>{
+                                comms.loading ? <CircularProgress size={25} color="inherit" /> : 'Show More'
+                            }</Button>
+                        </div>}
+                    </div>
                 }
-                {comms.hasMore && <div style={{ textAlign: "center", margin: "20px" }}>
-                    <Button color="secondary" onClick={comms.showMore}>{
-                        comms.loading ? <CircularProgress size={25} color="inherit" /> : 'Show More'
-                    }</Button>
-                </div>}
             </div>
         </Card>
     </div>
