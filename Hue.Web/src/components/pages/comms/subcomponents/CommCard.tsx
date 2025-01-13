@@ -175,12 +175,11 @@ export default function CommCard(props: {
 
     const anyMetadata = commission.artist || commission.charCount > 0 || commission.price > 0 || commission.characters.length > 0
 
-
     return <>
         <Card elevation={10} style={{ margin: "10px" }}>
             <CardActionArea onClick={() => nav(`/commissions/${commission.id}`)} onContextMenu={handleContextMenu}>
                 <div style={{
-                    paddingBottom: imageError ? "15%" : "25%",
+                    paddingBottom: imageError ? "25px" : "75px",
                     display: "block",
                     boxSizing: 'border-box',
                     backgroundColor: color,
@@ -290,8 +289,10 @@ function DateRow(props: {
 
     const { doneDate, startDate } = props
 
+    const inFuture = startDate ? new Date(startDate).getTime() > Date.now() : false
+
     if (!startDate) { return <>Unscheduled</> }
-    if (!doneDate) { return <>Started {new Date(startDate).toLocaleDateString()}</> }
+    if (!doneDate) { return <>{inFuture ? "Starts on" : "Started"} {new Date(startDate).toLocaleDateString()}</> }
     return <>{new Date(startDate).toLocaleDateString()} - {new Date(doneDate).toLocaleDateString()}</>
 
 }
