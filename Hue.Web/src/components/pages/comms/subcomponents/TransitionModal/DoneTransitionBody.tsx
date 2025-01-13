@@ -26,7 +26,7 @@ export default function DoneTransitionBody(props: {
     useEffect(() => {
         setStartTs(comm.startTs ? dateFromBackend(comm.startTs) : dateFromBackend(new Date().toISOString()))
         setDoneTs(comm.doneTs ? dateFromBackend(comm.doneTs) : dateFromBackend(new Date().toISOString()))
-        setDirty(false)
+        setDirty(true) //It will probably be dirty if we're changing the done date
     }, [comm])
 
     const ok = () => {

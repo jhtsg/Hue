@@ -31,7 +31,7 @@ export default function PublishedTransitionBody(props: {
         setPostDescription(comm.postDescription)
         setPostUrl(comm.postUrl)
         setPublishTs(comm.publishTs ? dateFromBackend(comm.publishTs) : dateFromBackend(new Date().toLocaleDateString()))
-        setDirty(false)
+        setDirty(true) //Same as the done transition modal. We probably are marking the publish date
     }, [comm])
 
     const ok = () => {
