@@ -44,7 +44,7 @@ COPY --from=frontend-builder /app/dist /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Expose ports
-EXPOSE 80
+EXPOSE 9080
 
 # Start NGINX and ASP.NET backend
 COPY start.sh /start.sh
