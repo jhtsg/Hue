@@ -341,7 +341,7 @@ function MetadataRow(props: {
 
         }>💵 ${commission.price}</ColorPill>}
         {commission.charCount > 0 && <ColorPill color={
-            commission.charCount > 3 ? '#995555' : commission.charCount === 2 ? '#999955' : '#559955'
+            commission.charCount >= 3 ? '#995555' : commission.charCount === 2 ? '#999955' : '#559955'
         }>👥 Chars: {commission.charCount}</ColorPill>}
     </div>
 }
