@@ -51,7 +51,7 @@ export default function CommsPage() {
         <hr />
 
         <Drawer open={archived} anchor="right" onClose={() => setArchived(false)}>
-            <CommColumn code={-1} title="Archived Commissions" fullHeight />
+            <CommColumn code={-1} fullHeight />
         </Drawer>
 
         {yearsApi.data?.length === 0
