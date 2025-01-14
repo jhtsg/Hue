@@ -10,6 +10,7 @@ namespace Hue.Data
 {
     public class ArtistDAO(string connectionString) {
         readonly AdoTemplate adoTemplate = new(connectionString);
+        readonly ServicesDAO servicesDao = new(connectionString);
 
         #region CREATE
         public async Task<int> Create(string username, Artist artist) {
@@ -149,6 +150,8 @@ namespace Hue.Data
             if (await adoTemplate.QuerySingle(checkSql, (cmd) => cmd.SetInt(ARTIST_ID, id), (reader) => reader.GetInt(0) > 0)) {
                 throw new InvalidOperationException("Artist is assigned to commissions");
             }
+
+            await servicesDao.DeleteAllFromArtist(username, id);
 
             var sql = DeleteSql(ARTIST_TABLE, new([new(ARTIST_ID)]));
             await adoTemplate.Execute(sql, (cmd) => cmd.SetInt(ARTIST_ID,id));

@@ -5,7 +5,6 @@ using Hue.Common;
 using static Hue.API.Controllers.AuthController;
 using Hue.Common.Artist;
 using Hue.API.utils;
-using Microsoft.AspNetCore.DataProtection.KeyManagement;
 
 namespace Hue.API.Controllers
 {

@@ -27,7 +27,7 @@
 
         public class WhereConditionSubgroup(WhereConditionGroup group) : WhereCondition("") {
             public override string ToString() {
-                return "(" + group.ToString() + ")";
+                return group.ToString().Trim().Length == 0 ? "" : "(" + group.ToString() + ")";
             }
         }
 
@@ -39,6 +39,9 @@
             public WhereCondition(string column) : this(column, WhereConditionOperator.EQUALS, $"@{column}") { }
             public WhereCondition(string column, WhereConditionOperator operation) : this(column, operation, $"@{column}") { }
             public WhereCondition(string column, List<string> vals) : this(column, WhereConditionOperator.IN,
+                "(" + string.Join(",", vals) + ")"
+                ) { }
+            public WhereCondition(string column, List<int> vals) : this(column, WhereConditionOperator.IN,
                 "(" + string.Join(",", vals) + ")"
                 ) { }
 

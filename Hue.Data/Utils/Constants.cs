@@ -24,6 +24,20 @@
         public static readonly string ARTIST_IMG_MIME_TX = "artist_img_mime_tx";
         public static readonly string ARTIST_IMG_PRESENT_IN = "artist_img_present_in";
 
+        public static readonly string SERVICE_TABLE = $"{SCHEMA}.artist_service";
+        public static readonly string SERVICE_ID = "service_id" ;
+        public static readonly string SERVICE_NM = "service_nm";
+        public static readonly string SERVICE_DESC_TX = "service_desc_tx";
+        public static readonly string SERVICE_BASE_PRICE_NB = "service_base_price_nb";
+        public static readonly string SERVICE_CURRENCY_CD = "service_currency_cd";
+
+        public static readonly string SERVICE_ADDITIONS_TABLE = $"{SCHEMA}.artist_service_addts";
+        public static readonly string SERVICE_ADDT_ID = "service_addt_id";
+        public static readonly string SERVICE_ADDT_NM = "service_addt_nm";
+        public static readonly string SERVICE_ADDT_DESC_TX = "service_addt_desc_tx";
+        public static readonly string SERVICE_ADDT_PRICE_NB = "service_addt_price_nb";
+        public static readonly string SERVICE_ADDT_LIMIT_NB = "service_addt_limit_nb";
+
         public static readonly string CHAR_TABLE = $"{SCHEMA}.char";
         public static readonly string CHAR_ID = "char_id";
         public static readonly string CHAR_NM = "char_nm";
