@@ -74,3 +74,12 @@ export const daysUntil = (date: Date): number => {
 export const objectToQueryString = (obj: any) => obj ? "?" + Object.keys(obj)
     .map((k) => `${k}=${obj[k]}`)
     .join("&") : "";
+
+export const currencies = {
+    USD: "$",
+    EUR: "€",
+    GBP: "£",
+    PHP: "₽",
+    MEX: "MX$",
+    AUD: "AU$",
+} as any
