@@ -9,7 +9,7 @@ export default function CreateArtistModal(props: {
 
     const { open, setOpen, onOk } = props
 
-    return <Dialog open={open} onClose={() => setOpen(false)} maxWidth="sm" fullWidth>
+    return <Dialog open={open} onClose={() => setOpen(false)} maxWidth="md" fullWidth>
         <div style={{ padding: 20 }}>
             <ArtistPane create open={open} setOpen={setOpen} onOk={() => {
                 setOpen(false);
