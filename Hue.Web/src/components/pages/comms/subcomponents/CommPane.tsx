@@ -583,7 +583,7 @@ function StatusSelect(props: {
     </FormControl>
 }
 
-function TypeSelect(props: {
+export function TypeSelect(props: {
     type: number,
     setType: (val: number) => void
 }) {

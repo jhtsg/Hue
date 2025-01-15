@@ -11,6 +11,8 @@ import CommissionFilterOptions from "../../../model/commission/CommissionFilterO
 import { deleteArtist } from "../../../api/Artist";
 import NoCommsDeletePane from "../../shared/NoCommsDeletePane";
 import useApi from "../../hooks/useApi";
+import ServiceBrowser from "../../shared/services/ServiceBrowser";
+import Artist from "../../../model/artist/Artist";
 
 export default function ArtistPage() {
 
@@ -44,6 +46,15 @@ export default function ArtistPage() {
                 </CardContent>
             </Card>
         </div>
+
+        {!artist && <div style={{ maxWidth: "800px", margin: "20px auto 20px auto" }}>
+            <Card elevation={5}>
+                <div style={{ padding: "20px" }}>
+                    <div style={{ marginBottom: "10px" }}>Services</div>
+                    <ServiceBrowser artist={{ id: new Number(id) } as Artist} editable />
+                </div>
+            </Card>
+        </div>}
 
         <div style={{ maxWidth: "800px", margin: "20px auto 20px auto" }}>
             <CommissionStatisticsPane filter={filter} maxWidth={519} />
