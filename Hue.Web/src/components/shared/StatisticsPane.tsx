@@ -12,6 +12,7 @@ export function StatisticsPane(props: {
     thisYear?: Statistic,
     thisYearLoading: boolean,
     thisYearError: any
+    verticalOverride?: boolean
 }) {
 
     const { width } = useWindowDimensions();
@@ -20,11 +21,11 @@ export function StatisticsPane(props: {
 
     const vertical = width < 700
 
-    const { overall, thisYear, overallError, overallLoading, thisYearError, thisYearLoading } = props;
+    const { overall, thisYear, overallError, overallLoading, thisYearError, thisYearLoading, verticalOverride } = props;
 
 
-    return <div style={{ margin: "20px auto 20px auto", maxWidth: "800px", display: vertical ? "" : "flex" }}>
-        <Card style={vertical ? { marginBottom: "20px" } : { flex: "1", marginRight: "10px" }}>
+    return <div style={{ margin: "0 auto", maxWidth: vertical || verticalOverride ? undefined : "800px", display: vertical || verticalOverride ? "" : "flex" }}>
+        <Card style={vertical || verticalOverride ? { marginBottom: "20px" } : { flex: "1", marginRight: "10px" }}>
             <CardContent>
                 <div>Overall</div>
                 <hr />
@@ -59,7 +60,7 @@ export function StatisticsPane(props: {
 
             </CardContent>
         </Card>
-        <Card style={vertical ? {} : { flex: "1", marginLeft: "10px" }}>
+        <Card style={vertical || verticalOverride ? {} : { flex: "1", marginLeft: "10px" }}>
             <CardContent>
                 <div>So far this year</div>
                 <hr />

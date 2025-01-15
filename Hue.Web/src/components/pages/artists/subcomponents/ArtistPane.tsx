@@ -207,7 +207,7 @@ export default function ArtistPane(props: {
                 {artistApi.data?.isRetired && !editMode
                     ? <RetiredAvatar size={128} src={
                         selectedFile ? selectedFileUrl : artistImage(id ?? 0)
-                    } text={artistApi.data?.name ?? "?"} hasImage={artistApi.data?.hasImage} />
+                    } text={"?"} hasImage={artistApi.data?.hasImage} />
                     : <SafeAvatar size={128} src={
                         selectedFile && editMode ? selectedFileUrl : artistImage(id ?? 0)
                     } text={artistApi.data?.name ?? "?"} hasImage />

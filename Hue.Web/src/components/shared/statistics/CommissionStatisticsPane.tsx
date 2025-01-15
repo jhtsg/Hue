@@ -121,7 +121,7 @@ const DisplayDecider = (props: { mode: string, data: CommissionStatistics, super
         default:
             return <div style={{
                 display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-                color: "#999", height: `${!loading && allDisabled ? 100 : chartHeight}px`
+                color: "#999", height: `${chartHeight}px`
             }}>
                 {loading ? <>
                     <div style={{ marginBottom: "10px" }}><CircularProgress /></div>

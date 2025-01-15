@@ -8,10 +8,11 @@ import { ReactNode } from "react"
 export default function CommsDisplay(props: {
     style?: React.CSSProperties
     filter?: CommissionFilterOptions
-    noCommsPane?: ReactNode
+    noCommsPane?: ReactNode,
+    verticalOverride?: boolean
 }) {
 
-    const { filter, style, noCommsPane } = props
+    const { filter, style, noCommsPane, verticalOverride } = props
     const { vertical } = useWindowDimensions();
 
     const comms = useCommissions(filter)
@@ -20,7 +21,7 @@ export default function CommsDisplay(props: {
         <div style={{ maxWidth: "1200px", margin: "40px auto", display: "flex", flexWrap: 'wrap', justifyContent: 'center', ...style }}>
             {comms.loading && comms.comms.length === 0 && <CircularProgress />}
             {comms.count === 0 && (noCommsPane ?? <div style={{ marginTop: "20px", textAlign: 'center' }}>No commissions!</div>)}
-            {comms.comms.map(a => <div style={vertical ? { width: "50%" } : { width: "33%" }}>
+            {comms.comms.map(a => <div style={vertical || verticalOverride ? { width: "50%" } : { width: "33%" }}>
                 <CommCard commission={a} noContextMenu />
             </div>)}
         </div>
