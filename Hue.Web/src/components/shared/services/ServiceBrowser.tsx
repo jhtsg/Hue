@@ -3,15 +3,17 @@ import Artist from "../../../model/artist/Artist"
 import useApi from "../../hooks/useApi"
 import { createService, deleteService, getServices, updateService } from "../../../api/Service"
 import Service from "../../../model/artist/Service"
-import { Button, Card, CardActionArea, CircularProgress } from "@mui/material"
+import { Button, Card, CardActionArea, CircularProgress, TextField } from "@mui/material"
 import { CommissionTypes } from "../../../model/commission/CommissionEnums"
 import { useUser } from "../../hooks/useUser"
 import { AddCircleOutline, Brush } from "@mui/icons-material"
-import { currencies } from "../Utils"
+import { currencies, isCharAddition } from "../Utils"
 import SafeAvatar from "../SafeAvatar"
 import { artistImage } from "../../../api/Artist"
 import ServiceEditor from "./ServiceEditor"
 import { useSnackbar } from "notistack"
+import { ArtistSelectorTile, TypeSelect } from "../../pages/comms/subcomponents/CommPane"
+import { useWindowDimensions } from "../../hooks/useWindowDimensions"
 
 export default function ServiceBrowser(props: {
     searchEnabled?: boolean,
@@ -20,9 +22,9 @@ export default function ServiceBrowser(props: {
     artist?: Artist,
     setArtist?: (val: Artist | undefined) => void,
     commType?: number,
-    setCommType?: (val: number | undefined) => void,
+    setCommType?: (val: number) => void,
     charCount?: number,
-    setCharCount?: (val: number | undefined) => void,
+    setCharCount?: (val: number) => void,
     noRetired?: boolean
     onSelect?: (val: Service) => void,
     height?: string,
@@ -43,6 +45,7 @@ export default function ServiceBrowser(props: {
     const { enqueueSnackbar } = useSnackbar();
 
     const { user } = useUser()
+    const { vertical } = useWindowDimensions();
 
     const [newOpen, setNewOpen] = useState(false)
     const [editOpen, setEditOpen] = useState(false)
@@ -94,6 +97,35 @@ export default function ServiceBrowser(props: {
     }
 
     return <>
+        {searchEnabled && <><div style={{
+            display: "flex", flexDirection: vertical ? 'column' : undefined,
+            gap: "10px", marginTop: "5px",
+            alignItems: 'center'
+        }}>
+            <TypeSelect
+                type={commType ?? 0}
+                setType={setCommType ?? console.error}
+            />
+
+            <div style={{ display: "flex", gap: "10px", alignItems: 'center', width: "100%" }}>
+                <ArtistSelectorTile
+                    setArtist={setArtist ?? console.error}
+                    artist={artist}
+                />
+
+                <TextField
+                    type='number'
+                    label='Chars'
+                    value={Math.max(1, charCount ?? 1)}
+                    onChange={(e) => setCharCount?.(new Number(e.target.value) as number)}
+                    style={{ flex: "1" }}
+                />
+            </div>
+
+
+        </div>
+            <hr />
+        </>}
         <div style={{ height: height ?? "200px", display: "flex", flexDirection: "column", overflowY: "hidden" }}>
             {servicesApi.loading ? <div style={{ display: "flex", flex: "1", flexDirection: "column", alignItems: "center", justifyContent: "center" }}><CircularProgress /></div>
                 : servicesApi.data
@@ -107,6 +139,8 @@ export default function ServiceBrowser(props: {
                                 {servicesApi.data?.map(a => <ServiceCard
                                     service={a}
                                     hideArtist={!!artist && !searchEnabled}
+                                    estimateEnabled={estimateEnabled}
+                                    charCount={charCount}
                                     onClick={editable ? () => {
                                         setEditService(a);
                                         setEditOpen(true)
@@ -129,9 +163,21 @@ function ServiceCard(props: {
     service: Service,
     onClick?: () => void,
     hideArtist?: boolean
+    estimateEnabled?: boolean
+    charCount?: number
 }) {
 
-    const { service, onClick, hideArtist } = props
+    const { service, onClick, hideArtist, estimateEnabled, charCount } = props
+
+    const addtlCharAddition = estimateEnabled ? service.additions
+        .filter(isCharAddition)[0] : undefined
+
+    const hasMore = addtlCharAddition ? service.additions.length > 1 : service.additions.length > 0
+
+    const estimate = estimateEnabled
+        ? `${service.basePrice + (((Math.max(1, charCount ?? 1)) - 1) * (addtlCharAddition?.price ?? 0))
+        } ${hasMore ? '+' : ''}`
+        : ""
 
     return <Card>
         <CardActionArea onClick={onClick}>
@@ -151,8 +197,10 @@ function ServiceCard(props: {
                     {!hideArtist && <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
                         <SafeAvatar hasImage={service.artist.hasImage} text={service.artist.name} src={artistImage(service.artist.id)} size={32} />
                     </div>}
-                    <div style={{ fontSize: "1.2em", fontWeight: "700" }}>
-                        {currencies[service.currency] ?? service.currency + " "}{service.basePrice}{service.additions.length > 0 && " +"}
+                    <div style={{ fontSize: "1.2em", fontWeight: "700", width: "70px" }}>
+                        {currencies[service.currency] ?? service.currency + " "}{
+                            estimateEnabled ? estimate : (service.basePrice + "") + (service.additions.length > 0 && " +")
+                        }
                     </div>
                 </div>
             </div>

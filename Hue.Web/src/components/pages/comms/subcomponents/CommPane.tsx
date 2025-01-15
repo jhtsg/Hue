@@ -12,7 +12,7 @@ import { updateCommTag } from "../../../../api/CommTag"
 import Artist from "../../../../model/artist/Artist"
 import Commission from "../../../../model/commission/Commission"
 
-import { ArrowDownward, ArrowForward, Close, InsertPhoto } from "@mui/icons-material"
+import { ArrowDownward, ArrowForward, Calculate, Close, InsertPhoto } from "@mui/icons-material"
 import useEnhancedBlocker from "../../../hooks/useEnhancedBlocker"
 import BlockerConfirmModal from "../../../shared/modals/BlockerConfirmModal"
 import { CommissionStatus, CommissionTypes } from "../../../../model/commission/CommissionEnums"
@@ -33,6 +33,7 @@ import SocialIcon from "../../../shared/SocialIcon"
 import ArtistSelector from "../../artists/subcomponents/ArtistSelector"
 import { getStatisticForArtist } from "../../../../api/Statistics"
 import ArtistStatistic from "../../../../model/statistics/ArtistStatistic"
+import ServiceEstimator from "../../../shared/services/ServiceEstimator"
 
 
 export default function CommPane(props: {
@@ -91,7 +92,7 @@ export default function CommPane(props: {
     }
 
     useEffect(() => {
-        if (id) { refreshComm() }
+        if (id && commApi.data?.id !== id) { refreshComm() }
     }, [id])
 
     useEffect(() => {
@@ -312,6 +313,7 @@ export default function CommPane(props: {
                         charCount={charCount} setCharCount={setCharCount}
                         price={price} setPrice={setPrice}
                         artist={artist} setArtist={setArtist}
+                        commType={type} setCommType={setType}
                         vertical={vertical}
                     />
 
@@ -328,7 +330,7 @@ export default function CommPane(props: {
 
                 </div>
                 {vertical && <hr style={{ marginTop: "20px", marginBottom: "20px" }} />}
-                <div style={vertical ? {} : { width: "33%", paddingTop: "10px", paddingLeft: "10px", paddingRight: "10px", display: "flex", flexDirection: "column", minHeight: "100vh" }}>
+                <div style={vertical ? {} : { width: "33%", paddingTop: "10px", paddingLeft: "10px", paddingRight: "10px", display: "flex", flexDirection: "column" }}>
 
                     {!vertical && <SaveButton anyLoading={anyLoading} dirty={dirty} saveClick={saveClick} />}
 
@@ -737,17 +739,89 @@ export function ArtistInformation(props: {
     artist?: Artist,
     price: number,
     charCount: number,
+    commType: number,
     setArtist: (val: Artist | undefined) => void,
     setPrice: (val: number) => void,
     setCharCount: (val: number) => void,
+    setCommType: (val: number) => void
     markDirty: () => void
     vertical?: boolean
 }) {
 
-    const { charCount, markDirty, price, setArtist, setCharCount, setPrice, artist, vertical } = props
+    const { charCount, markDirty, price, setArtist, setCharCount, setPrice, artist, vertical, commType, setCommType } = props
+    const { user } = useUser();
+    const isArtist = user?.isArtist
+
+    const [serviceEstimatorOpen, setServiceEstimatorOpen] = useState(false)
+
+    return <>
+        <div>{isArtist ? "Client" : "Artist"}</div>
+        <div style={vertical ? {} : { display: "flex", alignItems: 'center' }}>
+
+            <ArtistSelectorTile
+                artist={artist}
+                setArtist={(val: Artist | undefined) => {
+                    setArtist(val);
+                    markDirty();
+                }}
+                vertical={vertical}
+            />
+
+            <div style={vertical ? {} : { flex: "1", marginLeft: "20px", display: 'flex' }}>
+
+                <div style={{ width: vertical ? undefined : "50%", display: "flex", alignItems: 'center', marginBottom: vertical ? "20px" : undefined }}>
+                    <TextField type="number" label='Price'
+                        style={vertical ? {} : { marginRight: "10px" }} value={price} fullWidth
+                        onChange={(e) => {
+                            setPrice(new Number(e.target.value) as number)
+                            markDirty()
+                        }}
+                        slotProps={{ input: { startAdornment: <InputAdornment position="start">$</InputAdornment> } }}
+                    />
+                    {!isArtist && <>
+                        <IconButton onClick={() => setServiceEstimatorOpen(true)}><Calculate /></IconButton>
+
+                        <ServiceEstimator
+                            open={serviceEstimatorOpen} setOpen={setServiceEstimatorOpen}
+                            setPrice={setPrice} artist={artist}
+                            charCount={charCount} commType={commType}
+                            setArtist={setArtist} setCharCount={setCharCount}
+                            setCommType={setCommType} markDirty={markDirty}
+                        /></>
+                    }
+                </div>
+
+
+                <div style={vertical ? {} : { width: "50%" }}>
+                    <TextField type="number" label='Character Count' fullWidth
+                        style={vertical ? {} : { marginLeft: "10px" }} value={charCount}
+                        onChange={(e) => {
+                            setCharCount(new Number(e.target.value) as number)
+                            markDirty()
+                        }}
+                    />
+                </div>
+            </div>
+        </div >
+
+
+
+
+    </>
+}
+
+export function ArtistSelectorTile(props: {
+    artist?: Artist,
+    setArtist: (val: Artist | undefined) => void,
+    vertical?: boolean
+}) {
+
+    const { artist, setArtist, vertical } = props
+
     const [anchorEl, setAnchorEl] = useState(undefined as undefined | HTMLElement);
     const [artistPicker, setArtistPicker] = useState(false)
     const nav = useNavigate();
+
     const { user } = useUser();
     const isArtist = user?.isArtist
 
@@ -767,56 +841,21 @@ export function ArtistInformation(props: {
     const unassignArtist = () => {
         setArtist(undefined)
         setAnchorEl(undefined)
-        markDirty();
     }
 
     return <>
-        <div>{isArtist ? "Client" : "Artist"}</div>
-        <div style={vertical ? {} : { display: "flex", alignItems: 'center' }}>
-            <div style={vertical ? { marginBottom: "20px" } : undefined}>
-                {artist ?
-                    <ArtistTile artist={artist} onClick={handleClick} />
-                    : <AvatarTile hasImage={false} width={280}
-                        avatarSize={48}
-                        onClick={() => { setArtistPicker(true) }}
-                        avatarColor="#999999"
-                        avatarString={'+'}>
-                        Assign {isArtist ? "a Client" : "an Artist"}
-                    </AvatarTile>
-                }
-            </div>
-            <div style={vertical ? {} : { flex: "1", marginLeft: "20px", display: 'flex' }}>
-
-                <div style={vertical ? {} : { width: "50%" }}>
-                    <TextField type="number" label='Price'
-                        style={vertical ? {
-                            marginBottom: "20px"
-                        } : { marginRight: "10px" }} value={price} fullWidth
-                        onChange={(e) => {
-                            setPrice(new Number(e.target.value) as number)
-                            markDirty()
-                        }}
-                        slotProps={{
-                            input: {
-                                startAdornment: <InputAdornment position="start">
-                                    $
-                                </InputAdornment>
-                            }
-                        }}
-                    />
-                </div>
-
-                <div style={vertical ? {} : { width: "50%" }}>
-                    <TextField type="number" label='Character Count' fullWidth
-                        style={vertical ? {} : { marginLeft: "10px" }} value={charCount}
-                        onChange={(e) => {
-                            setCharCount(new Number(e.target.value) as number)
-                            markDirty()
-                        }}
-                    />
-                </div>
-            </div>
-        </div >
+        <div style={vertical ? { marginBottom: "20px" } : undefined}>
+            {artist ?
+                <ArtistTile artist={artist} onClick={handleClick} />
+                : <AvatarTile hasImage={false} width={280}
+                    avatarSize={48}
+                    onClick={() => { setArtistPicker(true) }}
+                    avatarColor="#999999"
+                    avatarString={'+'}>
+                    Assign {isArtist ? "a Client" : "an Artist"}
+                </AvatarTile>
+            }
+        </div>
 
         {artistPicker && <ArtistSelector
             open={artistPicker}
@@ -824,7 +863,6 @@ export function ArtistInformation(props: {
             setArtist={(val) => {
                 setArtist(val);
                 setArtistPicker(false);
-                markDirty();
             }}
         />
         }
@@ -837,6 +875,7 @@ export function ArtistInformation(props: {
             <MenuItem onClick={openArtist}>Open</MenuItem>
             <MenuItem onClick={unassignArtist}>Unassign</MenuItem>
         </Menu>
+
     </>
 }
 

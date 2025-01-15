@@ -22,16 +22,18 @@ export default function ArtistPane(props: {
     create?: boolean,
     editable?: boolean,
     id?: number
+    artist?: Artist
+    size?: number
+    fontSize?: string
     open?: boolean
     setOpen?: (val: boolean) => void
     onOk?: () => void
 }) {
 
-    const { id, create, editable, onOk } = props
+    const { id, create, editable, onOk, artist: artistOverride, size, fontSize } = props
 
     const { enqueueSnackbar } = useSnackbar();
     const { user } = useUser();
-    const artist = user?.isArtist
 
     const { width } = useWindowDimensions();
     const ultraVertical = width < 500
@@ -59,11 +61,14 @@ export default function ArtistPane(props: {
     const fileInputRef = useRef(null);
 
     const refreshArtist = () => {
+        if (artistOverride) return
         artistApi.fetch(undefined, undefined, id)
     }
 
+    const artist = artistOverride ?? artistApi.data
+
     useEffect(() => {
-        if (id) { refreshArtist() }
+        if (id && !artistOverride) { refreshArtist() }
     }, [id])
 
     useEffect(() => {
@@ -81,11 +86,11 @@ export default function ArtistPane(props: {
 
     const handleActionClick = () => {
         if (!editMode) {
-            setName(artistApi.data?.name)
-            setSocial(artistApi.data?.socialUrl)
-            setCommSheet(artistApi.data?.commSheetUrl);
-            setPayment(artistApi.data?.paymentUrl)
-            setPaymentMode(artistApi.data?.paymentUrl === "INVOICE" ? INVOICE_MODE : isPaypal() ? PAYPAL_MODE : OTHER_MODE)
+            setName(artist?.name)
+            setSocial(artist?.socialUrl)
+            setCommSheet(artist?.commSheetUrl);
+            setPayment(artist?.paymentUrl)
+            setPaymentMode(artist?.paymentUrl === "INVOICE" ? INVOICE_MODE : isPaypal() ? PAYPAL_MODE : OTHER_MODE)
             setSelectedFile(null)
             setEditMode(true)
             artistApi.resetError()
@@ -109,20 +114,20 @@ export default function ArtistPane(props: {
                 commSheetUrl: commSheet,
                 socialUrl: social,
                 paymentUrl: paymentMode === INVOICE_MODE ? "INVOICE" : payment,
-                isRetired: artistApi.data?.isRetired
+                isRetired: artist?.isRetired
             } as Artist)
         }
 
     }
 
     const retireArtist = () => {
-        updateArtistApi.fetch(onRetireSuccess(!artistApi.data?.isRetired), undefined, {
-            id: artistApi.data?.id,
-            name: artistApi.data?.name,
-            commSheetUrl: artistApi.data?.commSheetUrl,
-            socialUrl: artistApi.data?.socialUrl,
-            paymentUrl: artistApi.data?.paymentUrl,
-            isRetired: !artistApi.data?.isRetired
+        updateArtistApi.fetch(onRetireSuccess(!artist?.isRetired), undefined, {
+            id: artist?.id,
+            name: artist?.name,
+            commSheetUrl: artist?.commSheetUrl,
+            socialUrl: artist?.socialUrl,
+            paymentUrl: artist?.paymentUrl,
+            isRetired: !artist?.isRetired
         } as Artist)
     }
 
@@ -168,6 +173,7 @@ export default function ArtistPane(props: {
     }
 
 
+
     const anyLoading = artistApi.loading || updateArtistApi.loading || createArtistApi.loading || updateArtistProfileApi.loading
 
     const payPalPrefix = "https://paypal.me/"
@@ -177,7 +183,7 @@ export default function ArtistPane(props: {
 
     const setPaypalUsername = (val: string) => setPayment(payPalPrefix + val);
 
-    const isPaypal = () => artistApi.data?.paymentUrl?.startsWith(payPalPrefix) || (artistApi.data?.paymentUrl?.length ?? 0) === 0;
+    const isPaypal = () => artist?.paymentUrl?.startsWith(payPalPrefix) || (artist?.paymentUrl?.length ?? 0) === 0;
 
     return <>
 
@@ -198,26 +204,26 @@ export default function ArtistPane(props: {
         <ApiAlert result={updateArtistApi.error} style={{ marginBottom: "20px" }} />
         <ApiAlert result={createArtistApi.error} style={{ marginBottom: "20px" }} />
         <ApiAlert result={updateArtistProfileApi.error} style={{ marginBottom: "20px" }} />
-        <div style={{ width: "100%", display: "flex", flexDirection: ultraVertical ? 'column' : undefined }}>
+        <div style={{ width: "100%", display: "flex", flexDirection: ultraVertical ? 'column' : undefined, alignItems: (!!size || !!fontSize) ? 'center' : undefined }}>
 
             {/* Avatar */}
             <div style={ultraVertical ? { textAlign: 'center', margin: "0px auto 20px auto" } : { marginRight: "20px", textAlign: 'center' }}>
 
                 {/* Avatar */}
-                {artistApi.data?.isRetired && !editMode
-                    ? <RetiredAvatar size={128} src={
+                {artist?.isRetired && !editMode
+                    ? <RetiredAvatar size={size ?? 128} src={
                         selectedFile ? selectedFileUrl : artistImage(id ?? 0)
-                    } text={"?"} hasImage={artistApi.data?.hasImage} />
-                    : <SafeAvatar size={128} src={
+                    } text={"?"} hasImage={artist?.hasImage} />
+                    : <SafeAvatar size={size ?? 128} src={
                         selectedFile && editMode ? selectedFileUrl : artistImage(id ?? 0)
-                    } text={artistApi.data?.name ?? "?"} hasImage />
+                    } text={artist?.name ?? "?"} hasImage />
                 } {/* Assume we have an image if we're not creating since it'd be faster to error out than to wait for the artist */}
 
                 {/* Change button */}
                 {editMode && <Button style={{ marginTop: "10px" }} onClick={() => { (fileInputRef?.current as any)?.click(); }}>Change</Button>}
             </div>
 
-            <div style={{ flex: "1", display: "flex", flexDirection: "column", margin: ultraVertical && !editMode ? "0 auto" : undefined }}>
+            <div style={{ flex: "1", display: "flex", flexDirection: "column", margin: ultraVertical && !editMode ? "0 auto" : undefined, fontSize: fontSize }}>
                 <div style={{ flex: "1" }}>
                     {editMode ? <div style={{ display: 'flex', flexDirection: "column", gap: "20px" }}>
                         {/* Editor mode */}
@@ -234,11 +240,11 @@ export default function ArtistPane(props: {
                         />
 
                         {/* Options hidden to artists */}
-                        <div hidden={artist}>
+                        <div hidden={user?.isArtist}>
                             <TextField label="Commission Sheet URL" value={commSheet} onChange={(e) => setCommSheet(e.target.value)} fullWidth />
                         </div>
 
-                        <div hidden={artist}>
+                        <div hidden={user?.isArtist}>
                             <FormControl style={{ width: "100%" }}>
                                 <FormLabel>Payment</FormLabel>
                                 <RadioGroup value={paymentMode} onChange={(e) => setPaymentMode(e.target.value)}>
@@ -273,19 +279,19 @@ export default function ArtistPane(props: {
 
                         </div>
 
-                    </div> : artistApi.data ? <>
+                    </div> : artist ? <>
                         {/* Tile mode */}
-                        <div style={{ fontSize: "2em" }}>{artistApi.data.name}</div>
+                        <div style={{ fontSize: "2em" }}>{artist.name}</div>
                         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                            {artistApi.data?.isRetired && <CharacterCategoryPill category={{ name: "Retired", color: "#777" } as CharacterCategory} />}
-                            <SocialDisplay url={artistApi.data.socialUrl} link />
-                            {artistApi.data?.paymentUrl?.length > 0 && (
-                                artistApi.data?.paymentUrl === "INVOICE" ? <SocialDisplay url="https://paypal.me/Invoice" prefixOverride=" " /> :
-                                    <SocialDisplay url={artistApi.data?.paymentUrl} link />
+                            {artist?.isRetired && <CharacterCategoryPill category={{ name: "Retired", color: "#777" } as CharacterCategory} />}
+                            <SocialDisplay url={artist.socialUrl} link />
+                            {artist?.paymentUrl?.length > 0 && (
+                                artist?.paymentUrl === "INVOICE" ? <SocialDisplay url="https://paypal.me/Invoice" prefixOverride=" " /> :
+                                    <SocialDisplay url={artist?.paymentUrl} link />
                             )}
                         </div>
-                        {artistApi.data.commSheetUrl && artistApi.data.commSheetUrl.trim().length > 0 &&
-                            <div style={{ marginTop: "5px", fontSize: ".7em" }}><Link href={artistApi.data.commSheetUrl}>Commission Sheet</Link></div>
+                        {artist.commSheetUrl && artist.commSheetUrl.trim().length > 0 &&
+                            <div style={{ marginTop: "5px", fontSize: ".7em" }}><Link href={artist.commSheetUrl}>Commission Sheet</Link></div>
                         }
                     </> :
                         <>
@@ -303,7 +309,7 @@ export default function ArtistPane(props: {
                         </Button>
 
                         {!editMode && !anyLoading && !create && <Button onClick={() => setRetireAys(true)}>
-                            {artistApi.data?.isRetired ? "Un-" : ""}Retire
+                            {artist?.isRetired ? "Un-" : ""}Retire
                         </Button>
                         }
 
@@ -315,12 +321,12 @@ export default function ArtistPane(props: {
             </div>
         </div>
 
-        <AreYouSureModal open={retireAys} setOpen={setRetireAys} onYes={retireArtist} loading={updateArtistApi.loading} title={`${artistApi.data?.isRetired ? "Un-" : ""}Retire this artist?`}>
+        <AreYouSureModal open={retireAys} setOpen={setRetireAys} onYes={retireArtist} loading={updateArtistApi.loading} title={`${artist?.isRetired ? "Un-" : ""}Retire this artist?`}>
             <div style={{ display: "flex", justifyContent: 'center' }}>
-                {artistApi.data && <ArtistTile artist={artistApi.data} onClick={() => { }} />}
+                {artist && <ArtistTile artist={artist} onClick={() => { }} />}
             </div>
             <hr />
-            {artistApi.data?.name} {artistApi.data?.isRetired
+            {artist?.name} {artist?.isRetired
                 ? "will now be selectable to take up commissions. You can retire them later again at any time"
                 : "will no longer be selectable to take up commissions. This will not delete them, and you can un-retire them later at any time"
             }

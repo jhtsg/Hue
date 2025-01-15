@@ -1,3 +1,5 @@
+import ServiceAddition from "../../model/artist/ServiceAddition";
+
 export function stringToColor(string: string) {
     let hash = 0;
     let i;
@@ -83,3 +85,9 @@ export const currencies = {
     MEX: "MX$",
     AUD: "AU$",
 } as any
+
+export const isCharAddition = (val: ServiceAddition) =>
+    val.name.toLowerCase().includes("additional character") ||
+    val.name.toLowerCase().includes("addtl. character") ||
+    val.name.toLowerCase().includes("additional char") ||
+    val.name.toLowerCase().includes("addtl. char")

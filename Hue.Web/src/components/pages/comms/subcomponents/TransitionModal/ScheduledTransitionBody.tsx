@@ -23,6 +23,7 @@ export default function ScheduledTransitionBody(props: {
     const [artist, setArtist] = useState(undefined as Artist | undefined)
     const [price, setPrice] = useState(0);
     const [charCount, setCharCount] = useState(0);
+    const [commType, setCommType] = useState(0);
 
     const [dirty, setDirty] = useState(false);
     const markDirty = () => setDirty(true);
@@ -32,6 +33,7 @@ export default function ScheduledTransitionBody(props: {
         setArtist(comm.artist)
         setPrice(comm.price)
         setCharCount(comm.charCount)
+        setCommType(comm.charCount)
         setDirty(false)
     }, [comm])
 
@@ -43,7 +45,8 @@ export default function ScheduledTransitionBody(props: {
                 startTs: startTs,
                 artist: artist,
                 price: price,
-                charCount: charCount
+                charCount: charCount,
+                type: commType
             } as Commission)
         }
     }
@@ -62,6 +65,7 @@ export default function ScheduledTransitionBody(props: {
                 price={price} setPrice={setPrice}
                 artist={artist} setArtist={setArtist}
                 charCount={charCount} setCharCount={setCharCount}
+                commType={commType} setCommType={setCommType}
             />
 
         </DialogContent>
