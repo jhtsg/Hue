@@ -190,7 +190,7 @@ function ServiceCard(props: {
     const cannotFulfill = estimateEnabled
         && (addtlCharAddition
             ? addtlCharAddition.limit > 0 && addtlCharAddition.limit < (charCount ?? 0) - 1
-            : (charCount ?? 0) > 1
+            : false
         )
 
     const addtlCharOverhead = addtlCharAddition

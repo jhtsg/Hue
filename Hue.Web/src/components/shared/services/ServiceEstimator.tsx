@@ -123,7 +123,7 @@ export default function ServiceEstimator(props: {
                             <hr style={{ marginBottom: "30px" }} />
                             <div style={{ display: "flex", flexWrap: 'wrap', gap: "0px", margin: "-10px", alignItems: 'center' }}>
                                 {
-                                    additionAmounts.sort((a, b) => a.addition.limit === 1 ? -1 : 1).map((a, i) => <EstimateBox
+                                    additionAmounts.sort((a, _) => a.addition.limit === 1 ? -1 : 1).map((a, i) => <EstimateBox
                                         currency={service.currency}
                                         estimate={a}
                                         setAmount={
