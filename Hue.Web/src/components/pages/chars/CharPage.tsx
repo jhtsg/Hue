@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from "react-router-dom";
-import { Card, CardContent, IconButton } from "@mui/material";
+import { Card, CardContent, IconButton, Tab, Tabs } from "@mui/material";
 import { ArrowBack } from "@mui/icons-material";
 import CharacterPane from "./subcomponents/CharacterPane";
 import CommsDisplay from "../comms/subcomponents/CommsDisplay";
@@ -10,21 +10,34 @@ import CommissionFilterOptions from "../../../model/commission/CommissionFilterO
 import NoCommsDeletePane from "../../shared/NoCommsDeletePane";
 import useApi from "../../hooks/useApi";
 import { deleteCharacter } from "../../../api/Char";
+import { useWindowDimensions } from "../../hooks/useWindowDimensions";
 
 export default function CharPage() {
+
     const { id } = useParams();
+
+    const [charId, setCharId] = useState(new Number(id) as number)
+    const [filter, setFilter] = useState({ CharacterId: id } as CommissionFilterOptions)
+    const [selectedTab, setSelectedTab] = useState(0)
+
+
     const nav = useNavigate();
     const deleteApi = useApi(deleteCharacter)
+    const { maxComponentHeight, vertical } = useWindowDimensions();
 
-    const [filter, setFilter] = useState({
-        CharacterId: id
-    } as CommissionFilterOptions)
+
+    useEffect(() => {
+        const idNumber = new Number(id) as number;
+        if (charId !== (idNumber)) {
+            setCharId(idNumber)
+        }
+    }, [id])
 
     useEffect(() => {
         setFilter({
-            CharacterId: id
+            CharacterId: charId
         } as CommissionFilterOptions)
-    }, [id])
+    }, [charId])
 
     return <>
         <div style={{ display: "flex", alignItems: "end" }}>
@@ -33,33 +46,42 @@ export default function CharPage() {
         </div>
         <hr />
 
-        <div style={{ maxWidth: "800px", margin: "20px auto 0 auto" }}>
+        <div style={{ maxWidth: "1200px", margin: "20px auto 0 auto" }}>
             <Card elevation={5}>
                 <CardContent>
-                    <CharacterPane editable id={new Number(id) as number} />
+                    <CharacterPane editable id={charId} />
                 </CardContent>
             </Card>
-
         </div>
 
-        <div style={{ maxWidth: "800px", margin: "20px auto 20px auto" }}>
-            <CommissionStatisticsPane filter={filter} maxWidth={519} />
-        </div>
-
-        <CharsStatisticPane id={Number(id)} />
-
-        <div style={{ margin: "20px auto -30px auto", maxWidth: "1200px" }}>
-            <div>As Featured In</div>
+        <div style={{ maxWidth: "1200px", margin: "10px auto 0 auto" }}>
+            <Tabs value={selectedTab} onChange={(_, newVal) => setSelectedTab(newVal)}>
+                <Tab label="Statistics" value={0} />
+                <Tab label="Commissions" value={2} />
+            </Tabs>
             <hr />
         </div>
-        <CommsDisplay filter={{
-            Page: 0,
-            CharacterId: Number(id)
-        }} noCommsPane={<NoCommsDeletePane
-            api={deleteApi}
-            id={Number(id)}
-            type="character"
-        />} />
+
+        <div style={{ maxWidth: "1200px", margin: "20px auto 0 auto", display: selectedTab === 0 ? "flex" : "none", flexDirection: vertical ? "column" : "row-reverse", gap: "20px", }}>
+            <div style={vertical ? undefined : { width: "400px" }}>
+                <CharsStatisticPane id={charId} verticalOverride />
+            </div>
+            <div style={{ flex: "1" }}>
+                <CommissionStatisticsPane filter={filter} maxWidth={519} />
+            </div>
+        </div>
+
+
+        <div style={{ display: selectedTab === 2 ? undefined : 'none', height: maxComponentHeight - 350, overflowY: "auto", maxWidth: "1200px", margin: "0 auto" }}>
+            <CommsDisplay
+                filter={filter} style={{ marginTop: "10px", marginBottom: 0 }}
+                noCommsPane={<NoCommsDeletePane
+                    api={deleteApi}
+                    id={charId}
+                    type="character"
+                />}
+            />
+        </div>
 
     </>
 }

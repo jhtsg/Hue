@@ -86,9 +86,9 @@ export default function ArtistPage() {
             </Card>
         </div>
 
-        <div style={{ display: selectedTab === 2 ? undefined : 'none' }}>
+        <div style={{ display: selectedTab === 2 ? undefined : 'none', height: maxComponentHeight - 320, overflowY: "auto", maxWidth: "1200px", margin: "0 auto" }}>
             <CommsDisplay
-                filter={filter} style={{ marginTop: "10px", height: maxComponentHeight - 320, overflowY: "auto", marginBottom: 0 }}
+                filter={filter} style={{ marginTop: "10px", marginBottom: 0 }}
                 noCommsPane={<NoCommsDeletePane
                     api={deleteApi}
                     id={artistId}
