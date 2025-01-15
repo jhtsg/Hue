@@ -73,8 +73,8 @@ export const CurrencyProvider = (props: { children: any }) => {
     const getCurrencyConversions = (curr: string) => {
         const currency = curr.toLowerCase();
 
-        if (currencyApi.loading) return undefined;
-        if (!currencyApi.data[currency]) {
+        if (currencyApi.loading || currencyApi.error) return undefined;
+        if (!currencyApi.data?.[currency]) {
             refresh(currency)
             return undefined
         }

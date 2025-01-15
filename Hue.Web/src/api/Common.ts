@@ -17,6 +17,10 @@ const MIME_TYPES = {
     OCTET_STREAM: "application/octet-stream"
 }
 
+export function ExternalGet<T>(setLoading: (value: boolean) => void, setItem: (value?: T) => void, onError: (value?: any) => void, url: string) {
+    externalFetch(setLoading, setItem, onError, url, "GET");
+}
+
 export function Get<T>(setLoading: (value: boolean) => void, setItem: (value?: T) => void, onError: (value?: any) => void, url: string) {
     internalFetch(setLoading, setItem, onError, url, "GET");
 }
@@ -85,6 +89,23 @@ export function Upload<T>(
 
 }
 
+
+function externalFetch<T>(setLoading: (value: boolean) => void, setItem: (value?: T) => void, onError: (value?: any) => void, url: string, method: 'GET' | 'POST' | 'PUT' | 'DELETE', body?: any) {
+    setLoading(true)
+
+    const init = { method: method } as RequestInit;
+
+    if (body) {
+        init.body = typeof (body) === 'string' ? body : JSON.stringify(body)
+        init.headers = { [CONTENT_TYPE_HEADER]: MIME_TYPES.JSON };
+    }
+
+    fetch(url, init)
+        .then(handleResponse)
+        .then((data: ApiResponse) => handleData(data, onError, setLoading, setItem))
+        .catch((e: Error) => handleError(new ApiResponse(undefined, false, 999), onError, e, setLoading));
+}
+
 function internalFetch<T>(setLoading: (value: boolean) => void, setItem: (value?: T) => void, onError: (value?: any) => void, url: string, method: 'GET' | 'POST' | 'PUT' | 'DELETE', body?: any) {
     setLoading(true)
 
@@ -102,7 +123,6 @@ function internalFetch<T>(setLoading: (value: boolean) => void, setItem: (value?
         .then(handleResponse)
         .then((data: ApiResponse) => handleData(data, onError, setLoading, setItem))
         .catch((e: Error) => handleError(new ApiResponse(undefined, false, 999), onError, e, setLoading));
-
 }
 
 function handleData<T>(response: ApiResponse, onError: (value?: any) => void, setLoading: (value: boolean) => void, setItem: (value: T) => void) {
