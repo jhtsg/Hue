@@ -54,7 +54,7 @@ export default function CommissionStatisticsPane(props: {
 
     const allDisabled = typesDisabled && spendingDisabled && ttcDisabled && artistDisabled && characterDisabled && tagsDisabled
 
-    return <Card elevation={3} style={{ padding: "20px" }}>
+    return <Card elevation={3} style={{ padding: "20px", marginBottom: "20px" }}>
         <ApiAlert result={statsApi.error} />
         <div style={{ display: "flex", gap: "10px", flexDirection: superVertical ? "column" : undefined }}>
 

@@ -72,7 +72,7 @@ export default function CharPage() {
         </div>
 
 
-        <div style={{ display: selectedTab === 2 ? undefined : 'none', height: maxComponentHeight - 350, overflowY: "auto", maxWidth: "1200px", margin: "0 auto" }}>
+        <div style={{ display: selectedTab === 2 ? undefined : 'none', height: vertical ? undefined : maxComponentHeight - 390, overflowY: vertical ? undefined : "auto", maxWidth: "1200px", margin: "0 auto 20px auto", minHeight: "300px" }}>
             <CommsDisplay
                 filter={filter} style={{ marginTop: "10px", marginBottom: 0 }}
                 noCommsPane={<NoCommsDeletePane

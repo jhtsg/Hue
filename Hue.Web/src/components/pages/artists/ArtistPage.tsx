@@ -77,7 +77,7 @@ export default function ArtistPage() {
             </div>
         </div>
 
-        <div style={{ maxWidth: "1200px", margin: "20px auto 20px auto", display: selectedTab === 1 ? undefined : 'none' }}>
+        <div style={{ maxWidth: "1200px", margin: "20px auto 20px auto", display: selectedTab === 1 ? undefined : 'none', minHeight: "200px" }}>
             <Card elevation={5}>
                 <div style={{ padding: "20px" }}>
                     <div style={{ marginBottom: "10px" }}>Services</div>
@@ -86,7 +86,7 @@ export default function ArtistPage() {
             </Card>
         </div>
 
-        <div style={{ display: selectedTab === 2 ? undefined : 'none', height: maxComponentHeight - 320, overflowY: "auto", maxWidth: "1200px", margin: "0 auto" }}>
+        <div style={{ display: selectedTab === 2 ? undefined : 'none', height: vertical ? undefined : maxComponentHeight - 320, overflowY: vertical ? undefined : "auto", maxWidth: "1200px", margin: "0 auto 20px auto", minHeight: "300px" }}>
             <CommsDisplay
                 filter={filter} style={{ marginTop: "10px", marginBottom: 0 }}
                 noCommsPane={<NoCommsDeletePane

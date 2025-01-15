@@ -285,7 +285,7 @@ export default function CharacterPane(props: {
                             </div>
                         </div>
                         <div style={{}}>
-                            <TextField label="Description" value={description} onChange={(e) => setDescription(e.target.value)} fullWidth multiline minRows={5} />
+                            <TextField label="Description" value={description} onChange={(e) => setDescription(e.target.value)} fullWidth multiline minRows={2} />
                         </div>
                     </> :
                         characterApi.data ? <>
@@ -301,14 +301,14 @@ export default function CharacterPane(props: {
                                 <div style={{ fontSize: ".8em", color: "#999999" }}>{characterApi.data.species}</div>
                             </div>
                             <hr />
-                            <div>{characterApi.data.description}</div>
+                            <div style={{ height: "50px", overflowY: "auto" }}>{characterApi.data.description}</div>
 
                         </> :
                             <>
                                 <Skeleton variant="text" sx={{ fontSize: '2em' }} animation='wave' />
                                 <Skeleton variant="text" sx={{ fontSize: '.8em' }} animation='wave' />
                                 <hr />
-                                <Skeleton variant="rounded" sx={{ width: '100%', height: '100px' }} animation='wave' />
+                                <Skeleton variant="rounded" sx={{ width: '100%', height: '50px' }} animation='wave' />
                             </>
                     }
                 </div>
