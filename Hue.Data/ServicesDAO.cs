@@ -15,7 +15,7 @@ namespace Hue.Data {
         public async Task<Service?> Create(string username, Service service) {
 
             //Make sure the user owns the artist
-            if (!(await ArtistDAO.UserOwnsArtist(adoTemplate, username, service.Id))) {
+            if (!(await ArtistDAO.UserOwnsArtist(adoTemplate, username, service.Artist.Id))) {
                 throw new InvalidOperationException("User does not own artist");
             };
 
@@ -85,13 +85,15 @@ namespace Hue.Data {
             public int ArtistId { get; set; }
             public string ArtistName { get; set; }
             public string ArtistSocial { get; set; }
+            public string ArtistCommUrl { get; set; }
+            public string ArtistPaymentUrl { get; set; }
             public bool ArtistImgPresent { get; set; }
             public bool ArtistRetired { get; set; }
 
             public static readonly List<string> Columns = [
                 "s." + SERVICE_ID, COMM_TYPE_CD, SERVICE_NM, SERVICE_DESC_TX,SERVICE_BASE_PRICE_NB, SERVICE_CURRENCY_CD,
                 SERVICE_ADDT_ID, SERVICE_ADDT_NM,SERVICE_ADDT_DESC_TX,SERVICE_ADDT_PRICE_NB,SERVICE_ADDT_LIMIT_NB,
-                "s." + ARTIST_ID, ARTIST_NM, ARTIST_SOCIAL_TX,ARTIST_IMG_PRESENT_IN,RETIRED_IN
+                "s." + ARTIST_ID, ARTIST_NM, ARTIST_SOCIAL_TX, ARTIST_COMM_SHEET_TX,PAYMENT_URL_TX, ARTIST_IMG_PRESENT_IN,RETIRED_IN
             ];
 
             public static string Select() {
@@ -128,6 +130,8 @@ namespace Hue.Data {
                     ArtistId = reader.GetInt(ARTIST_ID),
                     ArtistName = reader.GetString(ARTIST_NM),
                     ArtistSocial = reader.GetString(ARTIST_SOCIAL_TX),
+                    ArtistCommUrl = reader.GetString(ARTIST_COMM_SHEET_TX),
+                    ArtistPaymentUrl = reader.GetString(PAYMENT_URL_TX),
                     ArtistImgPresent = reader.GetBoolean(ARTIST_IMG_PRESENT_IN),
                     ArtistRetired = reader.GetBoolean(RETIRED_IN)
                 };
@@ -147,8 +151,10 @@ namespace Hue.Data {
                             Id = firstRow.ArtistId,
                             Name = firstRow.ArtistName,
                             SocialUrl = firstRow.ArtistSocial,
+                            CommSheetUrl = firstRow.ArtistCommUrl,
                             IsRetired = firstRow.ArtistRetired,
                             HasImage = firstRow.ArtistImgPresent,
+                            PaymentUrl = firstRow.ArtistPaymentUrl
                         },
                         Additions = rows.Where(a=>a.ServiceAdditionId != null)
                             .Select(a => new ServiceAddition() {
@@ -168,18 +174,19 @@ namespace Hue.Data {
 
         #region READ
         public async Task<Service?> Get(string username, int id) {
-            var sql = ServiceRow.Select(new([new(SERVICE_ID)]));
+            var sql = ServiceRow.Select(new([new("S." + SERVICE_ID, WhereConditionOperator.EQUALS, "@SERVICE_ID")]));
             return ServiceRow.ToServices(await adoTemplate.Query(sql, (cmd) => {
                 cmd.SetString(USER_NM, username);
                 cmd.SetInt(SERVICE_ID, id);
             }, ServiceRow.RowMapper)).FirstOrDefault();
         }
 
-        public async Task<List<Service>> GetAll(string username, int? artistId, int? commTypeCode) {
+        public async Task<List<Service>> GetAll(string username, int? artistId, int? commTypeCode, bool? noRetired) {
 
             List<WhereCondition> conditions = [];
-            if (artistId.HasValue) { conditions.Add(new("s." + ARTIST_ID, WhereConditionOperator.EQUALS,ARTIST_ID)); }
+            if (artistId.HasValue) { conditions.Add(new("s." + ARTIST_ID, WhereConditionOperator.EQUALS,"@"+ARTIST_ID)); }
             if (commTypeCode.HasValue) { conditions.Add(new(COMM_TYPE_CD)); }
+            if (noRetired==true) { conditions.Add(new(RETIRED_IN)); }
 
             var sql = conditions.Count > 0 ? ServiceRow.Select(new(conditions)) : ServiceRow.Select();
             
@@ -187,6 +194,7 @@ namespace Hue.Data {
                 cmd.SetString(USER_NM, username);
                 if (artistId.HasValue) { cmd.SetInt(ARTIST_ID, artistId); }
                 if (commTypeCode.HasValue) { cmd.SetInt(COMM_TYPE_CD, commTypeCode); }
+                if (noRetired==true) { cmd.SetBoolean(RETIRED_IN,false); }
             }, ServiceRow.RowMapper));
         }
 
@@ -258,7 +266,7 @@ namespace Hue.Data {
 
         public async Task DeleteAllFromArtist(string username, int artistId) {
             //Delete all the additions
-            var services = await GetAll(username, artistId, null);
+            var services = await GetAll(username, artistId, null,null);
             foreach (var service in services) {
                 await DeleteAdditions(service.Additions.Select(a => a.Id).ToList());
             }
@@ -269,6 +277,8 @@ namespace Hue.Data {
         }
 
         private async Task DeleteAdditions(List<int> ids) {
+            if (ids.Count == 0) return;
+
             var sql = DeleteSql(SERVICE_ADDITIONS_TABLE, new([new(
                 SERVICE_ADDT_ID,ids    
             )]));

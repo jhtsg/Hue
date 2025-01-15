@@ -31,11 +31,11 @@ namespace Hue.API.Controllers
         #region  READ
 
         [HttpGet]
-        public async Task<IActionResult> GetAll([FromQuery]int? artistId = null, [FromQuery] int? commType = null ) {
+        public async Task<IActionResult> GetAll([FromQuery]int? artistId = null, [FromQuery] int? commType = null, [FromQuery] bool? noRetired = null) {
             var session = await GetSession(Request, Response);
             return session == null
                 ? Unauthorized()
-                : Ok(await dao.GetAll(session.Username,artistId,commType));
+                : Ok(await dao.GetAll(session.Username,artistId,commType, noRetired));
         }
 
         [HttpGet("{ID}")]
