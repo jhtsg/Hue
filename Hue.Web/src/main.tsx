@@ -8,6 +8,7 @@ import { SnackbarProvider } from 'notistack'
 import { PingPongProvider } from './components/contexts/PingPongContext.tsx'
 import { RouterProvider } from 'react-router-dom'
 import { HueRouter } from './HueRouter.tsx'
+import { CurrencyProvider } from './components/contexts/CurrencyContext.tsx'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -15,11 +16,13 @@ createRoot(document.getElementById('root')!).render(
       <AuthProvider>
         <DimensionsProvider>
           <RefreshProvider>
-            <ThemeWrapper>
-              <SnackbarProvider maxSnack={4} anchorOrigin={{ vertical: 'bottom', horizontal: 'right', }} >
-                <RouterProvider router={HueRouter} />
-              </SnackbarProvider>
-            </ThemeWrapper>
+            <CurrencyProvider>
+              <ThemeWrapper>
+                <SnackbarProvider maxSnack={4} anchorOrigin={{ vertical: 'bottom', horizontal: 'right', }} >
+                  <RouterProvider router={HueRouter} />
+                </SnackbarProvider>
+              </ThemeWrapper>
+            </CurrencyProvider>
           </RefreshProvider>
         </DimensionsProvider>
       </AuthProvider>
