@@ -3,10 +3,10 @@ import Artist from "../../../model/artist/Artist"
 import useApi from "../../hooks/useApi"
 import { createService, deleteService, getServices, updateService } from "../../../api/Service"
 import Service from "../../../model/artist/Service"
-import { Button, Card, CardActionArea, CircularProgress, TextField } from "@mui/material"
+import { Button, Card, CardActionArea, CircularProgress, TextField, Tooltip } from "@mui/material"
 import { CommissionTypes } from "../../../model/commission/CommissionEnums"
 import { useUser } from "../../hooks/useUser"
-import { AddCircleOutline, Brush } from "@mui/icons-material"
+import { AddCircleOutline, Brush, Warning } from "@mui/icons-material"
 import { currencies, isCharAddition } from "../Utils"
 import SafeAvatar from "../SafeAvatar"
 import { artistImage } from "../../../api/Artist"
@@ -47,6 +47,7 @@ export default function ServiceBrowser(props: {
     const { user } = useUser()
     const { vertical } = useWindowDimensions();
 
+    const [filter, setFilter] = useState("")
     const [newOpen, setNewOpen] = useState(false)
     const [editOpen, setEditOpen] = useState(false)
     const [editService, setEditService] = useState(undefined as undefined | Service);
@@ -70,14 +71,19 @@ export default function ServiceBrowser(props: {
 
         createServiceApi.fetch(() => {
             setNewOpen(false)
+            setEditOpen(false)
             enqueueSnackbar("Service Created", { variant: "success" })
             refresh();
         }, undefined, val);
 
     }
 
-    const onUpdate = (val: Service) => {
+    const onUpdate = (val: Service, clone: boolean) => {
         if (artist) { val.artist = artist }
+        if (clone) {
+            onCreate(val)
+            return;
+        }
 
         updateServiceApi.fetch(() => {
             setEditOpen(false)
@@ -97,33 +103,38 @@ export default function ServiceBrowser(props: {
     }
 
     return <>
-        {searchEnabled && <><div style={{
-            display: "flex", flexDirection: vertical ? 'column' : undefined,
-            gap: "10px", marginTop: "5px",
-            alignItems: 'center'
-        }}>
-            <TypeSelect
-                type={commType ?? 0}
-                setType={setCommType ?? console.error}
+        {searchEnabled && <>
+            <TextField
+                label='Search' value={filter} onChange={(e) => setFilter(e.target.value)}
+                fullWidth
+                style={{ marginBottom: "10px", marginTop: "5px" }}
             />
-
-            <div style={{ display: "flex", gap: "10px", alignItems: 'center', width: "100%" }}>
-                <ArtistSelectorTile
-                    setArtist={setArtist ?? console.error}
-                    artist={artist}
+            <div style={{
+                display: "flex", flexDirection: vertical ? 'column' : undefined,
+                gap: "10px", marginTop: "5px",
+                alignItems: 'center'
+            }}>
+                <TypeSelect
+                    type={commType ?? 0}
+                    setType={setCommType ?? console.error}
                 />
 
-                <TextField
-                    type='number'
-                    label='Chars'
-                    value={Math.max(1, charCount ?? 1)}
-                    onChange={(e) => setCharCount?.(new Number(e.target.value) as number)}
-                    style={{ flex: "1" }}
-                />
+                <div style={{ display: "flex", gap: "10px", alignItems: 'center', width: "100%" }}>
+                    <ArtistSelectorTile
+                        setArtist={setArtist ?? console.error}
+                        artist={artist}
+                    />
+
+                    <TextField
+                        type='number'
+                        label='Chars'
+                        value={Math.max(1, charCount ?? 1)}
+                        onChange={(e) => setCharCount?.(new Number(e.target.value) as number)}
+                        style={{ flex: "1" }}
+                    />
+                </div>
             </div>
 
-
-        </div>
             <hr />
         </>}
         <div style={{ height: height ?? "200px", display: "flex", flexDirection: "column", overflowY: "hidden" }}>
@@ -136,16 +147,18 @@ export default function ServiceBrowser(props: {
                         </div>
                         : <div style={{ flex: "1", overflowY: "auto", }}>
                             <div style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
-                                {servicesApi.data?.map(a => <ServiceCard
-                                    service={a}
-                                    hideArtist={!!artist && !searchEnabled}
-                                    estimateEnabled={estimateEnabled}
-                                    charCount={charCount}
-                                    onClick={editable ? () => {
-                                        setEditService(a);
-                                        setEditOpen(true)
-                                    } : () => onSelect?.(a)}
-                                />)}
+                                {servicesApi.data?.filter(a => filter.trim().length > 0 ? (a.name.trim().length === 0 ? CommissionTypes[a.commissionType].type : a.name).toLowerCase().includes(filter.toLowerCase()) || a.description.toLowerCase().includes(filter.toLowerCase()) : true)
+                                    .map(a => <ServiceCard
+                                        service={a}
+                                        hideArtist={!!artist && !searchEnabled}
+                                        estimateEnabled={estimateEnabled}
+                                        charCount={charCount}
+                                        onClick={editable ? () => {
+                                            setEditService(a);
+                                            setEditOpen(true)
+                                        } : () => onSelect?.(a)}
+                                    />)
+                                }
                             </div>
                         </div> : <></>}
         </div>
@@ -174,8 +187,18 @@ function ServiceCard(props: {
 
     const hasMore = addtlCharAddition ? service.additions.length > 1 : service.additions.length > 0
 
+    const cannotFulfill = estimateEnabled
+        && (addtlCharAddition
+            ? addtlCharAddition.limit > 0 && addtlCharAddition.limit < (charCount ?? 0) - 1
+            : (charCount ?? 0) > 1
+        )
+
+    const addtlCharOverhead = addtlCharAddition
+        ? ((Math.max(1, charCount ?? 1)) - 1) * addtlCharAddition.price
+        : 0
+
     const estimate = estimateEnabled
-        ? `${service.basePrice + (((Math.max(1, charCount ?? 1)) - 1) * (addtlCharAddition?.price ?? 0))
+        ? `${service.basePrice + addtlCharOverhead
         } ${hasMore ? '+' : ''}`
         : ""
 
@@ -194,12 +217,15 @@ function ServiceCard(props: {
                     </div>
                 </div>
                 <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+                    <div style={{ display: cannotFulfill ? undefined : "none", color: 'yellow' }}>
+                        <Tooltip title="Exceeding service's character limit"><Warning /></Tooltip>
+                    </div>
                     {!hideArtist && <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
                         <SafeAvatar hasImage={service.artist.hasImage} text={service.artist.name} src={artistImage(service.artist.id)} size={32} />
                     </div>}
                     <div style={{ fontSize: "1.2em", fontWeight: "700", width: "70px" }}>
                         {currencies[service.currency] ?? service.currency + " "}{
-                            estimateEnabled ? estimate : (service.basePrice + "") + (service.additions.length > 0 && " +")
+                            estimateEnabled ? estimate : (service.basePrice + "") + (service.additions.length > 0 ? " +" : "")
                         }
                     </div>
                 </div>

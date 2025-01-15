@@ -87,6 +87,8 @@ export const currencies = {
 } as any
 
 export const isCharAddition = (val: ServiceAddition) =>
+    val.name.toLowerCase().includes("extra character") ||
+    val.name.toLowerCase().includes("extra char") ||
     val.name.toLowerCase().includes("additional character") ||
     val.name.toLowerCase().includes("addtl. character") ||
     val.name.toLowerCase().includes("additional char") ||

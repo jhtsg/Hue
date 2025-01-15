@@ -100,7 +100,7 @@ namespace Hue.Data {
                 return SelectSql(Columns,
                     $"{SERVICE_TABLE} s left join {SERVICE_ADDITIONS_TABLE} asa on s.{SERVICE_ID} = asa.{SERVICE_ID}, {ARTIST_TABLE} a",
                     new WhereConditionGroup([new JoinCondition("a", "s", ARTIST_ID), new(USER_NM)]),
-                    [new(ARTIST_NM), new(SERVICE_BASE_PRICE_NB)]
+                    [new(SERVICE_BASE_PRICE_NB), new(ARTIST_NM)]
                 );
             }
 
@@ -108,7 +108,7 @@ namespace Hue.Data {
                 return SelectSql(Columns,
                     $"{SERVICE_TABLE} s left join {SERVICE_ADDITIONS_TABLE} asa on s.{SERVICE_ID} = asa.{SERVICE_ID}, {ARTIST_TABLE} a",
                     new WhereConditionGroup([new JoinCondition("a", "s", ARTIST_ID), new(USER_NM), new WhereConditionSubgroup(conditions)]),
-                    [new(ARTIST_NM),new(SERVICE_BASE_PRICE_NB)]
+                    [new(SERVICE_BASE_PRICE_NB), new(ARTIST_NM)]
                 );
             }
 

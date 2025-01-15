@@ -4,14 +4,14 @@ import { useEffect, useState } from "react"
 import ServiceAddition from "../../../model/artist/ServiceAddition"
 import { TypeSelect } from "../../pages/comms/subcomponents/CommPane"
 import { currencies } from "../Utils"
-import { AddCircleOutline, Brush, Delete, Save } from "@mui/icons-material"
+import { AddCircleOutline, Brush, ContentCopy, Delete, Save } from "@mui/icons-material"
 import { CommissionTypes } from "../../../model/commission/CommissionEnums"
 import { addToCollection, deleteFromCollection, updateInCollection } from "../CollectionUtils"
 import { useWindowDimensions } from "../../hooks/useWindowDimensions"
 
 export default function ServiceEditor(props: {
     service?: Service
-    onOk: (val: Service) => void,
+    onOk: (val: Service, clone: boolean) => void,
     onDelete?: () => void,
     open: boolean,
     setOpen: (val: boolean) => void
@@ -52,7 +52,7 @@ export default function ServiceEditor(props: {
     const deleteAddition = (index: number) =>
         setAdditions(deleteFromCollection(additions, index))
 
-    const onSave = () => {
+    const onSave = (clone: boolean) => {
         onOk({
             ...service,
             name: name,
@@ -61,7 +61,7 @@ export default function ServiceEditor(props: {
             currency: currency,
             basePrice: price,
             additions: additions,
-        } as Service)
+        } as Service, clone)
     }
 
 
@@ -70,7 +70,8 @@ export default function ServiceEditor(props: {
             <div>{onDelete ? "Editing" : "Creating"} Service</div>
             <div style={{ display: "flex", gap: "5px" }}>
                 {onDelete && <IconButton onClick={onDelete}><Delete /></IconButton>}
-                <IconButton onClick={onSave}><Save /></IconButton>
+                {onDelete && <IconButton onClick={() => onSave(true)}><ContentCopy /></IconButton>}
+                <IconButton onClick={() => onSave(false)}><Save /></IconButton>
             </div>
         </DialogTitle>
         <DialogContent>
