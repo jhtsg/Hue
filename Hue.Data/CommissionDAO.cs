@@ -506,6 +506,7 @@ namespace Hue.Data
             }
             
             var delSql = $@"
+{DeleteSql(COMM_IMG_TABLE, new(WhereConditionUnion.AND, [new(COMM_ID)]))};
 {DeleteSql(COMM_TAG_MAP, new(WhereConditionUnion.AND, [new(COMM_ID)]))};
 {DeleteSql(COMM_CHAR_MAP, new(WhereConditionUnion.AND, [new(COMM_ID)]))};
 {DeleteSql(COMM_TABLE, new(WhereConditionUnion.AND, [new(COMM_ID)]))};
