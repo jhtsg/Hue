@@ -83,7 +83,7 @@
         public static readonly string COMM_CHAR_MAP = $"{SCHEMA}.comm_char_map";
         public static readonly string COMM_TAG_MAP = $"{SCHEMA}.comm_tag_map";
 
-        public static readonly string COMM_IMG_TABLE = $"{SCHEMA}.comm_img_map";
+        public static readonly string COMM_IMG_TABLE = $"{SCHEMA}.comm_img";
         public static readonly string COMM_IMG_ID = "comm_img_id";
         public static readonly string COMM_IMG_NOTES_TX = "comm_img_notes_tx";
         public static readonly string COMM_IMG_TYPE_CD = "comm_img_type_cd";

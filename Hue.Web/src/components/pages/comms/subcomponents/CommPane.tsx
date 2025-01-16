@@ -34,6 +34,7 @@ import ArtistSelector from "../../artists/subcomponents/ArtistSelector"
 import { getStatisticForArtist } from "../../../../api/Statistics"
 import ArtistStatistic from "../../../../model/statistics/ArtistStatistic"
 import ServiceEstimator from "../../../shared/services/ServiceEstimator"
+import AssociatedImagesCarousel from "./AssociatedImages/AssociatedImagesCarousel"
 
 
 export default function CommPane(props: {
@@ -280,8 +281,8 @@ export default function CommPane(props: {
         <WarningsBanner artist={artist} startTs={startTs} doneTs={doneTs} publishTs={publishTs} status={status} />
 
         <div style={{ padding: "20px" }}>
-            <div style={vertical ? {} : { display: "flex" }}>
-                <div style={vertical ? {} : { flex: "1", paddingTop: "0px", paddingRight: "10px" }}>
+            <div style={vertical ? {} : { display: "flex", gap: "10px" }}>
+                <div style={vertical ? { overflowX: 'hidden' } : { flex: "1", paddingTop: "0px", paddingRight: "10px", overflowX: 'hidden' }}>
 
                     {/* Name */}
                     <TextField label='Name' fullWidth variant="standard" value={name}
@@ -307,6 +308,11 @@ export default function CommPane(props: {
                             markDirty();
                         }} />
 
+                    {!create && id && <>
+                        <hr style={{ marginTop: "20px", marginBottom: "20px" }} />
+                        <AssociatedImagesCarousel commId={id} type='REFERENCE' />
+                    </>}
+
                     <hr style={{ marginTop: "20px", marginBottom: "20px" }} />
 
                     <ArtistInformation markDirty={markDirty}
@@ -327,9 +333,17 @@ export default function CommPane(props: {
                         vertical={vertical}
                     />
 
+                    {!create && id && <>
+                        <hr style={{ marginTop: "20px", marginBottom: "20px" }} />
+                        <div style={{ marginTop: "20px" }}>
+                            <AssociatedImagesCarousel commId={id} type='POST' />
+                        </div>
+                    </>}
+
+
 
                 </div>
-                {vertical && <hr style={{ marginTop: "20px", marginBottom: "20px" }} />}
+                <hr style={{ marginTop: "20px", marginBottom: "20px" }} />
                 <div style={vertical ? {} : { width: "33%", paddingTop: "10px", paddingLeft: "10px", paddingRight: "10px", display: "flex", flexDirection: "column" }}>
 
                     {!vertical && <SaveButton anyLoading={anyLoading} dirty={dirty} saveClick={saveClick} />}
@@ -376,12 +390,10 @@ export default function CommPane(props: {
                     />
 
                     }
-                    {
-                        !create && <Button fullWidth variant="contained" color="secondary" onClick={() => { setDeleteOpen(true) }}
-                            style={{ marginTop: "10px", marginBottom: "12px" }}>
-                            Delete Commission
-                        </Button>
-                    }
+                    {!create && <Button fullWidth variant="contained" color="secondary" onClick={() => { setDeleteOpen(true) }}
+                        style={{ marginTop: "10px", marginBottom: "12px" }}>
+                        Delete Commission
+                    </Button>}
 
 
                 </div>
@@ -756,7 +768,7 @@ export function ArtistInformation(props: {
 
     return <>
         <div>{isArtist ? "Client" : "Artist"}</div>
-        <div style={vertical ? {} : { display: "flex", alignItems: 'center' }}>
+        <div style={vertical ? {} : { display: "flex", alignItems: 'center', gap: "10px" }}>
 
             <ArtistSelectorTile
                 artist={artist}
@@ -767,34 +779,35 @@ export function ArtistInformation(props: {
                 vertical={vertical}
             />
 
-            <div style={vertical ? {} : { flex: "1", marginLeft: "20px", display: 'flex' }}>
+            <div style={vertical ? {} : { flex: "1", display: 'flex', gap: "10px" }}>
 
-                <div style={{ width: vertical ? undefined : "50%", display: "flex", alignItems: 'center', marginBottom: vertical ? "20px" : undefined }}>
+                <div style={{ flex: vertical ? undefined : "1", display: "flex", alignItems: 'center', marginBottom: vertical ? "20px" : undefined, gap: "10px" }}>
                     <TextField type="number" label='Price'
-                        style={vertical ? {} : { marginRight: "10px" }} value={price} fullWidth
+                        value={price} fullWidth
                         onChange={(e) => {
                             setPrice(new Number(e.target.value) as number)
                             markDirty()
                         }}
-                        slotProps={{ input: { startAdornment: <InputAdornment position="start">$</InputAdornment> } }}
+                        slotProps={{
+                            input: {
+                                startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                                endAdornment: isArtist ? undefined : <InputAdornment position="end"><IconButton onClick={() => setServiceEstimatorOpen(true)}><Calculate /></IconButton></InputAdornment>
+                            }
+                        }}
                     />
-                    {!isArtist && <>
-                        <IconButton onClick={() => setServiceEstimatorOpen(true)}><Calculate /></IconButton>
-
-                        <ServiceEstimator
-                            open={serviceEstimatorOpen} setOpen={setServiceEstimatorOpen}
-                            setPrice={setPrice} artist={artist}
-                            charCount={charCount} commType={commType}
-                            setArtist={setArtist} setCharCount={setCharCount}
-                            setCommType={setCommType} markDirty={markDirty}
-                        /></>
-                    }
+                    {!isArtist && <ServiceEstimator
+                        open={serviceEstimatorOpen} setOpen={setServiceEstimatorOpen}
+                        setPrice={setPrice} artist={artist}
+                        charCount={charCount} commType={commType}
+                        setArtist={setArtist} setCharCount={setCharCount}
+                        setCommType={setCommType} markDirty={markDirty}
+                    />}
                 </div>
 
 
-                <div style={vertical ? {} : { width: "50%" }}>
+                <div style={vertical ? {} : { flex: "1" }}>
                     <TextField type="number" label='Character Count' fullWidth
-                        style={vertical ? {} : { marginLeft: "10px" }} value={charCount}
+                        value={charCount}
                         onChange={(e) => {
                             setCharCount(new Number(e.target.value) as number)
                             markDirty()

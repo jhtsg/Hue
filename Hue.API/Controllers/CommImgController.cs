@@ -25,8 +25,8 @@ namespace Hue.API.Controllers
         public async Task<IActionResult> Create(
                 [FromForm] IFormFile file, 
                 [FromForm] int commId,
-                [FromForm] string notes,
-                [FromForm] int imgType
+                [FromForm] string? notes,
+                [FromForm] int type
             ) {
             var session = await GetSession(Request, Response);
             if (session == null) { return Unauthorized(); }
@@ -41,7 +41,7 @@ namespace Hue.API.Controllers
             await file.CopyToAsync(memoryStream);
             var fileBytes = memoryStream.ToArray(); // Convert to byte array
 
-            var id = await dao.Create(session.Username, commId, notes, imgType, fileBytes, file.ContentType);
+            var id = await dao.Create(session.Username, commId, notes, type, fileBytes, file.ContentType);
             //Actually we can just set this here
             
             var key = $"{session.Username}-{id}-COMMIMG";
@@ -105,8 +105,6 @@ namespace Hue.API.Controllers
         }
 
         #endregion
-
-
 
     }
 }

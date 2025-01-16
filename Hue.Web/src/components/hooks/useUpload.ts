@@ -78,13 +78,18 @@ export default function useUpload<T>(
         setProgress(0)
         uploadFunc(setLoading, setProgress,
             (val?: T) => {
-                fetch(cacheBustUrl + "?NoCache=true", {
-                    method: 'GET',
-                    credentials: 'include'
-                }).then(() => {
+                if (cacheBustUrl.length > 0) {
+                    fetch(cacheBustUrl + "?NoCache=true", {
+                        method: 'GET',
+                        credentials: 'include'
+                    }).then(() => {
+                        if (onSuccess) { onSuccess(val) }
+                        setData(val ?? undefined as any)
+                    })
+                } else {
                     if (onSuccess) { onSuccess(val) }
                     setData(val ?? undefined as any)
-                })
+                }
             }
             ,
             onError ? (val: any) => {
