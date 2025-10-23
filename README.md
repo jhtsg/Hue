@@ -1,11 +1,11 @@
 # Hue
 
-![Kanban](https://raw.githubusercontent.com/jhtsg/jhtsg/refs/heads/main/screenshots/kanban.png)
+![Kanban](./Hue.Web/public/screenshots/kanban.png)
 
 Hue is a commission management application meant to make it easy to manage and track commissions. Hue centralizes and links artists, characters, and commission information, making it easy to view trends and see statistics for all of your pieces.
 
 ## All in one place
-![A commission](https://raw.githubusercontent.com/jhtsg/jhtsg/refs/heads/main/screenshots/commission.png)
+![A commission](./Hue.Web/public/screenshots/commission.png)
 
 A Commission is the biggest unit in Hue, which ties together several fields:
 
@@ -28,7 +28,7 @@ Associated entities include and contain
     - Name and Description
 
 ## Powerful Statistics
-![Stats](https://raw.githubusercontent.com/jhtsg/jhtsg/refs/heads/main/screenshots/statistics.png)
+![Stats](./Hue.Web/public/screenshots/statistics.png)
 
 Hue's main focus is linking this information to extract powerful statistics and insights into your commissioning habits, and your artists' performance. Hue's dashboard shows you your monthly spending, and how your commissions have progressed. Hue can also break down your commissions and spending by artist, characters, or tags. You can also go further in depth with each artist and character:
 
@@ -42,10 +42,10 @@ Hue's main focus is linking this information to extract powerful statistics and 
     <tbody>
         <tr>
             <td>
-                <img src="https://raw.githubusercontent.com/jhtsg/jhtsg/refs/heads/main/screenshots/artistStatistics.png"/>
+                <img src="./Hue.Web/public/screenshots/artistStatistics.png"/>
             </td>
             <td>
-                <img src="https://raw.githubusercontent.com/jhtsg/jhtsg/refs/heads/main/screenshots/charStatistics.png"/>
+                <img src="./Hue.Web/public/screenshots/charStatistics.png"/>
             </td>
         </tr>
         <tr>
