@@ -129,6 +129,7 @@ export default function CommPane(props: {
     }, [props.open])
 
     useEffect(() => {
+        if (dirty) return;
         if (!commApi.data) return;
         const comm = commApi.data;
         setName(comm.name)
