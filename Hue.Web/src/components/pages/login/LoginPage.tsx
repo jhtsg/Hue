@@ -47,7 +47,7 @@ function Footer() {
         <div style={{ display: "flex", justifyContent: "center", alignItems: "center", textAlign: "left", marginBottom: "20px" }}>
             <img src="/tsg.png" width={64} style={{ marginRight: "20px" }} />
             <div>
-                <div>(C)2024 TheSlimeGuy</div>
+                <div>(C)2025 TheSlimeGuy</div>
                 <div>No Rights Reserved</div>
             </div>
 
