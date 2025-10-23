@@ -1,11 +1,10 @@
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { getPriceCats, getSpending, getStatuses } from "../../../../../api/Statistics";
 import { useOptionedApi } from "../../../../hooks/useApi";
 import { useWindowDimensions } from "../../../../hooks/useWindowDimensions";
 import PriceCatBarChartPane from "./subcomponents/PriceCatBarChartPane";
 import SpendingBarChartPane from "./subcomponents/SpendingBarChartPane";
 import StatusBarChartPane from "./subcomponents/StatusBarChartPane";
-import { CSSTransition } from "react-transition-group";
 import './MonthlyStatisticsPane.css'
 
 export default function MonthlyStatisticsPane(props: {
@@ -13,12 +12,17 @@ export default function MonthlyStatisticsPane(props: {
 }) {
 
     const { year } = props;
-    const { vertical } = useWindowDimensions();
+    const { vertical, width } = useWindowDimensions();
+    const [maxHeight, setMaxHeight] = useState("0px");
+
+    const contentRef = useRef<HTMLDivElement>(null);
 
     const priceCatApi = useOptionedApi({ maintainData: true }, getPriceCats)
     const spendingApi = useOptionedApi({ maintainData: true }, getSpending)
     const statusApi = useOptionedApi({ maintainData: true }, getStatuses)
 
+
+    const expanded = year > 0
 
     useEffect(() => {
         if (!year || year < 0) return;
@@ -29,15 +33,30 @@ export default function MonthlyStatisticsPane(props: {
 
     }, [year])
 
+    useEffect(() => {
+        if (contentRef.current) {
+            setMaxHeight(year > 0 ? `${contentRef.current.scrollHeight + 10}px` : "0px");
+        }
+    }, [year]);
 
+    useEffect(() => {
+        if (year <= 0) return;
 
-    return <CSSTransition
-        in={year > 0}
-        timeout={500}  // Duration of the transition
-        classNames={vertical ? "grow-vertical" : "grow"}
-        unmountOnExit
-    ><div style={{ marginBottom: "20px" }}>
+        if (contentRef.current) {
+            setMaxHeight(year > 0 ? `${contentRef.current.scrollHeight + 10}px` : "0px");
+        }
+    }, [width]);
 
+    return <div
+        ref={contentRef}
+        style={{
+            paddingBottom: expanded ? "20px" : "0px",
+            overflowY: 'hidden',
+            maxHeight: maxHeight,
+            opacity: expanded ? 1 : 0,
+            transition: "max-height 0.3s ease, opacity 0.3s ease, padding-left 0.3s ease, padding-right 0.3s ease, padding-bottom 0.3s ease"
+        }}>
+        <div>
             <div style={vertical ? {} : { display: "flex" }}>
                 <div style={vertical ? { marginBottom: "20px" } : { flex: "1", marginRight: "10px" }}>
                     <PriceCatBarChartPane title="Monthly Commissions by Price Category" priceCats={priceCatApi.data} loading={priceCatApi.loading} />
@@ -49,7 +68,6 @@ export default function MonthlyStatisticsPane(props: {
                     <StatusBarChartPane title="Monthly Status Percentages" statuses={statusApi.data} loading={statusApi.loading} />
                 </div>
             </div>
-
         </div>
-    </CSSTransition>
+    </div>
 }
