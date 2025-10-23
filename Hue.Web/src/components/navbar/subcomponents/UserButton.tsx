@@ -98,7 +98,7 @@ export function UserButton() {
                 updatePrimaryCharacterApi.fetch(() => {
                     setNewChar(undefined)
                     refreshAuth();
-                    enqueueSnackbar("Primary character updated!")
+                    enqueueSnackbar("Primary character updated!", { variant: "success" })
                 }, undefined, newChar)
             }}
             title={`Set ${newChar?.name} as your primary character?`}

@@ -161,7 +161,7 @@ export default function ArtistPane(props: {
     const onUploadCreateSuccess = () => {
         if (selectedFileUrl) { URL.revokeObjectURL(selectedFileUrl) }
         setSelectedFile(null)
-        enqueueSnackbar("Artist Created!")
+        enqueueSnackbar("Artist Created!", { variant: 'success' })
         if (onOk) onOk();
     }
 
