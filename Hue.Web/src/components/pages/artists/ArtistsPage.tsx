@@ -1,10 +1,10 @@
-import { Fab, Tooltip } from "@mui/material"
+import { Accordion, AccordionDetails, AccordionSummary, Fab, Tooltip, Typography } from "@mui/material"
 import { getArtists } from "../../../api/Artist"
 import useApi from "../../hooks/useApi"
 import ApiAlert from "../../shared/ApiAlert"
 import LoadingBackdrop from "../../shared/LoadingBackdrop"
 import ArtistTile from "./subcomponents/ArtistTile"
-import { Add, ColorLens } from "@mui/icons-material"
+import { Add, BeachAccess, ColorLens, ExpandMore } from "@mui/icons-material"
 import { useState } from "react"
 import { useWindowDimensions } from "../../hooks/useWindowDimensions"
 import { useUser } from "../../hooks/useUser"
@@ -18,6 +18,7 @@ export default function ArtistsPage() {
     const { vertical, maxComponentHeight } = useWindowDimensions();
     const { user } = useUser();
     const artist = user?.isArtist
+    const hasRetiredArtists = artistsApi.data?.filter(a => a.isRetired).length > 0
 
     return <>
 
@@ -38,13 +39,32 @@ export default function ArtistsPage() {
                         <div>There are no {artist ? "clients" : "artists"}</div>
                         <div>(yet)</div>
                     </div>
-                    : <div style={{
-                        display: 'flex', flexWrap: 'wrap',
-                        width: '100%', marginTop: "20px",
-                        justifyContent: vertical ? "center" : undefined
-                    }} >
-                        {artistsApi.data?.map(a => <ArtistTile artist={a} />)}
-                    </div>
+                    : <>
+                        <div style={{
+                            display: 'flex', flexWrap: 'wrap',
+                            width: '100%', marginTop: "20px",
+                            justifyContent: vertical ? "center" : undefined
+                        }} >
+                            {artistsApi.data?.filter(a => !a.isRetired).map(a => <ArtistTile artist={a} />)}
+                        </div>
+                        {hasRetiredArtists && <Accordion style={{ marginTop: "10px" }}>
+                            <AccordionSummary expandIcon={<ExpandMore />}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: "10px" }}>
+                                    <BeachAccess />
+                                    <Typography>Retired {artist ? "clients" : "artists"}</Typography>
+                                </div>
+                            </AccordionSummary>
+                            <AccordionDetails>
+                                <div style={{
+                                    display: 'flex', flexWrap: 'wrap',
+                                    width: '100%', marginTop: "-20px",
+                                    justifyContent: vertical ? "center" : undefined
+                                }} >
+                                    {artistsApi.data?.filter(a => a.isRetired).map(a => <ArtistTile artist={a} />)}
+                                </div>
+                            </AccordionDetails>
+                        </Accordion>}
+                    </>
             }
         </div>
 

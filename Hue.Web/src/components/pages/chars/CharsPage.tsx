@@ -1,8 +1,8 @@
 import { useState } from "react";
 import useApi from "../../hooks/useApi";
 import { getCharacters } from "../../../api/Char";
-import { Fab, Tooltip } from "@mui/material";
-import { Add, Groups } from "@mui/icons-material";
+import { Accordion, AccordionDetails, AccordionSummary, Fab, Tooltip, Typography } from "@mui/material";
+import { Add, BeachAccess, ExpandMore, Groups } from "@mui/icons-material";
 import ApiAlert from "../../shared/ApiAlert";
 import LoadingBackdrop from "../../shared/LoadingBackdrop";
 import CharacterTile from "./subcomponents/CharacterTile";
@@ -14,6 +14,7 @@ export default function CharsPage() {
     const [newOpen, setNewOpen] = useState(false)
     const charactersApi = useApi(getCharacters, true)
     const { vertical, maxComponentHeight } = useWindowDimensions();
+    const hasRetiredChars = charactersApi.data?.filter(a => a.isRetired).length > 0
 
     return <>
         <div style={{ display: "flex", alignItems: "end" }}>
@@ -31,9 +32,28 @@ export default function CharsPage() {
                     <div>There are no characters</div>
                     <div>(yet)</div>
                 </div>
-                : <div style={{ display: 'flex', flexWrap: 'wrap', width: '100%', marginTop: "20px", justifyContent: vertical ? "center" : undefined }} >
-                    {charactersApi.data?.map(a => <CharacterTile character={a} />)}
-                </div>
+                : <>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', width: '100%', marginTop: "20px", justifyContent: vertical ? "center" : undefined }} >
+                        {charactersApi.data?.filter(a => !a.isRetired)?.map(a => <CharacterTile character={a} />)}
+                    </div>
+                    {hasRetiredChars && <Accordion style={{ marginTop: "10px" }}>
+                        <AccordionSummary expandIcon={<ExpandMore />}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: "10px" }}>
+                                <BeachAccess />
+                                <Typography>Retired characters</Typography>
+                            </div>
+                        </AccordionSummary>
+                        <AccordionDetails>
+                            <div style={{
+                                display: 'flex', flexWrap: 'wrap',
+                                width: '100%', marginTop: "-20px",
+                                justifyContent: vertical ? "center" : undefined
+                            }} >
+                                {charactersApi.data?.filter(a => a.isRetired).map(a => <CharacterTile character={a} />)}
+                            </div>
+                        </AccordionDetails>
+                    </Accordion>}
+                </>
             }
         </div>
 
