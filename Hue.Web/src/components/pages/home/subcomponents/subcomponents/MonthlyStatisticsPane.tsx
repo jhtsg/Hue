@@ -5,7 +5,6 @@ import { useWindowDimensions } from "../../../../hooks/useWindowDimensions";
 import PriceCatBarChartPane from "./subcomponents/PriceCatBarChartPane";
 import SpendingBarChartPane from "./subcomponents/SpendingBarChartPane";
 import StatusBarChartPane from "./subcomponents/StatusBarChartPane";
-import './MonthlyStatisticsPane.css'
 
 export default function MonthlyStatisticsPane(props: {
     year: number
@@ -50,11 +49,11 @@ export default function MonthlyStatisticsPane(props: {
     return <div
         ref={contentRef}
         style={{
-            paddingBottom: expanded ? "20px" : "0px",
+            marginBottom: expanded ? "20px" : "0px",
             overflowY: 'hidden',
             maxHeight: maxHeight,
             opacity: expanded ? 1 : 0,
-            transition: "max-height 0.3s ease, opacity 0.3s ease, padding-left 0.3s ease, padding-right 0.3s ease, padding-bottom 0.3s ease"
+            transition: "max-height 0.3s ease, opacity 0.3s ease, margin-bottom 0.3s ease"
         }}>
         <div>
             <div style={vertical ? {} : { display: "flex" }}>
