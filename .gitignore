@@ -367,3 +367,5 @@ REGISTER_KEY.txt
 DB_URL.txt
 /Hue.API/FRONTEND_HOST_NAME.txt
 /Hue.API/NO_SECURE.txt
+/Hue.API/REGISTER_KEY.txt
+Hue.Web/package-lock.json
