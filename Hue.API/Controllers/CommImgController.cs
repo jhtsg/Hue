@@ -23,7 +23,7 @@ namespace Hue.API.Controllers
         #region CREATE
         [HttpPost]
         public async Task<IActionResult> Create(
-                [FromForm] IFormFile file, 
+                IFormFile file, 
                 [FromForm] int commId,
                 [FromForm] string? notes,
                 [FromForm] int type

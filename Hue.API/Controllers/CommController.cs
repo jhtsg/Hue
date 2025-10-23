@@ -176,7 +176,7 @@ namespace Hue.API.Controllers
         }
 
         [HttpPut("{ID}/image")]
-        public async Task<IActionResult> UpdateImage(int ID, [FromForm] IFormFile file) {
+        public async Task<IActionResult> UpdateImage(int ID, IFormFile file) {
             var session = await GetSession(Request, Response);
             if (session == null) { return Unauthorized(); }
 
