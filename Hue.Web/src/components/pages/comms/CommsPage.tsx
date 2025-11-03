@@ -1,5 +1,5 @@
-import { Add, Archive, Download, PhotoLibrary } from "@mui/icons-material";
-import { Button, Dialog, Drawer, Fab, Tab, Tabs, Tooltip } from "@mui/material"
+import { Add, Archive, Close, Download, PhotoLibrary } from "@mui/icons-material";
+import { Button, Dialog, DialogContent, DialogTitle, Drawer, Fab, IconButton, Tab, Tabs, Tooltip } from "@mui/material"
 import { useState } from "react"
 import CommBoard from "./subcomponents/CommBoard/Board";
 import { useSearchParams } from "react-router-dom";
@@ -11,6 +11,7 @@ import useApi from "../../hooks/useApi";
 import { getCommissionYears } from "../../../api/Comm";
 import { useWindowDimensions } from "../../hooks/useWindowDimensions";
 import { API_PREFIX } from "../../../api/Common";
+import AreYouSureModal from "../../shared/modals/AreYouSureModal";
 
 export default function CommsPage() {
 
@@ -30,7 +31,14 @@ export default function CommsPage() {
     }
 
     const [newOpen, setNewOpen] = useState(false);
+    const [newDirty, setNewDirty] = useState(false);
+    const [newAys, setNewAys] = useState(false)
     const [archived, setArchived] = useState(false)
+
+    const newClose = () => {
+        if (newDirty) { setNewAys(true) }
+        else { setNewOpen(false) }
+    }
 
     return <>
         <div style={{ display: "flex", alignItems: "end" }}>
@@ -71,19 +79,43 @@ export default function CommsPage() {
 
         <Tooltip title="Create a new commission">
             <Fab color="primary" style={{ position: "fixed", bottom: "20px", right: "20px" }}
-                onClick={() => setNewOpen(true)} >
+                onClick={() => {
+                    setNewOpen(true)
+                    setNewDirty(false)
+                }} >
                 <Add />
             </Fab>
         </Tooltip>
 
-        <Dialog open={newOpen} onClose={() => setNewOpen(false)} maxWidth="lg" fullWidth>
-            <div style={{ padding: 20 }}>
-                <CommPane create open={newOpen} setOpen={setNewOpen} onOk={() => {
-                    setNewOpen(false);
-                    refresh();
-                }} />
-
-            </div>
+        <Dialog open={newOpen} maxWidth="lg" fullWidth>
+            <DialogTitle>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <div>Create a Commission</div>
+                    <IconButton
+                        onClick={() => {
+                            newClose();
+                        }}
+                    ><Close /></IconButton>
+                </div>
+            </DialogTitle>
+            <DialogContent>
+                <CommPane create open={newOpen}
+                    onDirty={() => {
+                        setNewDirty(true)
+                    }}
+                    onOk={() => {
+                        setNewOpen(false);
+                        refresh();
+                    }}
+                />
+            </DialogContent>
         </Dialog>
+
+        <AreYouSureModal onYes={() => { setNewAys(false); setNewOpen(false); setNewDirty(false); }} open={newAys} setOpen={setNewAys} title="Are you sure?">
+            Are you sure you want to close? This commission has not been saved!
+        </AreYouSureModal>
+
+
+
     </>
 }

@@ -38,15 +38,14 @@ import AssociatedImagesCarousel from "./AssociatedImages/AssociatedImagesCarouse
 
 
 export default function CommPane(props: {
-    create?: boolean,
-    editable?: boolean,
     id?: number
+    create?: boolean,
     open?: boolean
-    setOpen?: (val: boolean) => void
     onOk?: () => void
+    onDirty?: () => void
 }) {
 
-    const { id, create, onOk } = props
+    const { id, create, onOk, onDirty } = props
 
     const { enqueueSnackbar } = useSnackbar();
     const nav = useNavigate();
@@ -261,6 +260,7 @@ export default function CommPane(props: {
 
     const markDirty = () => {
         setDirty(true);
+        onDirty?.();
     }
 
     const anyLoading = commApi.loading || updateCommApi.loading || createCommApi.loading || updateCommHeaderApi.loading || createCommApi.loading
@@ -275,7 +275,7 @@ export default function CommPane(props: {
         <ApiAlert result={updateCommHeaderApi.error} />
 
         <CoverHeader
-            id={id} color={color} selectedFileUrl={selectedFileUrl} setDirty={setDirty}
+            id={id} color={color} selectedFileUrl={selectedFileUrl} markDirty={markDirty}
             setSelectedFile={setSelectedFile} setSelectedFileUrl={setSelectedFileUrl}
         />
 
@@ -516,12 +516,12 @@ function CoverHeader(props: {
     selectedFileUrl?: string,
     setSelectedFile: (val: File | null) => void,
     setSelectedFileUrl: (val: string | undefined) => void,
-    setDirty: (val: boolean) => void,
+    markDirty: () => void,
     color: string,
 }) {
 
     const [imageError, setImageError] = useState(false)
-    const { id, color, selectedFileUrl, setSelectedFile, setSelectedFileUrl, setDirty } = props
+    const { id, color, selectedFileUrl, setSelectedFile, setSelectedFileUrl, markDirty } = props
 
     useEffect(() => {
         setImageError(false)
@@ -544,7 +544,7 @@ function CoverHeader(props: {
                 if (e.target.files) {
                     setSelectedFile(e.target.files[0])
                     setSelectedFileUrl(URL.createObjectURL(e.target.files[0]))
-                    setDirty(true)
+                    markDirty()
                 }
             }}
             ref={fileInputRef}
